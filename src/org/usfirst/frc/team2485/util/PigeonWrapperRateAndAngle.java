@@ -5,13 +5,13 @@ import org.usfirst.frc.team2485.robot.RobotMap;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 
-public class AHRSWrapperRateAndAngle implements PIDSource {
+public class PigeonWrapperRateAndAngle implements PIDSource {
 	public static enum Units {
 		DEGS, RADS
 	}
 	private PIDSourceType pidSource;
 	private Units units;
-	public AHRSWrapperRateAndAngle(PIDSourceType pidSource, Units units) {
+	public PigeonWrapperRateAndAngle(PIDSourceType pidSource, Units units) {
 		this.pidSource = pidSource;
 		this.units = units;
 	}

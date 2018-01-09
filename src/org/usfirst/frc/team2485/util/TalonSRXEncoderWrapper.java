@@ -34,7 +34,7 @@ public class TalonSRXEncoderWrapper implements PIDSource{
 		}
 	}
 	
-	public void setDistancePerRevolution(double disancePerRevolution) {
+	public void setDistancePerRevolution(double distancePerRevolution) {
 		this.distancePerRevolution = distancePerRevolution;
 	}
 	
