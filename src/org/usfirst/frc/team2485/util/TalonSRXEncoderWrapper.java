@@ -1,17 +1,17 @@
 package org.usfirst.frc.team2485.util;
 
-import com.ctre.CANTalon;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 
-public class CANTalonEncoderWrapper implements PIDSource{
-	private CANTalon cantalon;
+public class TalonSRXEncoderWrapper implements PIDSource{
+	private TalonSRX talonsrx;
 	private PIDSourceType pidSource;
 	private double distancePerRevolution = 1;
 	
-	public CANTalonEncoderWrapper(CANTalon cantalon, PIDSourceType pidSource) {
-		this.cantalon = cantalon;
+	public TalonSRXEncoderWrapper(TalonSRX talonsrx, PIDSourceType pidSource) {
+		this.talonsrx = talonsrx;
 		this.pidSource = pidSource;
 	}
 	
@@ -28,9 +28,9 @@ public class CANTalonEncoderWrapper implements PIDSource{
 	@Override
 	public double pidGet() {
 		if(pidSource == PIDSourceType.kDisplacement) {
-			return ((double)(cantalon.getEncPosition())/4096)*distancePerRevolution;
+			return ((double)(talonsrx.getSelectedSensorPosition(0))/4096)*distancePerRevolution;
 		} else {
-			return ((double)(cantalon.getEncVelocity())/4096)*10*distancePerRevolution;
+			return ((double)(talonsrx.getSelectedSensorVelocity(0))/4096)*10*distancePerRevolution;
 		}
 	}
 	

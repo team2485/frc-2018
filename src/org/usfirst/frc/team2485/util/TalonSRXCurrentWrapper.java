@@ -1,16 +1,16 @@
 package org.usfirst.frc.team2485.util;
 
-import com.ctre.CANTalon;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 
-public class CANTalonCurrentWrapper implements PIDSource {
+public class TalonSRXCurrentWrapper implements PIDSource {
 	
-	private CANTalon canTalon;
+	private TalonSRX canTalon;
 	
-	public CANTalonCurrentWrapper(CANTalon cantalon) {
-		this.canTalon = cantalon;
+	public TalonSRXCurrentWrapper(TalonSRX talonsrx) {
+		this.canTalon = talonsrx;
 		
 	}
 
