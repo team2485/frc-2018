@@ -35,6 +35,8 @@ public class WarlordsPIDController extends WarlordsControlSystem {
 	private boolean continuous;
 	
 	private PIDSource maxOutputSource, minOutputSource;
+	
+	private PIDSource kPSource, kISource, kDSource, kFSource;
 		
 	/**
 	 * 
@@ -78,6 +80,13 @@ public class WarlordsPIDController extends WarlordsControlSystem {
 	public void setPID(double kP, double kI, double kD) {
 		setPID(kP, kI, kD, 0);
 	} 
+	
+	public void setConstantsSources(PIDSource kP, PIDSource kI, PIDSource kD, PIDSource kF) {
+		kPSource = kP;
+		kISource = kI;
+		kDSource = kD;
+		kFSource = kF;
+	}
 	
 	/**
 	 * Disables and clears integral and derivative terms
@@ -205,6 +214,20 @@ public class WarlordsPIDController extends WarlordsControlSystem {
 		if (minOutputSource != null) {
 			minOutput = minOutputSource.pidGet();
 		}
+		
+		if (kPSource != null) {
+			kP = kPSource.pidGet();
+		}
+		if (kISource != null) {
+			kI = kISource.pidGet();
+		}
+		if (kDSource != null) {
+			kD = kDSource.pidGet();
+		}
+		if (kFSource != null) {
+			kF = kFSource.pidGet();
+		}
+		
 		sensorVal = sources[0].pidGet();
 		double error = setpoint - sensorVal;
 
@@ -266,6 +289,8 @@ public class WarlordsPIDController extends WarlordsControlSystem {
 			out.pidWrite(result);
 		}
 	}
+	
+	
 	
 	@Override
 	public void pidWrite(double output) {

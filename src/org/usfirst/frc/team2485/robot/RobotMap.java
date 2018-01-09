@@ -1,6 +1,10 @@
 package org.usfirst.frc.team2485.robot;
 
+import org.usfirst.frc.team2485.robot.subsystems.DriveTrain;
+
 import com.kauailabs.navx.frc.AHRS;
+
+import edu.wpi.first.wpilibj.SerialPort.Port;
 
 /**
  * The RobotMap is a mapping from the ports sensors and actuators are wired into
@@ -12,9 +16,22 @@ public class RobotMap {
 
 	public static double ROBOT_WIDTH;
 	
+	//SENSORS
 	public static AHRS ahrs;
 	
+	//SPEED CONTROLLERS
+	
+	//SUBSYSTEMS
+	public static DriveTrain drivetrain;
+	
 	public static void init() {
+		
+		//SENSORS
+		ahrs = new AHRS(Port.kMXP);
+		
+		//SUBSYSTEMS
+		drivetrain = new DriveTrain();
+		
 		
 	}
 	
