@@ -1,6 +1,10 @@
 package org.usfirst.frc.team2485.robot;
 
+
+import com.ctre.phoenix.sensors.PigeonIMU;
+
 import org.usfirst.frc.team2485.robot.subsystems.DriveTrain;
+
 
 import com.kauailabs.navx.frc.AHRS;
 
@@ -16,23 +20,17 @@ public class RobotMap {
 
 	public static double ROBOT_WIDTH;
 	
-	//SENSORS
+
+	public static final int PIGEON_PORT = 0;
+	
 	public static AHRS ahrs;
 	
-	//SPEED CONTROLLERS
-	
-	//SUBSYSTEMS
-	public static DriveTrain drivetrain;
+	public static PigeonIMU pigeon;
 	
 	public static void init() {
-		
-		//SENSORS
-		ahrs = new AHRS(Port.kMXP);
-		
-		//SUBSYSTEMS
-		drivetrain = new DriveTrain();
-		
-		
+		pigeon = new PigeonIMU(PIGEON_PORT);
+
+
 	}
 	
 	// For example to map the left and right motors, you could define the

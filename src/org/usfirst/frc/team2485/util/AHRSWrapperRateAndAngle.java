@@ -29,9 +29,12 @@ public class AHRSWrapperRateAndAngle implements PIDSource {
 	@Override
 	public double pidGet() {
 		if (pidSource == PIDSourceType.kDisplacement) {
-			return (units == Units.RADS) ? Math.PI / 180 * RobotMap.ahrs.getAngle() : RobotMap.ahrs.getAngle();
+			return (units == Units.RADS) ? Math.PI / 180 * RobotMap.pigeon.getFusedHeading() : RobotMap.pigeon.getFusedHeading();
+			
 		} else {
-			double delta = RobotMap.ahrs.getRate(); // multiply by 60 because kauai labs can't math
+			double[] ypr = new double[3];
+			RobotMap.pigeon.getYawPitchRoll(ypr);
+			double delta = ypr[0]; 
 			if(delta<-180) {
 				delta+=360;
 			}
