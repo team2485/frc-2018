@@ -172,7 +172,6 @@ public class LidarWrapper extends SensorBase implements PIDSource {
 		}
 	}
 
-	@Override
 	public void initSendable(SendableBuilder builder) {
 		// TODO Auto-generated method stub
 		
