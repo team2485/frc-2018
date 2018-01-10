@@ -57,6 +57,7 @@ public class RobotMap {
 	
 	public static void init() {
 		
+		
 		driveLeftTalonWrapper1 = new TalonSRXWrapper(ControlMode.Current, driveLeftPort1);
 		driveLeftTalonWrapper2 = new TalonSRXWrapper(ControlMode.Current, driveLeftPort2);
 		driveLeftTalonWrapper3 = new TalonSRXWrapper(ControlMode.Current, driveLeftPort3);

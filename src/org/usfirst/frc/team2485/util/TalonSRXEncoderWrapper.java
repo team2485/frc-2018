@@ -38,5 +38,9 @@ public class TalonSRXEncoderWrapper implements PIDSource{
 		this.distancePerRevolution = distancePerRevolution;
 	}
 	
+	public void reset() {
+		talonsrx.setSelectedSensorPosition(0, 0, 0);
+	}
+	
 	
 }
