@@ -5,9 +5,11 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
 
 import org.usfirst.frc.team2485.robot.subsystems.DriveTrain;
+import org.usfirst.frc.team2485.util.PigeonWrapperRateAndAngle;
 import org.usfirst.frc.team2485.util.SpeedControllerWrapper;
 import org.usfirst.frc.team2485.util.TalonSRXEncoderWrapper;
 import org.usfirst.frc.team2485.util.TalonSRXWrapper;
+import org.usfirst.frc.team2485.util.PigeonWrapperRateAndAngle.Units;
 
 import edu.wpi.first.wpilibj.PIDSourceType;
 
@@ -48,6 +50,9 @@ public class RobotMap {
 
 	public static PigeonIMU pigeon;
 	
+	public static PigeonWrapperRateAndAngle pigeonRateWrapper;
+	public static PigeonWrapperRateAndAngle pigeonDisplacementWrapper;
+	
 	public static TalonSRXEncoderWrapper driveLeftEncoderWrapperRate;
 	public static TalonSRXEncoderWrapper driveRightEncoderWrapperRate;
 	public static TalonSRXEncoderWrapper driveLeftEncoderWrapperDistance;
@@ -58,12 +63,12 @@ public class RobotMap {
 	public static void init() {
 		
 		
-		driveLeftTalonWrapper1 = new TalonSRXWrapper(ControlMode.Current, driveLeftPort1);
-		driveLeftTalonWrapper2 = new TalonSRXWrapper(ControlMode.Current, driveLeftPort2);
-		driveLeftTalonWrapper3 = new TalonSRXWrapper(ControlMode.Current, driveLeftPort3);
-		driveRightTalonWrapper1 = new TalonSRXWrapper(ControlMode.Current, driveRightPort1);
-		driveRightTalonWrapper2 = new TalonSRXWrapper(ControlMode.Current, driveRightPort2);
-		driveRightTalonWrapper3 = new TalonSRXWrapper(ControlMode.Current, driveRightPort3);
+		driveLeftTalonWrapper1 = new TalonSRXWrapper(ControlMode.PercentOutput, driveLeftPort1);
+		driveLeftTalonWrapper2 = new TalonSRXWrapper(ControlMode.PercentOutput, driveLeftPort2);
+		driveLeftTalonWrapper3 = new TalonSRXWrapper(ControlMode.PercentOutput, driveLeftPort3);
+		driveRightTalonWrapper1 = new TalonSRXWrapper(ControlMode.PercentOutput, driveRightPort1);
+		driveRightTalonWrapper2 = new TalonSRXWrapper(ControlMode.PercentOutput, driveRightPort2);
+		driveRightTalonWrapper3 = new TalonSRXWrapper(ControlMode.PercentOutput, driveRightPort3);
 		
 		driveLeftTalon1 = new TalonSRX(driveLeftPort1);
 		driveLeftTalon2 = new TalonSRX(driveLeftPort2);
@@ -76,6 +81,9 @@ public class RobotMap {
 		driveRight = new SpeedControllerWrapper(driveRightTalonWrapper1, driveRightTalonWrapper2, driveRightTalonWrapper3);
 		
 		pigeon = new PigeonIMU(PIGEON_PORT);
+		pigeonRateWrapper = new PigeonWrapperRateAndAngle(PIDSourceType.kRate, Units.RADS);
+		pigeonDisplacementWrapper = new PigeonWrapperRateAndAngle(PIDSourceType.kDisplacement, Units.RADS);
+
 		
 		driveLeftEncoderWrapperRate = new TalonSRXEncoderWrapper(driveLeftTalon3, PIDSourceType.kRate);
 		driveRightEncoderWrapperRate = new TalonSRXEncoderWrapper(driveRightTalon3, PIDSourceType.kRate);
