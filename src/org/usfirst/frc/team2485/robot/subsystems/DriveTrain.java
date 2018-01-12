@@ -171,7 +171,34 @@ public class DriveTrain extends Subsystem {
         
     }
     
-    public void WARLordsDrive() {
+    public void simpleDrive(double throttle, double steering) {
+    	double leftPwm, rightPwm;
+    	
+    	double vmax = throttle;
+    	
+    	double angularPwm = 0;
+		
+    	if (throttle != 0) {
+    		angularPwm = steering * throttle; 
+    	} else {
+    		angularPwm = steering;
+    	}
+    	
+		if (vmax > 0 ) {
+			vmax -= Math.abs(angularPwm);
+		} else if (vmax < 0) {
+			vmax += Math.abs(angularPwm);
+		}
+    	
+		leftPwm = vmax + angularPwm;
+		rightPwm = vmax - angularPwm;
+		
+    	RobotMap.driveLeft.set(leftPwm);
+    	RobotMap.driveRight.set(rightPwm);
+    }
+    
+    public void WARLordsDrive(double throttle, double steering) {
+    	
     	
     }
     
