@@ -30,33 +30,18 @@ public class ConstantsIO {
 	public static double kD_DriveVelocity;
 	public static double kF_DriveVelocity;
 	
-	public static double kP_Distance;
-	public static double kI_Distance;
-	public static double kD_Distance;
-	
-	public static double kDownRamp_OverallVelocity;
-	public static double kUpRamp_OverallVelocity;
-	public static double kDownRamp_IndividualVelocity;
-	public static double kUpRamp_IndividualVelocity;
-
-	public static double kUpRamp_DriveThrottle;
-	public static double kDownRamp_DriveThrottle;
+	public static double kP_MaxDistance;
 	
 	public static double kP_DriveAngle;
 	public static double kI_DriveAngle;
 	public static double kD_DriveAngle;
-	
-	public static double kP_RotateTo;
-	public static double kI_RotateTo;
-	public static double kD_RotateTo;
-
-	public static double kUpRamp_DriveSteering;
-	public static double kDownRamp_DriveSteering;
 
 	public static double kP_DriveAngVel;
 	public static double kI_DriveAngVel;
 	public static double kD_DriveAngVel;
 	public static double kF_DriveAngVel;
+	
+	public static double IMax;
 
 
 
@@ -91,34 +76,21 @@ public class ConstantsIO {
 		kD_DriveVelocity = Double.parseDouble(data.get("kD_DriveVelocity"));
 		kF_DriveVelocity = Double.parseDouble(data.get("kF_DriveVelocity"));
 
-		kP_Distance = Double.parseDouble(data.get("kP_Distance"));
-		kI_Distance = Double.parseDouble(data.get("kI_Distance"));
-		kD_Distance = Double.parseDouble(data.get("kD_Distance"));
+		kP_MaxDistance = Double.parseDouble(data.get("kP_MaxDistance"));
 
-		kUpRamp_DriveThrottle = Double.parseDouble(data.get("kUpRamp_DriveThrottle"));
-		kDownRamp_DriveThrottle = Double.parseDouble(data.get("kDownRamp_DriveThrottle"));
 
-		kDownRamp_OverallVelocity = Double.parseDouble(data.get("kDownRamp_OverallVelocity"));
-		kUpRamp_OverallVelocity = Double.parseDouble(data.get("kUpRamp_OverallVelocity"));
-
-		kDownRamp_IndividualVelocity = Double.parseDouble(data.get("kDownRamp_IndividualVelocity"));
-		kUpRamp_IndividualVelocity = Double.parseDouble(data.get("kUpRamp_IndividualVelocity"));
+	
 
 		kP_DriveAngle = Double.parseDouble(data.get("kP_DriveAngle"));
 		kI_DriveAngle = Double.parseDouble(data.get("kI_DriveAngle"));
 		kD_DriveAngle = Double.parseDouble(data.get("kD_DriveAngle"));
-		
-		kP_RotateTo = Double.parseDouble(data.get("kP_RotateTo"));
-		kI_RotateTo = Double.parseDouble(data.get("kI_RotateTo"));
-		kD_RotateTo = Double.parseDouble(data.get("kD_RotateTo"));
 		
 		kP_DriveAngVel = Double.parseDouble(data.get("kP_DriveAngVel"));
 		kI_DriveAngVel = Double.parseDouble(data.get("kI_DriveAngVel"));
 		kD_DriveAngVel = Double.parseDouble(data.get("kD_DriveAngVel"));
 		kF_DriveAngVel = Double.parseDouble(data.get("kF_DriveAngVel"));
 		
-		kUpRamp_DriveSteering = Double.parseDouble(data.get("kUpRamp_DriveSteering"));
-		kDownRamp_DriveSteering = Double.parseDouble(data.get("kDownRamp_DriveSteering"));
+		IMax = Double.parseDouble(data.get("IMax"));
 		
 	}
 

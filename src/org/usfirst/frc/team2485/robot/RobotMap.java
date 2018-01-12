@@ -12,6 +12,7 @@ import org.usfirst.frc.team2485.util.TalonSRXWrapper;
 import org.usfirst.frc.team2485.util.PigeonWrapperRateAndAngle.Units;
 
 import edu.wpi.first.wpilibj.PIDSourceType;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 
 /**
  * The RobotMap is a mapping from the ports sensors and actuators are wired into
@@ -57,12 +58,12 @@ public class RobotMap {
 	public static TalonSRXEncoderWrapper driveRightEncoderWrapperRate;
 	public static TalonSRXEncoderWrapper driveLeftEncoderWrapperDistance;
 	public static TalonSRXEncoderWrapper driveRightEncoderWrapperDistance;
-
+	public static PowerDistributionPanel PDP;
 	public static DriveTrain drivetrain;
 	
 	public static void init() {
 		
-		
+		PDP = new PowerDistributionPanel();
 		driveLeftTalonWrapper1 = new TalonSRXWrapper(ControlMode.PercentOutput, driveLeftPort1);
 		driveLeftTalonWrapper2 = new TalonSRXWrapper(ControlMode.PercentOutput, driveLeftPort2);
 		driveLeftTalonWrapper3 = new TalonSRXWrapper(ControlMode.PercentOutput, driveLeftPort3);
