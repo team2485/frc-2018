@@ -41,10 +41,7 @@ public class DriveTrain extends Subsystem {
 
 	public static final double STEERING_DEADBAND = 0.15;
 	public static final double THROTTLE_DEADBAND = 0.05;
-	private static final double MIN_CURRENT = 2;
-	private static final double MAX_CURRENT = 20;
 
-	private boolean isQuickTurn;
 
 	private WarlordsPIDController distancePID = new WarlordsPIDController();
 	private WarlordsPIDController anglePID = new WarlordsPIDController();

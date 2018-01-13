@@ -104,11 +104,10 @@ public class RobotMap {
 		
 		
 		// Configure Hardware
-		driveLeftEncoderWrapperDistance.setDistancePerRevolution(WHEEL_RADIUS * 2 * Math.PI);
-		driveRightEncoderWrapperDistance.setDistancePerRevolution(WHEEL_RADIUS * 2 * Math.PI);
-		driveLeftEncoderWrapperRate.setDistancePerRevolution(WHEEL_RADIUS * 2 * Math.PI);
-		driveRightEncoderWrapperRate.setDistancePerRevolution(WHEEL_RADIUS * 2 * Math.PI);
-
+		driveLeftEncoderWrapperDistance.setDistancePerRevolution(WHEEL_RADIUS * 2 * Math.PI * 24.0 / 54);
+		driveRightEncoderWrapperDistance.setDistancePerRevolution(WHEEL_RADIUS * 2 * Math.PI * 24.0 / 54);
+		driveLeftEncoderWrapperRate.setDistancePerRevolution(WHEEL_RADIUS * 2 * Math.PI * 24.0 / 54);
+		driveRightEncoderWrapperRate.setDistancePerRevolution(WHEEL_RADIUS * 2 * Math.PI * 24.0 / 54);
 		
 		
 		// Construct Subsystems
