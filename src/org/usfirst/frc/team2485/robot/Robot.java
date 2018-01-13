@@ -45,6 +45,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void disabledPeriodic() {
 		Scheduler.getInstance().run();
+		updateSmartDashboard();
 	}
 
 	/**
@@ -98,8 +99,19 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		Scheduler.getInstance().run();
+		updateSmartDashboard();
+		
+
 	}
 
+	public void updateSmartDashboard() {
+		SmartDashboard.putNumber("Yaw", RobotMap.pigeonDisplacementWrapper.pidGet());
+		SmartDashboard.putNumber("Yaw Rate", RobotMap.pigeonRateWrapper.pidGet());
+		SmartDashboard.putNumber("Left Encoder Dist", RobotMap.driveLeftEncoderWrapperDistance.pidGet());
+		SmartDashboard.putNumber("Right Encoder Dist", RobotMap.driveRightEncoderWrapperDistance.pidGet());
+		SmartDashboard.putNumber("Left Encoder Rate", RobotMap.driveLeftEncoderWrapperRate.pidGet());
+		SmartDashboard.putNumber("Right Encoder Rate", RobotMap.driveLeftEncoderWrapperRate.pidGet());
+	}
 	/**
 	 * This function is called periodically during test mode
 	 */

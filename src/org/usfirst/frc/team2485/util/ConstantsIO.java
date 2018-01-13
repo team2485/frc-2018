@@ -30,7 +30,7 @@ public class ConstantsIO {
 	public static double kD_DriveVelocity;
 	public static double kF_DriveVelocity;
 	
-	public static double kP_MaxDistance;
+	public static double kPMax_Distance;
 	
 	public static double kP_DriveAngle;
 	public static double kI_DriveAngle;
@@ -41,7 +41,9 @@ public class ConstantsIO {
 	public static double kD_DriveAngVel;
 	public static double kF_DriveAngVel;
 	
-	public static double IMax;
+	public static int IMax;
+
+	public static double voltageMax;
 
 
 
@@ -70,16 +72,16 @@ public class ConstantsIO {
 		//		createUnMatchedConstants();
 
 		accelerationMax = Double.parseDouble(data.get("accelerationMax"));
+		kPMax_Distance = Double.parseDouble(data.get("kPMax_Distance"));
+		IMax = Integer.parseInt(data.get("IMax"));
+		voltageMax = Double.parseDouble(data.get("voltageMax"));
+
+
 		
 		kP_DriveVelocity = Double.parseDouble(data.get("kP_DriveVelocity"));
 		kI_DriveVelocity = Double.parseDouble(data.get("kI_DriveVelocity"));
 		kD_DriveVelocity = Double.parseDouble(data.get("kD_DriveVelocity"));
 		kF_DriveVelocity = Double.parseDouble(data.get("kF_DriveVelocity"));
-
-		kP_MaxDistance = Double.parseDouble(data.get("kP_MaxDistance"));
-
-
-	
 
 		kP_DriveAngle = Double.parseDouble(data.get("kP_DriveAngle"));
 		kI_DriveAngle = Double.parseDouble(data.get("kI_DriveAngle"));
@@ -90,7 +92,6 @@ public class ConstantsIO {
 		kD_DriveAngVel = Double.parseDouble(data.get("kD_DriveAngVel"));
 		kF_DriveAngVel = Double.parseDouble(data.get("kF_DriveAngVel"));
 		
-		IMax = Double.parseDouble(data.get("IMax"));
 		
 	}
 

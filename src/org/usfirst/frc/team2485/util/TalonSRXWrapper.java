@@ -15,8 +15,8 @@ public class TalonSRXWrapper implements SpeedController, PIDOutput {
 	private ControlMode controlMode;
 	private boolean isInverted = false;
 	
-	public TalonSRXWrapper(ControlMode controlMode, int port) {
-		talon = new TalonSRX(port);
+	public TalonSRXWrapper(ControlMode controlMode, TalonSRX talon) {
+		this.talon = talon;
 		this.controlMode = controlMode;
 		
 	}
