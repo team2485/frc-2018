@@ -33,17 +33,9 @@ public class PigeonWrapperRateAndAngle implements PIDSource {
 			
 		} else {
 			double[] ypr = new double[3];
-			RobotMap.pigeon.getYawPitchRoll(ypr);
-			double delta = ypr[0]; 
-			if(delta<-180) {
-				delta+=360;
-			}
-			else if(delta>180) {
-				delta-=360;
-			}
-			double rate = delta*60;
+			RobotMap.pigeon.getRawGyro(ypr);
 			
-			return (units == Units.RADS) ? Math.PI / 180 * rate : rate;
+			return (units == Units.RADS) ? Math.PI / 180 * ypr[0] : ypr[0];
 		}
 	}
 	
