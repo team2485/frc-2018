@@ -8,6 +8,7 @@ import com.ctre.phoenix.sensors.PigeonIMU;
 
 import org.usfirst.frc.team2485.robot.subsystems.DriveTrain;
 import org.usfirst.frc.team2485.util.PigeonWrapperRateAndAngle;
+import org.usfirst.frc.team2485.util.PigeonWrapperRateAndAngle.Units;
 import org.usfirst.frc.team2485.util.SpeedControllerWrapper;
 import org.usfirst.frc.team2485.util.TalonSRXEncoderWrapper;
 import org.usfirst.frc.team2485.util.TalonSRXWrapper;
@@ -102,7 +103,7 @@ public class RobotMap {
 
 	
 		
-//		pigeon = new PigeonIMU(driveRightTalon1);
+		pigeon = new PigeonIMU(driveRightTalon1);
 		
 
 		// Construct Wrappers
@@ -131,8 +132,8 @@ public class RobotMap {
 		driveLeftCurrent.setInverted(true);
 		driveLeftPWM.setInverted(true);
 		
-//		pigeonRateWrapper = new PigeonWrapperRateAndAngle(PIDSourceType.kRate, Units.RADS);
-//		pigeonDisplacementWrapper = new PigeonWrapperRateAndAngle(PIDSourceType.kDisplacement, Units.RADS);
+		pigeonRateWrapper = new PigeonWrapperRateAndAngle(PIDSourceType.kRate, Units.RADS);
+		pigeonDisplacementWrapper = new PigeonWrapperRateAndAngle(PIDSourceType.kDisplacement, Units.RADS);
 		
 		driveLeftEncoderWrapperRate = new TalonSRXEncoderWrapper(driveLeftTalon3, PIDSourceType.kRate);
 		driveRightEncoderWrapperRate = new TalonSRXEncoderWrapper(driveRightTalon3, PIDSourceType.kRate);

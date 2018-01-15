@@ -1,6 +1,9 @@
 
 package org.usfirst.frc.team2485.robot;
 
+import org.usfirst.frc.team2485.robot.commands.DriveStraight;
+import org.usfirst.frc.team2485.robot.commands.HighLowCurrentTest;
+import org.usfirst.frc.team2485.robot.commands.SetVelocities;
 import org.usfirst.frc.team2485.util.ConstantsIO;
 import org.usfirst.frc.team2485.util.ThresholdHandler;
 
@@ -44,6 +47,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void disabledInit() {
+		Scheduler.getInstance().removeAll();
 		RobotMap.drivetrain.reset();
 	}
 
@@ -78,6 +82,11 @@ public class Robot extends IterativeRobot {
 		// schedule the autonomous command (example)
 		RobotMap.driveRightEncoderWrapperDistance.reset();
 		RobotMap.driveLeftEncoderWrapperDistance.reset();
+		RobotMap.pigeon.setFusedHeading(0, 0);
+//		Scheduler.getInstance().add(new HighLowCurrentTest(-8, -4, -8, -4, 4000));
+//		Scheduler.getInstance().add(new SetVelocities(30, 0));
+		Scheduler.getInstance().add(new DriveStraight(1200, 100, 100000));
+
 
 	}
 
@@ -89,7 +98,7 @@ public class Robot extends IterativeRobot {
 		Scheduler.getInstance().run();
 //		RobotMap.drivetrain.driveTo(200, 100, 0, 0);
 		updateSmartDashboard();
-		RobotMap.drivetrain.setCurrents(-4, -4);
+//		RobotMap.drivetrain.setCurrents(-1, -1);
 	}
 
 	@Override
@@ -119,14 +128,16 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void updateSmartDashboard() {
-//		SmartDashboard.putNumber("Yaw", RobotMap.pigeonDisplacementWrapper.pidGet());
-//		SmartDashboard.putNumber("Yaw Rate", RobotMap.pigeonRateWrapper.pidGet());
+		SmartDashboard.putNumber("Yaw", RobotMap.pigeonDisplacementWrapper.pidGet());
+		SmartDashboard.putNumber("Yaw Rate", RobotMap.pigeonRateWrapper.pidGet());
+		SmartDashboard.putNumber("Yaw Rate Error", RobotMap.drivetrain.getAngleRateError());
 		SmartDashboard.putNumber("Left Encoder Dist", RobotMap.driveLeftEncoderWrapperDistance.pidGet());
 		SmartDashboard.putNumber("Right Encoder Dist", RobotMap.driveRightEncoderWrapperDistance.pidGet());
 		SmartDashboard.putNumber("Left Encoder Rate", RobotMap.driveLeftEncoderWrapperRate.pidGet());
 		SmartDashboard.putNumber("Right Encoder Rate", RobotMap.driveRightEncoderWrapperRate.pidGet());
 		SmartDashboard.putNumber("Velocity Error", RobotMap.drivetrain.getVelocityError());
 		SmartDashboard.putNumber("Distance Error", RobotMap.drivetrain.getDistError());
+		SmartDashboard.putNumber("Angle Error", RobotMap.drivetrain.getAngleError());
 		
 		SmartDashboard.putNumber("Left Current", RobotMap.driveLeftTalon1.getOutputCurrent());
 		SmartDashboard.putNumber("Right Current", RobotMap.driveRightTalon1.getOutputCurrent());
