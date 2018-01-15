@@ -94,31 +94,40 @@ public class RobotMap {
 		for(TalonSRX t : driveTalons) {
 			t.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
 		}
+		driveLeftTalon2.set(ControlMode.Follower, driveLeftPort1);
+		driveLeftTalon3.set(ControlMode.Follower, driveLeftPort1);
+		driveRightTalon2.set(ControlMode.Follower, driveRightPort1);
+		driveRightTalon3.set(ControlMode.Follower, driveRightPort1);
+		driveLeftTalon1.selectProfileSlot(0, 0);
+		driveRightTalon1.selectProfileSlot(0, 0);
+
+	
 		
 //		pigeon = new PigeonIMU(driveRightTalon1);
+		
 
 		// Construct Wrappers
 		driveLeftTalonCurrentWrapper1 = new TalonSRXWrapper(ControlMode.Current, driveLeftTalon1);
-		driveLeftTalonCurrentWrapper2 = new TalonSRXWrapper(ControlMode.Current, driveLeftTalon2);
-		driveLeftTalonCurrentWrapper3 = new TalonSRXWrapper(ControlMode.Current, driveLeftTalon3);
+//		driveLeftTalonCurrentWrapper2 = new TalonSRXWrapper(ControlMode.Current, driveLeftTalon2);
+//		driveLeftTalonCurrentWrapper3 = new TalonSRXWrapper(ControlMode.Current, driveLeftTalon3);
 		driveRightTalonCurrentWrapper1 = new TalonSRXWrapper(ControlMode.Current, driveRightTalon1);
-		driveRightTalonCurrentWrapper2 = new TalonSRXWrapper(ControlMode.Current, driveRightTalon2);
-		driveRightTalonCurrentWrapper3 = new TalonSRXWrapper(ControlMode.Current, driveRightTalon3);
+//		driveRightTalonCurrentWrapper2 = new TalonSRXWrapper(ControlMode.Current, driveRightTalon2);
+//		driveRightTalonCurrentWrapper3 = new TalonSRXWrapper(ControlMode.Current, driveRightTalon3);
 		
 		driveLeftTalonPWMWrapper1 = new TalonSRXWrapper(ControlMode.PercentOutput, driveLeftTalon1);
-		driveLeftTalonPWMWrapper2 = new TalonSRXWrapper(ControlMode.PercentOutput, driveLeftTalon2);
-		driveLeftTalonPWMWrapper3 = new TalonSRXWrapper(ControlMode.PercentOutput, driveLeftTalon3);
+//		driveLeftTalonPWMWrapper2 = new TalonSRXWrapper(ControlMode.PercentOutput, driveLeftTalon2);
+//		driveLeftTalonPWMWrapper3 = new TalonSRXWrapper(ControlMode.PercentOutput, driveLeftTalon3);
 		driveRightTalonPWMWrapper1 = new TalonSRXWrapper(ControlMode.PercentOutput, driveRightTalon1);
-		driveRightTalonPWMWrapper2 = new TalonSRXWrapper(ControlMode.PercentOutput, driveRightTalon2);
-		driveRightTalonPWMWrapper3 = new TalonSRXWrapper(ControlMode.PercentOutput, driveRightTalon3);
+//		driveRightTalonPWMWrapper2 = new TalonSRXWrapper(ControlMode.PercentOutput, driveRightTalon2);
+//		driveRightTalonPWMWrapper3 = new TalonSRXWrapper(ControlMode.PercentOutput, driveRightTalon3);
 
 
 		
-		driveLeftCurrent = new SpeedControllerWrapper(driveLeftTalonCurrentWrapper1, driveLeftTalonCurrentWrapper2, driveLeftTalonCurrentWrapper3);
-		driveRightCurrent = new SpeedControllerWrapper(driveRightTalonCurrentWrapper1, driveRightTalonCurrentWrapper2, driveRightTalonCurrentWrapper3);
+		driveLeftCurrent = new SpeedControllerWrapper(driveLeftTalonCurrentWrapper1);
+		driveRightCurrent = new SpeedControllerWrapper(driveRightTalonCurrentWrapper1);
 		
-		driveLeftPWM = new SpeedControllerWrapper(driveLeftTalonPWMWrapper1, driveLeftTalonPWMWrapper2, driveLeftTalonPWMWrapper3);
-		driveRightPWM = new SpeedControllerWrapper(driveRightTalonPWMWrapper1, driveRightTalonPWMWrapper2, driveRightTalonPWMWrapper3);
+		driveLeftPWM = new SpeedControllerWrapper(driveLeftTalonPWMWrapper1);
+		driveRightPWM = new SpeedControllerWrapper(driveRightTalonPWMWrapper1);
 		
 		driveLeftCurrent.setInverted(true);
 		driveLeftPWM.setInverted(true);

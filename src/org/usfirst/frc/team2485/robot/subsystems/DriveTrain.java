@@ -230,6 +230,10 @@ public class DriveTrain extends Subsystem {
 		leftMotorSetter.setOutputs(RobotMap.driveLeftCurrent);
 		rightMotorSetter.setSetpointSource(rightCurrentPIDSource);
 		rightMotorSetter.setOutputs(RobotMap.driveRightCurrent);
+		
+//		RobotMap.driveLeftTalon1.config_kF(0, .01, 0);
+//		RobotMap.driveRightTalon1.config_kF(0, .01, 0);
+
 
 	}
 

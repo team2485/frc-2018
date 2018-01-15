@@ -87,8 +87,9 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousPeriodic() {
 		Scheduler.getInstance().run();
-		RobotMap.drivetrain.driveTo(200, 100, 0, 0);
+//		RobotMap.drivetrain.driveTo(200, 100, 0, 0);
 		updateSmartDashboard();
+		RobotMap.drivetrain.setCurrents(-4, -4);
 	}
 
 	@Override
@@ -126,10 +127,17 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Right Encoder Rate", RobotMap.driveRightEncoderWrapperRate.pidGet());
 		SmartDashboard.putNumber("Velocity Error", RobotMap.drivetrain.getVelocityError());
 		SmartDashboard.putNumber("Distance Error", RobotMap.drivetrain.getDistError());
+		
+		SmartDashboard.putNumber("Left Current", RobotMap.driveLeftTalon1.getOutputCurrent());
+		SmartDashboard.putNumber("Right Current", RobotMap.driveRightTalon1.getOutputCurrent());
 
+		
+		SmartDashboard.putNumber("Left Current Error", RobotMap.driveLeftTalon1.getClosedLoopError(0));
+		SmartDashboard.putNumber("Right Current Error", RobotMap.driveRightTalon1.getClosedLoopError(0));
+		
 		SmartDashboard.putNumber("Velocity TN", RobotMap.drivetrain.velocityTN.pidGet());
 		SmartDashboard.putNumber("Ang Vel TN", RobotMap.drivetrain.angVelocityTN.pidGet());
-		SmartDashboard.putNumber("Left + Right", RobotMap.driveLeftTalonCurrentWrapper3.get() + RobotMap.driveRightTalonCurrentWrapper3.get());
+		SmartDashboard.putNumber("Left + Right", RobotMap.driveLeftTalonCurrentWrapper1.get() + RobotMap.driveRightTalonCurrentWrapper1.get());
 	}
 	/**
 	 * This function is called periodically during test mode
