@@ -324,7 +324,7 @@ public class DriveTrain extends Subsystem {
 		RobotMap.driveRightCurrent.set(r);
 	}
 
-	public void driveTo(double distance, double maxSpeed, double angle, double curvature) {
+	public boolean driveTo(double distance, double maxSpeed, double angle, double curvature, double tolerance) {
 		velocityPID.enable();
 //		angVelocityPID.enable();
 //		anglePID.enable();
@@ -337,6 +337,7 @@ public class DriveTrain extends Subsystem {
 		
 		distancePID.setOutputRange(-maxSpeed, maxSpeed);
 //		anglePID.setOutputRange(-maxSpeed / RobotMap.ROBOT_WIDTH, maxSpeed / RobotMap.ROBOT_WIDTH);
+		return false;
 	}
 	
 	public void updateConstants() {
@@ -351,5 +352,10 @@ public class DriveTrain extends Subsystem {
 		angVelocityPID.setPID(ConstantsIO.kP_DriveAngVel, ConstantsIO.kI_DriveAngVel, ConstantsIO.kD_DriveAngVel, ConstantsIO.kF_DriveAngVel);
 		anglePID.setPID(ConstantsIO.kP_DriveAngle, ConstantsIO.kI_DriveAngle, ConstantsIO.kD_DriveAngle);
 
+	}
+
+	public double getAverageEncoderDistance() {
+		// TODO Auto-generated method stub
+		return encoderDistancePIDSource.pidGet();
 	}
 }
