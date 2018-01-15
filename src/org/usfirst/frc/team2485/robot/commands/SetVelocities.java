@@ -5,16 +5,16 @@ import org.usfirst.frc.team2485.robot.RobotMap;
 import edu.wpi.first.wpilibj.command.InstantCommand;
 
 public class SetVelocities extends InstantCommand{
-private double l, r;
+private double linearVelocity, angularVelocity;
 	
-	public SetVelocities(double l, double r) {
-		this.l = l;
-		this.r = r;
+	public SetVelocities(double linearVelocity, double angularVelocity) {
+		this.linearVelocity = linearVelocity;
+		this.angularVelocity = angularVelocity;
 	}
 	
 	@Override
 	protected void initialize() {
-		RobotMap.drivetrain.setVelocities(l, r);
+		RobotMap.drivetrain.setVelocities(linearVelocity, angularVelocity);;
 	}
 	
 

@@ -190,7 +190,7 @@ public class DriveTrain extends Subsystem {
 		velocityPID.setOutputs(velocityTN);
 		velocityPID.setSources(encoderAvgVelocityPIDSource);
 		velocityPID.setSetpointSource(distanceTN);
-//		velocityPID.setOutputSources(maxVelocityORSource, minVelocityORSource);
+		velocityPID.setOutputSources(maxVelocityORSource, minVelocityORSource);
 		
 
 		//angle
@@ -199,7 +199,7 @@ public class DriveTrain extends Subsystem {
 		anglePID.setSources(RobotMap.pigeonDisplacementWrapper);
 		anglePID.setContinuous(true);
 		anglePID.setInputRange(0, 2 * Math.PI);
-
+  
 		angVelTargSource.setPidSource(() -> {
 			return angleTN.pidGet() + (curvatureTN.pidGet() * encoderAvgVelocityPIDSource.pidGet());
 		});
@@ -267,6 +267,14 @@ public class DriveTrain extends Subsystem {
 
 
 	}
+	
+	public double getAngleRateError() {
+		return angVelocityPID.getAvgError();
+	}
+	
+	public double getAngleError() {
+		return anglePID.getAvgError();
+	}
 
 	public void setDriveSpeed(DriveSpeed speed) {
 		driveSpeed = speed.getSpeedFactor();
@@ -289,12 +297,14 @@ public class DriveTrain extends Subsystem {
 
 	public void reset() {
 
-		RobotMap.driveLeftCurrent.set(0);
-		RobotMap.driveRightCurrent.set(0);
+		RobotMap.driveLeftPWM.set(0);
+		RobotMap.driveRightPWM.set(0);
 		velocityPID.disable();
 		angVelocityPID.disable();
 		rightMotorSetter.disable();
 		leftMotorSetter.disable();
+		distancePID.disable();
+		anglePID.disable();
 		
 
 	}
@@ -305,7 +315,7 @@ public class DriveTrain extends Subsystem {
 
 	public void setVelocities(double linearVel, double angVel) {
 		velocityPID.enable();
-//		angVelocityPID.enable();
+		angVelocityPID.enable();
 		anglePID.disable();
 		distancePID.disable();
 		leftMotorSetter.enable();
@@ -326,17 +336,17 @@ public class DriveTrain extends Subsystem {
 
 	public boolean driveTo(double distance, double maxSpeed, double angle, double curvature, double tolerance) {
 		velocityPID.enable();
-//		angVelocityPID.enable();
-//		anglePID.enable();
+		angVelocityPID.enable();
+		anglePID.enable();
 		distancePID.enable();
 		leftMotorSetter.enable();
 		rightMotorSetter.enable();
-//		anglePID.setSetpoint(angle);
+		anglePID.setSetpoint(angle);
 		distancePID.setSetpoint(distance);
-//		curvatureTN.setOutput(curvature);
+		curvatureTN.setOutput(curvature);
 		
 		distancePID.setOutputRange(-maxSpeed, maxSpeed);
-//		anglePID.setOutputRange(-maxSpeed / RobotMap.ROBOT_WIDTH, maxSpeed / RobotMap.ROBOT_WIDTH);
+		anglePID.setOutputRange(-maxSpeed / RobotMap.ROBOT_WIDTH, maxSpeed / RobotMap.ROBOT_WIDTH);
 		return false;
 	}
 	

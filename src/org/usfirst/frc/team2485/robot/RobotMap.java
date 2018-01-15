@@ -103,7 +103,7 @@ public class RobotMap {
 
 	
 		
-//		pigeon = new PigeonIMU(driveRightTalon1);
+		pigeon = new PigeonIMU(driveRightTalon1);
 		
 
 		// Construct Wrappers
@@ -132,8 +132,8 @@ public class RobotMap {
 		driveLeftCurrent.setInverted(true);
 		driveLeftPWM.setInverted(true);
 		
-//		pigeonRateWrapper = new PigeonWrapperRateAndAngle(PIDSourceType.kRate, Units.RADS);
-//		pigeonDisplacementWrapper = new PigeonWrapperRateAndAngle(PIDSourceType.kDisplacement, Units.RADS);
+		pigeonRateWrapper = new PigeonWrapperRateAndAngle(PIDSourceType.kRate, Units.RADS);
+		pigeonDisplacementWrapper = new PigeonWrapperRateAndAngle(PIDSourceType.kDisplacement, Units.RADS);
 		
 		driveLeftEncoderWrapperRate = new TalonSRXEncoderWrapper(driveLeftTalon3, PIDSourceType.kRate);
 		driveRightEncoderWrapperRate = new TalonSRXEncoderWrapper(driveRightTalon3, PIDSourceType.kRate);
