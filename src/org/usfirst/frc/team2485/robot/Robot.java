@@ -129,7 +129,7 @@ public class Robot extends IterativeRobot {
 
 		SmartDashboard.putNumber("Velocity TN", RobotMap.drivetrain.velocityTN.pidGet());
 		SmartDashboard.putNumber("Ang Vel TN", RobotMap.drivetrain.angVelocityTN.pidGet());
-		SmartDashboard.putNumber("Left + Right", RobotMap.driveLeftTalonWrapper3.get() + RobotMap.driveRightTalonWrapper3.get());
+		SmartDashboard.putNumber("Left + Right", RobotMap.driveLeftTalonCurrentWrapper3.get() + RobotMap.driveRightTalonCurrentWrapper3.get());
 	}
 	/**
 	 * This function is called periodically during test mode

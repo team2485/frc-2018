@@ -49,6 +49,7 @@ public class DriveTrain extends Subsystem {
 	private WarlordsPIDController velocityPID = new WarlordsPIDController();
 	private WarlordsPIDController angVelocityPID = new WarlordsPIDController();
 
+	
 	private TransferNode distanceTN = new TransferNode(0);
 	private TransferNode angleTN = new TransferNode(0);
 	public TransferNode velocityTN = new TransferNode(0);
@@ -179,10 +180,10 @@ public class DriveTrain extends Subsystem {
 		});
 		
 		minVelocityORSource.setPidSource(() -> {
-			return -(getMaxVoltage()/ConstantsIO.voltageMax - Math.abs(angVelocityTN.pidGet()));
+			return -(getMaxCurrent() - Math.abs(angVelocityTN.pidGet()));
 		});
 		maxVelocityORSource.setPidSource(() -> {
-			return getMaxVoltage()/ConstantsIO.voltageMax - Math.abs(angVelocityTN.pidGet());
+			return getMaxCurrent() - Math.abs(angVelocityTN.pidGet());
 
 		});
 		
@@ -226,9 +227,9 @@ public class DriveTrain extends Subsystem {
 		});
 
 		leftMotorSetter.setSetpointSource(leftCurrentPIDSource);
-		leftMotorSetter.setOutputs(RobotMap.driveLeft);
+		leftMotorSetter.setOutputs(RobotMap.driveLeftCurrent);
 		rightMotorSetter.setSetpointSource(rightCurrentPIDSource);
-		rightMotorSetter.setOutputs(RobotMap.driveRight);
+		rightMotorSetter.setOutputs(RobotMap.driveRightCurrent);
 
 	}
 
@@ -254,8 +255,8 @@ public class DriveTrain extends Subsystem {
 			right /= Math.abs(right);
 		}
 
-		RobotMap.driveLeft.set(left);
-		RobotMap.driveRight.set(right);
+		RobotMap.driveLeftPWM.set(left);
+		RobotMap.driveRightPWM.set(right);
 	}
 
 	public void WARLordsDrive(double throttle, double steering) {
@@ -284,8 +285,8 @@ public class DriveTrain extends Subsystem {
 
 	public void reset() {
 
-		RobotMap.driveLeft.set(0);
-		RobotMap.driveRight.set(0);
+		RobotMap.driveLeftCurrent.set(0);
+		RobotMap.driveRightCurrent.set(0);
 		velocityPID.disable();
 		angVelocityPID.disable();
 		rightMotorSetter.disable();
@@ -314,6 +315,10 @@ public class DriveTrain extends Subsystem {
 		angVelocityPID.setSetpoint(angVel);
 	}
 	
+	public void setCurrents(double l, double r) {
+		RobotMap.driveLeftCurrent.set(l);
+		RobotMap.driveRightCurrent.set(r);
+	}
 
 	public void driveTo(double distance, double maxSpeed, double angle, double curvature) {
 		velocityPID.enable();

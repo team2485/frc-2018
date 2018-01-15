@@ -43,14 +43,23 @@ public class RobotMap {
 	public static TalonSRX driveRightTalon3;
 	public static TalonSRX[] driveTalons;
 	
-	public static TalonSRXWrapper driveLeftTalonWrapper1;
-	public static TalonSRXWrapper driveLeftTalonWrapper2;
-	public static TalonSRXWrapper driveLeftTalonWrapper3;
-	public static TalonSRXWrapper driveRightTalonWrapper1;
-	public static TalonSRXWrapper driveRightTalonWrapper2;
-	public static TalonSRXWrapper driveRightTalonWrapper3;
+	public static TalonSRXWrapper driveLeftTalonCurrentWrapper1;
+	public static TalonSRXWrapper driveLeftTalonCurrentWrapper2;
+	public static TalonSRXWrapper driveLeftTalonCurrentWrapper3;
+	public static TalonSRXWrapper driveRightTalonCurrentWrapper1;
+	public static TalonSRXWrapper driveRightTalonCurrentWrapper2;
+	public static TalonSRXWrapper driveRightTalonCurrentWrapper3;
 	
-	public static SpeedControllerWrapper driveLeft, driveRight;
+	public static TalonSRXWrapper driveLeftTalonPWMWrapper1;
+	public static TalonSRXWrapper driveLeftTalonPWMWrapper2;
+	public static TalonSRXWrapper driveLeftTalonPWMWrapper3;
+	public static TalonSRXWrapper driveRightTalonPWMWrapper1;
+	public static TalonSRXWrapper driveRightTalonPWMWrapper2;
+	public static TalonSRXWrapper driveRightTalonPWMWrapper3;
+
+	
+	public static SpeedControllerWrapper driveLeftCurrent, driveRightCurrent;
+	public static SpeedControllerWrapper driveLeftPWM, driveRightPWM;
 
 	public static PigeonIMU pigeon;
 	
@@ -89,18 +98,30 @@ public class RobotMap {
 //		pigeon = new PigeonIMU(driveRightTalon1);
 
 		// Construct Wrappers
-		driveLeftTalonWrapper1 = new TalonSRXWrapper(ControlMode.Current, driveLeftTalon1);
-		driveLeftTalonWrapper2 = new TalonSRXWrapper(ControlMode.Current, driveLeftTalon2);
-		driveLeftTalonWrapper3 = new TalonSRXWrapper(ControlMode.Current, driveLeftTalon3);
-		driveRightTalonWrapper1 = new TalonSRXWrapper(ControlMode.Current, driveRightTalon1);
-		driveRightTalonWrapper2 = new TalonSRXWrapper(ControlMode.Current, driveRightTalon2);
-		driveRightTalonWrapper3 = new TalonSRXWrapper(ControlMode.Current, driveRightTalon3);
+		driveLeftTalonCurrentWrapper1 = new TalonSRXWrapper(ControlMode.Current, driveLeftTalon1);
+		driveLeftTalonCurrentWrapper2 = new TalonSRXWrapper(ControlMode.Current, driveLeftTalon2);
+		driveLeftTalonCurrentWrapper3 = new TalonSRXWrapper(ControlMode.Current, driveLeftTalon3);
+		driveRightTalonCurrentWrapper1 = new TalonSRXWrapper(ControlMode.Current, driveRightTalon1);
+		driveRightTalonCurrentWrapper2 = new TalonSRXWrapper(ControlMode.Current, driveRightTalon2);
+		driveRightTalonCurrentWrapper3 = new TalonSRXWrapper(ControlMode.Current, driveRightTalon3);
+		
+		driveLeftTalonPWMWrapper1 = new TalonSRXWrapper(ControlMode.PercentOutput, driveLeftTalon1);
+		driveLeftTalonPWMWrapper2 = new TalonSRXWrapper(ControlMode.PercentOutput, driveLeftTalon2);
+		driveLeftTalonPWMWrapper3 = new TalonSRXWrapper(ControlMode.PercentOutput, driveLeftTalon3);
+		driveRightTalonPWMWrapper1 = new TalonSRXWrapper(ControlMode.PercentOutput, driveRightTalon1);
+		driveRightTalonPWMWrapper2 = new TalonSRXWrapper(ControlMode.PercentOutput, driveRightTalon2);
+		driveRightTalonPWMWrapper3 = new TalonSRXWrapper(ControlMode.PercentOutput, driveRightTalon3);
+
 
 		
-		driveLeft = new SpeedControllerWrapper(driveLeftTalonWrapper1, driveLeftTalonWrapper2, driveLeftTalonWrapper3);
-		driveRight = new SpeedControllerWrapper(driveRightTalonWrapper1, driveRightTalonWrapper2, driveRightTalonWrapper3);
+		driveLeftCurrent = new SpeedControllerWrapper(driveLeftTalonCurrentWrapper1, driveLeftTalonCurrentWrapper2, driveLeftTalonCurrentWrapper3);
+		driveRightCurrent = new SpeedControllerWrapper(driveRightTalonCurrentWrapper1, driveRightTalonCurrentWrapper2, driveRightTalonCurrentWrapper3);
 		
-		driveLeft.setInverted(true);
+		driveLeftPWM = new SpeedControllerWrapper(driveLeftTalonPWMWrapper1, driveLeftTalonPWMWrapper2, driveLeftTalonPWMWrapper3);
+		driveRightPWM = new SpeedControllerWrapper(driveRightTalonPWMWrapper1, driveRightTalonPWMWrapper2, driveRightTalonPWMWrapper3);
+		
+		driveLeftCurrent.setInverted(true);
+		driveLeftPWM.setInverted(true);
 		
 //		pigeonRateWrapper = new PigeonWrapperRateAndAngle(PIDSourceType.kRate, Units.RADS);
 //		pigeonDisplacementWrapper = new PigeonWrapperRateAndAngle(PIDSourceType.kDisplacement, Units.RADS);
