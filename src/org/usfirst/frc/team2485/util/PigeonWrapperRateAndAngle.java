@@ -29,13 +29,13 @@ public class PigeonWrapperRateAndAngle implements PIDSource {
 	@Override
 	public double pidGet() {
 		if (pidSource == PIDSourceType.kDisplacement) {
-			return (units == Units.RADS) ? Math.PI / 180 * RobotMap.pigeon.getFusedHeading() : RobotMap.pigeon.getFusedHeading();
+			return (units == Units.RADS) ? Math.PI / 180 * -1 * RobotMap.pigeon.getFusedHeading() : -1 * RobotMap.pigeon.getFusedHeading();
 			
 		} else {
-			double[] ypr = new double[3];
-			RobotMap.pigeon.getRawGyro(ypr);
+			double[] xyz = new double[3];
+			RobotMap.pigeon.getRawGyro(xyz);
 			
-			return (units == Units.RADS) ? Math.PI / 180 * ypr[0] : ypr[0];
+			return (units == Units.RADS) ? Math.PI / 180 * -1 * xyz[2] : -1 * xyz[2];
 		}
 	}
 	

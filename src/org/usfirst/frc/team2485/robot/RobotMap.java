@@ -1,6 +1,8 @@
 package org.usfirst.frc.team2485.robot;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
 
@@ -26,11 +28,11 @@ public class RobotMap {
 	public static final double WHEEL_RADIUS = 4;
 	
 	public static final int driveRightPort1 = 1;
-	public static final int driveRightPort2 = 3;
-	public static final int driveRightPort3 = 2;
-	public static final int driveLeftPort1 = 4;
+	public static final int driveRightPort2 = 2;
+	public static final int driveRightPort3 = 3;
+	public static final int driveLeftPort1 = 5;
 	public static final int driveLeftPort2 = 6;
-	public static final int driveLeftPort3 = 5;
+	public static final int driveLeftPort3 = 7;
 	
 	
 	public static TalonSRX driveLeftTalon1;
@@ -75,12 +77,16 @@ public class RobotMap {
 		driveRightTalon1 = new TalonSRX(driveRightPort1);
 		driveRightTalon2 = new TalonSRX(driveRightPort2);
 		driveRightTalon3 = new TalonSRX(driveRightPort3);
+		
 		driveTalons = new TalonSRX[] {
 				driveLeftTalon1, driveLeftTalon2, driveLeftTalon3, 
-				driveRightTalon1, driveRightTalon1, driveRightTalon1, 
+				driveRightTalon1, driveRightTalon2, driveRightTalon3, 
 		};
+		for(TalonSRX t : driveTalons) {
+			t.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
+		}
 		
-		pigeon = new PigeonIMU(driveRightTalon1);
+//		pigeon = new PigeonIMU(driveRightTalon1);
 
 		// Construct Wrappers
 		driveLeftTalonWrapper1 = new TalonSRXWrapper(ControlMode.PercentOutput, driveLeftTalon1);
@@ -90,23 +96,31 @@ public class RobotMap {
 		driveRightTalonWrapper2 = new TalonSRXWrapper(ControlMode.PercentOutput, driveRightTalon2);
 		driveRightTalonWrapper3 = new TalonSRXWrapper(ControlMode.PercentOutput, driveRightTalon3);
 
+		
 		driveLeft = new SpeedControllerWrapper(driveLeftTalonWrapper1, driveLeftTalonWrapper2, driveLeftTalonWrapper3);
 		driveRight = new SpeedControllerWrapper(driveRightTalonWrapper1, driveRightTalonWrapper2, driveRightTalonWrapper3);
 		
-		pigeonRateWrapper = new PigeonWrapperRateAndAngle(PIDSourceType.kRate, Units.RADS);
-		pigeonDisplacementWrapper = new PigeonWrapperRateAndAngle(PIDSourceType.kDisplacement, Units.RADS);
+		driveLeft.setInverted(true);
+		
+//		pigeonRateWrapper = new PigeonWrapperRateAndAngle(PIDSourceType.kRate, Units.RADS);
+//		pigeonDisplacementWrapper = new PigeonWrapperRateAndAngle(PIDSourceType.kDisplacement, Units.RADS);
 		
 		driveLeftEncoderWrapperRate = new TalonSRXEncoderWrapper(driveLeftTalon3, PIDSourceType.kRate);
 		driveRightEncoderWrapperRate = new TalonSRXEncoderWrapper(driveRightTalon3, PIDSourceType.kRate);
 		driveLeftEncoderWrapperDistance = new TalonSRXEncoderWrapper(driveLeftTalon3,  PIDSourceType.kDisplacement);
 		driveRightEncoderWrapperDistance = new TalonSRXEncoderWrapper(driveRightTalon3, PIDSourceType.kDisplacement);
 		
-		
+		driveLeftTalon3.setSensorPhase(true);
+		driveRightTalon3.setSensorPhase(false);
+		driveLeftTalon3.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, 0);
+		driveRightTalon3.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, 0);
+		driveLeftTalon3.configVelocityMeasurementWindow(1, 0);
+		driveRightTalon3.configVelocityMeasurementWindow(1, 0);
 		
 		// Configure Hardware
-		driveLeftEncoderWrapperDistance.setDistancePerRevolution(WHEEL_RADIUS * 2 * Math.PI * 24.0 / 54);
+		driveLeftEncoderWrapperDistance.setDistancePerRevolution(-WHEEL_RADIUS * 2 * Math.PI * 24.0 / 54);
 		driveRightEncoderWrapperDistance.setDistancePerRevolution(WHEEL_RADIUS * 2 * Math.PI * 24.0 / 54);
-		driveLeftEncoderWrapperRate.setDistancePerRevolution(WHEEL_RADIUS * 2 * Math.PI * 24.0 / 54);
+		driveLeftEncoderWrapperRate.setDistancePerRevolution(-WHEEL_RADIUS * 2 * Math.PI * 24.0 / 54);
 		driveRightEncoderWrapperRate.setDistancePerRevolution(WHEEL_RADIUS * 2 * Math.PI * 24.0 / 54);
 		
 		

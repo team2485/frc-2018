@@ -1,6 +1,9 @@
 
 package org.usfirst.frc.team2485.robot;
 
+import org.usfirst.frc.team2485.util.ConstantsIO;
+import org.usfirst.frc.team2485.util.ThresholdHandler;
+
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
@@ -28,6 +31,8 @@ public class Robot extends IterativeRobot {
 	public void robotInit() {
 		OI.init();
 		RobotMap.init();
+		ConstantsIO.init();
+		RobotMap.updateConstants();
 		// chooser.addObject("My Auto", new MyAutoCommand());
 		SmartDashboard.putData("Auto mode", chooser);
 	}
@@ -39,7 +44,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void disabledInit() {
-
+		RobotMap.drivetrain.reset();
 	}
 
 	@Override
@@ -61,8 +66,8 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousInit() {
-		autonomousCommand = chooser.getSelected();
-
+		ConstantsIO.init();
+		RobotMap.updateConstants();
 		/*
 		 * String autoSelected = SmartDashboard.getString("Auto Selector",
 		 * "Default"); switch(autoSelected) { case "My Auto": autonomousCommand
@@ -71,8 +76,9 @@ public class Robot extends IterativeRobot {
 		 */
 
 		// schedule the autonomous command (example)
-		if (autonomousCommand != null)
-			autonomousCommand.start();
+		RobotMap.driveRightEncoderWrapperDistance.reset();
+		RobotMap.driveLeftEncoderWrapperDistance.reset();
+
 	}
 
 	/**
@@ -81,16 +87,20 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousPeriodic() {
 		Scheduler.getInstance().run();
+		RobotMap.drivetrain.driveTo(200, 100, 0, 0);
+		updateSmartDashboard();
 	}
 
 	@Override
 	public void teleopInit() {
+		ConstantsIO.init();
+		RobotMap.updateConstants();
 		// This makes sure that the autonomous stops running when
 		// teleop starts running. If you want the autonomous to
 		// continue until interrupted by another command, remove
 		// this line or comment it out.
-		if (autonomousCommand != null)
-			autonomousCommand.cancel();
+		
+		
 	}
 
 	/**
@@ -100,17 +110,26 @@ public class Robot extends IterativeRobot {
 	public void teleopPeriodic() {
 		Scheduler.getInstance().run();
 		updateSmartDashboard();
-		
+		double y = -ThresholdHandler.deadbandAndScale(OI.XBOX.getRawAxis(OI.XBOX_LYJOYSTICK_PORT), RobotMap.drivetrain.THROTTLE_DEADBAND, 0, 1);
+    	double x = ThresholdHandler.deadbandAndScale(OI.XBOX.getRawAxis(OI.XBOX_RXJOYSTICK_PORT), RobotMap.drivetrain.STEERING_DEADBAND, 0, 1);;
+    	
+    	RobotMap.drivetrain.simpleDrive(y, x);
 
 	}
 
 	public void updateSmartDashboard() {
-		SmartDashboard.putNumber("Yaw", RobotMap.pigeonDisplacementWrapper.pidGet());
-		SmartDashboard.putNumber("Yaw Rate", RobotMap.pigeonRateWrapper.pidGet());
+//		SmartDashboard.putNumber("Yaw", RobotMap.pigeonDisplacementWrapper.pidGet());
+//		SmartDashboard.putNumber("Yaw Rate", RobotMap.pigeonRateWrapper.pidGet());
 		SmartDashboard.putNumber("Left Encoder Dist", RobotMap.driveLeftEncoderWrapperDistance.pidGet());
 		SmartDashboard.putNumber("Right Encoder Dist", RobotMap.driveRightEncoderWrapperDistance.pidGet());
 		SmartDashboard.putNumber("Left Encoder Rate", RobotMap.driveLeftEncoderWrapperRate.pidGet());
-		SmartDashboard.putNumber("Right Encoder Rate", RobotMap.driveLeftEncoderWrapperRate.pidGet());
+		SmartDashboard.putNumber("Right Encoder Rate", RobotMap.driveRightEncoderWrapperRate.pidGet());
+		SmartDashboard.putNumber("Velocity Error", RobotMap.drivetrain.getVelocityError());
+		SmartDashboard.putNumber("Distance Error", RobotMap.drivetrain.getDistError());
+
+		SmartDashboard.putNumber("Velocity TN", RobotMap.drivetrain.velocityTN.pidGet());
+		SmartDashboard.putNumber("Ang Vel TN", RobotMap.drivetrain.angVelocityTN.pidGet());
+		SmartDashboard.putNumber("Left + Right", RobotMap.driveLeftTalonWrapper3.get() + RobotMap.driveRightTalonWrapper3.get());
 	}
 	/**
 	 * This function is called periodically during test mode
@@ -119,4 +138,5 @@ public class Robot extends IterativeRobot {
 	public void testPeriodic() {
 		LiveWindow.run();
 	}
+
 }

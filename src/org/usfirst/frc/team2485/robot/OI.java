@@ -68,8 +68,8 @@ public class OI {
 	
 	public static void init() {
 		XBOX = new Joystick(0);
-		JOYSTICK = new Joystick(1);
-		
+//		JOYSTICK = new Joystick(1);
+//		
 		XBOX_UP = new JoystickButton(XBOX, XBOX_UP_PORT);
 		XBOX_DOWN = new JoystickButton(XBOX, XBOX_DOWN_PORT);
 		XBOX_LEFT = new JoystickButton(XBOX, XBOX_LEFT_PORT);
@@ -85,18 +85,18 @@ public class OI {
 		
 		XBOX_XBOX = new JoystickButton(XBOX, XBOX_XBOX_PORT);
 		
-		JOYSTICK_1 = new JoystickButton(JOYSTICK, 1); 
-		JOYSTICK_2 = new JoystickButton(JOYSTICK, 2);
-		JOYSTICK_3 = new JoystickButton(JOYSTICK, 3);
-		JOYSTICK_4 = new JoystickButton(JOYSTICK, 4);
-		JOYSTICK_TRIGGER = new JoystickButton(JOYSTICK, 5);
-		JOYSTICK_6 = new JoystickButton(JOYSTICK, 6);
-		JOYSTICK_7 = new JoystickButton(JOYSTICK, 7);
-		JOYSTICK_8 = new JoystickButton(JOYSTICK, 8);
-		JOYSTICK_9 = new JoystickButton(JOYSTICK, 9);
-		JOYSTICK_10 = new JoystickButton(JOYSTICK, 10);
-		JOYSTICK_11 = new JoystickButton(JOYSTICK, 11);
-		JOYSTICK_12 = new JoystickButton(JOYSTICK, 12);
+//		JOYSTICK_1 = new JoystickButton(JOYSTICK, 1); 
+//		JOYSTICK_2 = new JoystickButton(JOYSTICK, 2);
+//		JOYSTICK_3 = new JoystickButton(JOYSTICK, 3);
+//		JOYSTICK_4 = new JoystickButton(JOYSTICK, 4);
+//		JOYSTICK_TRIGGER = new JoystickButton(JOYSTICK, 5);
+//		JOYSTICK_6 = new JoystickButton(JOYSTICK, 6);
+//		JOYSTICK_7 = new JoystickButton(JOYSTICK, 7);
+//		JOYSTICK_8 = new JoystickButton(JOYSTICK, 8);
+//		JOYSTICK_9 = new JoystickButton(JOYSTICK, 9);
+//		JOYSTICK_10 = new JoystickButton(JOYSTICK, 10);
+//		JOYSTICK_11 = new JoystickButton(JOYSTICK, 11);
+//		JOYSTICK_12 = new JoystickButton(JOYSTICK, 12);
 	}
 	
 	//// CREATING BUTTONS

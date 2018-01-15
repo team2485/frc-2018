@@ -1,12 +1,12 @@
-accelerationMax = 0
-kPMax_Distance = 0
+accelerationMax = 100000
+kPMax_Distance = 2
 IMax = 30
 voltageMax = 13
 
-kP_DriveVelocity = 0
-kI_DriveVelocity = 0
+kP_DriveVelocity = 0.002
+kI_DriveVelocity = 0.02
 kD_DriveVelocity = 0
-kF_DriveVelocity = 0
+kF_DriveVelocity = 0.002
 	
 kP_DriveAngle = 0
 kI_DriveAngle = 0

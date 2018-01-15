@@ -25,7 +25,7 @@ public class DriveWithControllers extends Command {
     	double y = -ThresholdHandler.deadbandAndScale(OI.XBOX.getRawAxis(OI.XBOX_LYJOYSTICK_PORT), RobotMap.drivetrain.THROTTLE_DEADBAND, 0, 1);
     	double x = ThresholdHandler.deadbandAndScale(OI.XBOX.getRawAxis(OI.XBOX_RXJOYSTICK_PORT), RobotMap.drivetrain.STEERING_DEADBAND, 0, 1);;
     	
-    	RobotMap.drivetrain.simpleDrive(x, y);
+    	RobotMap.drivetrain.simpleDrive(y, x);
     }
 
     // Make this return true when this Command no longer needs to run execute()
