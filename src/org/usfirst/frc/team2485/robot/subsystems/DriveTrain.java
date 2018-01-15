@@ -61,8 +61,8 @@ public class DriveTrain extends Subsystem {
 	private PIDSourceWrapper encoderDistancePIDSource = new PIDSourceWrapper();
 	private PIDSourceWrapper encoderAvgVelocityPIDSource = new PIDSourceWrapper();
 
-	private PIDSourceWrapper leftPIDSource = new PIDSourceWrapper();
-	private PIDSourceWrapper rightPIDSource = new PIDSourceWrapper();
+	private PIDSourceWrapper leftCurrentPIDSource = new PIDSourceWrapper();
+	private PIDSourceWrapper rightCurrentPIDSource = new PIDSourceWrapper();
 
 	private PIDSourceWrapper angVelTargSource = new PIDSourceWrapper();
 	
@@ -110,6 +110,39 @@ public class DriveTrain extends Subsystem {
 			v=Math.min(v,VrAvg*iMax/iR);
 		}
 		return v;
+	}
+	
+	public double getMaxCurrent() {
+		double pwmL1 = RobotMap.driveLeftTalon1.getMotorOutputPercent();
+		double pwmL2 = RobotMap.driveLeftTalon2.getMotorOutputPercent();
+		double pwmL3 = RobotMap.driveLeftTalon3.getMotorOutputPercent();
+		double pwmL = (pwmL1 + pwmL2 + pwmL3)/3;
+		
+		double pwmR1 = RobotMap.driveRightTalon1.getMotorOutputPercent();
+		double pwmR2 = RobotMap.driveRightTalon2.getMotorOutputPercent();
+		double pwmR3 = RobotMap.driveRightTalon3.getMotorOutputPercent();
+		double pwmR = (pwmR1 + pwmR2 + pwmR3)/3;
+
+		double Ir1 = RobotMap.driveRightTalon1.getOutputCurrent();
+		double Ir2 = RobotMap.driveRightTalon2.getOutputCurrent();
+		double Ir3 = RobotMap.driveRightTalon3.getOutputCurrent();
+		double iL = (Ir1+Ir2+Ir3)/3;
+
+		double Il1 = RobotMap.driveLeftTalon1.getOutputCurrent();
+		double Il2 = RobotMap.driveLeftTalon2.getOutputCurrent();
+		double Il3 = RobotMap.driveLeftTalon3.getOutputCurrent();
+		double iR = (Il1+Il2+Il3)/3;
+		
+		double i = ConstantsIO.IMax;
+		
+		if (pwmL > .5) {
+			i = Math.min(i, iL/pwmL);
+		}
+		if (pwmR > .5) {
+			i = Math.min(i, iR/pwmR);
+		}
+		
+		return i;
 	}
 
 	public DriveTrain() {
@@ -173,28 +206,28 @@ public class DriveTrain extends Subsystem {
 		
 		
 		minAngVelocityORSource.setPidSource(() -> {
-			return -getMaxVoltage()/ConstantsIO.voltageMax;
+			return -getMaxCurrent();
 		});
 		maxAngVelocityORSource.setPidSource(() -> {
-			return getMaxVoltage()/ConstantsIO.voltageMax;
+			return getMaxCurrent();
 		});
 		
 
 		angVelocityPID.setSetpointSource(angVelTargSource);
 		angVelocityPID.setOutputs(angVelocityTN);
 		angVelocityPID.setSources(RobotMap.pigeonRateWrapper);
-//		angVelocityPID.setOutputSources(maxAngVelocityORSource, minAngVelocityORSource);
+		angVelocityPID.setOutputSources(maxAngVelocityORSource, minAngVelocityORSource);
 
-		leftPIDSource.setPidSource(() -> {
+		leftCurrentPIDSource.setPidSource(() -> {
 			return velocityTN.pidGet() + angVelocityTN.pidGet();
 		});
-		rightPIDSource.setPidSource(() -> {
+		rightCurrentPIDSource.setPidSource(() -> {
 			return velocityTN.pidGet() - angVelocityTN.pidGet();
 		});
 
-		leftMotorSetter.setSetpointSource(leftPIDSource);
+		leftMotorSetter.setSetpointSource(leftCurrentPIDSource);
 		leftMotorSetter.setOutputs(RobotMap.driveLeft);
-		rightMotorSetter.setSetpointSource(rightPIDSource);
+		rightMotorSetter.setSetpointSource(rightCurrentPIDSource);
 		rightMotorSetter.setOutputs(RobotMap.driveRight);
 
 	}

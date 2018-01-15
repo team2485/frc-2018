@@ -89,12 +89,12 @@ public class RobotMap {
 //		pigeon = new PigeonIMU(driveRightTalon1);
 
 		// Construct Wrappers
-		driveLeftTalonWrapper1 = new TalonSRXWrapper(ControlMode.PercentOutput, driveLeftTalon1);
-		driveLeftTalonWrapper2 = new TalonSRXWrapper(ControlMode.PercentOutput, driveLeftTalon2);
-		driveLeftTalonWrapper3 = new TalonSRXWrapper(ControlMode.PercentOutput, driveLeftTalon3);
-		driveRightTalonWrapper1 = new TalonSRXWrapper(ControlMode.PercentOutput, driveRightTalon1);
-		driveRightTalonWrapper2 = new TalonSRXWrapper(ControlMode.PercentOutput, driveRightTalon2);
-		driveRightTalonWrapper3 = new TalonSRXWrapper(ControlMode.PercentOutput, driveRightTalon3);
+		driveLeftTalonWrapper1 = new TalonSRXWrapper(ControlMode.Current, driveLeftTalon1);
+		driveLeftTalonWrapper2 = new TalonSRXWrapper(ControlMode.Current, driveLeftTalon2);
+		driveLeftTalonWrapper3 = new TalonSRXWrapper(ControlMode.Current, driveLeftTalon3);
+		driveRightTalonWrapper1 = new TalonSRXWrapper(ControlMode.Current, driveRightTalon1);
+		driveRightTalonWrapper2 = new TalonSRXWrapper(ControlMode.Current, driveRightTalon2);
+		driveRightTalonWrapper3 = new TalonSRXWrapper(ControlMode.Current, driveRightTalon3);
 
 		
 		driveLeft = new SpeedControllerWrapper(driveLeftTalonWrapper1, driveLeftTalonWrapper2, driveLeftTalonWrapper3);
