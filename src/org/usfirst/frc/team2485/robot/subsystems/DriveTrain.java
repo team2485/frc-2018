@@ -242,10 +242,7 @@ public class DriveTrain extends Subsystem {
 	}
 
 	public void simpleDrive(double throttle, double steering) {
-		velocityPID.disable();
-		angVelocityPID.disable();
-		rightMotorSetter.disable();
-		leftMotorSetter.disable();
+		enablePID(false);
 		double left = throttle + steering;
 		double right = throttle - steering;
 
@@ -263,9 +260,29 @@ public class DriveTrain extends Subsystem {
 		RobotMap.driveRightPWM.set(right);
 	}
 
-	public void WARLordsDrive(double throttle, double steering) {
-
-
+	public void WARLordsDrive(double throttle, double steering, boolean quickturn) {
+		velocityPID.disable();
+		distancePID.disable();
+		anglePID.disable();
+		
+		if (quickturn) {
+			angVelocityPID.disable();
+			leftMotorSetter.disable();
+			rightMotorSetter.disable();
+			
+			RobotMap.driveLeftPWM.set(steering);
+			RobotMap.driveRightPWM.set(-steering);
+		} else {
+			angVelocityPID.enable();
+			leftMotorSetter.enable();
+			rightMotorSetter.enable();
+			
+			curvatureTN.setOutput((2/RobotMap.ROBOT_WIDTH) * steering);
+			
+			double maxDriveCurrent = throttle * (getMaxCurrent() - Math.abs(angVelocityTN.pidGet()));
+			
+			velocityTN.setOutput(maxDriveCurrent);
+		}
 	}
 
 	public void setDriveSpeed(DriveSpeed speed) {
@@ -291,10 +308,7 @@ public class DriveTrain extends Subsystem {
 
 		RobotMap.driveLeftCurrent.set(0);
 		RobotMap.driveRightCurrent.set(0);
-		velocityPID.disable();
-		angVelocityPID.disable();
-		rightMotorSetter.disable();
-		leftMotorSetter.disable();
+		enablePID(false);
 		
 
 	}
@@ -354,6 +368,20 @@ public class DriveTrain extends Subsystem {
 
 	}
 
+	public void enablePID(boolean enable) {
+		if (enable) {
+			velocityPID.enable();
+			angVelocityPID.enable();
+			anglePID.enable();
+			distancePID.enable();
+		} else {
+			velocityPID.disable();
+			angVelocityPID.disable();
+			anglePID.disable();
+			distancePID.disable();
+		}
+	}
+	
 	public double getAverageEncoderDistance() {
 		// TODO Auto-generated method stub
 		return encoderDistancePIDSource.pidGet();

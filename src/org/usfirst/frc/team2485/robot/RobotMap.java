@@ -11,7 +11,6 @@ import org.usfirst.frc.team2485.util.PigeonWrapperRateAndAngle;
 import org.usfirst.frc.team2485.util.SpeedControllerWrapper;
 import org.usfirst.frc.team2485.util.TalonSRXEncoderWrapper;
 import org.usfirst.frc.team2485.util.TalonSRXWrapper;
-import org.usfirst.frc.team2485.util.PigeonWrapperRateAndAngle.Units;
 
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
