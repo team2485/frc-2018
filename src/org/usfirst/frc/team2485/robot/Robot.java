@@ -5,6 +5,7 @@ import org.usfirst.frc.team2485.robot.commands.DriveStraight;
 import org.usfirst.frc.team2485.robot.commands.HighLowCurrentTest;
 import org.usfirst.frc.team2485.robot.commands.SetVelocities;
 import org.usfirst.frc.team2485.util.ConstantsIO;
+import org.usfirst.frc.team2485.util.DeadReckoning;
 import org.usfirst.frc.team2485.util.ThresholdHandler;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
@@ -25,6 +26,7 @@ public class Robot extends IterativeRobot {
 
 	Command autonomousCommand;
 	SendableChooser<Command> chooser = new SendableChooser<>();
+	double[] ypr = new double[3];
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -107,6 +109,7 @@ public class Robot extends IterativeRobot {
 		ConstantsIO.init();
 		RobotMap.updateConstants();
 		RobotMap.drivetrain.reset();
+		RobotMap.deadReckoning.start();
 		// This makes sure that the autonomous stops running when
 		// teleop starts running. If you want the autonomous to
 		// continue until interrupted by another command, remove
@@ -154,6 +157,14 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Velocity TN", RobotMap.drivetrain.velocityTN.pidGet());
 		SmartDashboard.putNumber("Ang Vel TN", RobotMap.drivetrain.angVelocityTN.pidGet());
 		SmartDashboard.putNumber("Left + Right", RobotMap.driveLeftTalonCurrentWrapper1.get() + RobotMap.driveRightTalonCurrentWrapper1.get());
+		
+		RobotMap.pigeon.getYawPitchRoll(ypr);
+		
+		SmartDashboard.putNumber("Pitch", ypr[1]);
+		SmartDashboard.putNumber("Roll", ypr[2]);
+		
+		SmartDashboard.putNumber("X", RobotMap.deadReckoning.getX());
+		SmartDashboard.putNumber("Y", RobotMap.deadReckoning.getY());
 	}
 	/**
 	 * This function is called periodically during test mode

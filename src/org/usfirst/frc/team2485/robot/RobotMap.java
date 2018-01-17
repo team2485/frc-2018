@@ -7,6 +7,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
 
 import org.usfirst.frc.team2485.robot.subsystems.DriveTrain;
+import org.usfirst.frc.team2485.util.DeadReckoning;
 import org.usfirst.frc.team2485.util.PigeonWrapperRateAndAngle;
 import org.usfirst.frc.team2485.util.PigeonWrapperRateAndAngle.Units;
 import org.usfirst.frc.team2485.util.SpeedControllerWrapper;
@@ -25,7 +26,7 @@ import edu.wpi.first.wpilibj.PowerDistributionPanel;
 public class RobotMap {
 
 	public static final double ROBOT_WIDTH = 28;
-	public static final double WHEEL_RADIUS = 4;
+	public static final double WHEEL_RADIUS = 2;
 	
 	public static final int driveRightPort1 = 1;
 	public static final int driveRightPort2 = 2;
@@ -80,6 +81,8 @@ public class RobotMap {
 	public static TalonSRXEncoderWrapper driveRightEncoderWrapperRate;
 	public static TalonSRXEncoderWrapper driveLeftEncoderWrapperDistance;
 	public static TalonSRXEncoderWrapper driveRightEncoderWrapperDistance;
+	
+	public static DeadReckoning deadReckoning;
 	
 	public static PowerDistributionPanel PDP;
 	
@@ -168,6 +171,8 @@ public class RobotMap {
 		driveRightTalon3.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, 0);
 		driveLeftTalon3.configVelocityMeasurementWindow(1, 0);
 		driveRightTalon3.configVelocityMeasurementWindow(1, 0);
+		
+		deadReckoning = new DeadReckoning(pigeon, driveLeftEncoderWrapperDistance, driveRightEncoderWrapperDistance);
 		
 		// Configure Hardware
 		driveLeftEncoderWrapperDistance.setDistancePerRevolution(-WHEEL_RADIUS * 2 * Math.PI * 24.0 / 54);
