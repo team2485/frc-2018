@@ -8,10 +8,10 @@ import com.ctre.phoenix.sensors.PigeonIMU;
 
 import org.usfirst.frc.team2485.robot.subsystems.DriveTrain;
 import org.usfirst.frc.team2485.util.PigeonWrapperRateAndAngle;
+import org.usfirst.frc.team2485.util.PigeonWrapperRateAndAngle.Units;
 import org.usfirst.frc.team2485.util.SpeedControllerWrapper;
 import org.usfirst.frc.team2485.util.TalonSRXEncoderWrapper;
 import org.usfirst.frc.team2485.util.TalonSRXWrapper;
-import org.usfirst.frc.team2485.util.PigeonWrapperRateAndAngle.Units;
 
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
@@ -30,32 +30,42 @@ public class RobotMap {
 	public static final int driveRightPort1 = 1;
 	public static final int driveRightPort2 = 2;
 	public static final int driveRightPort3 = 3;
+	//public static final int driveRightPort4 ;
+	
 	public static final int driveLeftPort1 = 5;
 	public static final int driveLeftPort2 = 6;
 	public static final int driveLeftPort3 = 7;
+	//public static final int driveLeftPort4 ;
+	
 	
 	
 	public static TalonSRX driveLeftTalon1;
 	public static TalonSRX driveLeftTalon2;
 	public static TalonSRX driveLeftTalon3;
+	//public static TalonSRX driveLeftTalon4;
 	public static TalonSRX driveRightTalon1;
 	public static TalonSRX driveRightTalon2;
 	public static TalonSRX driveRightTalon3;
+	//public static TalonSRX driveRightTalon4;
 	public static TalonSRX[] driveTalons;
 	
 	public static TalonSRXWrapper driveLeftTalonCurrentWrapper1;
 	public static TalonSRXWrapper driveLeftTalonCurrentWrapper2;
 	public static TalonSRXWrapper driveLeftTalonCurrentWrapper3;
+	//public static TalonSRXWrapper driveLeftTalonCurrentWrapper4;
 	public static TalonSRXWrapper driveRightTalonCurrentWrapper1;
 	public static TalonSRXWrapper driveRightTalonCurrentWrapper2;
 	public static TalonSRXWrapper driveRightTalonCurrentWrapper3;
+	//public static TalonSRXWrapper driveRightTalonCurrentWrapper4;
 	
 	public static TalonSRXWrapper driveLeftTalonPWMWrapper1;
 	public static TalonSRXWrapper driveLeftTalonPWMWrapper2;
 	public static TalonSRXWrapper driveLeftTalonPWMWrapper3;
+	//public static TalonSRXWrapper driveLeftTalonPWMWrapper4;
 	public static TalonSRXWrapper driveRightTalonPWMWrapper1;
 	public static TalonSRXWrapper driveRightTalonPWMWrapper2;
 	public static TalonSRXWrapper driveRightTalonPWMWrapper3;
+	//public static TalonSRXWrapper driveRightTalonPWMWrapper4;
 
 	
 	public static SpeedControllerWrapper driveLeftCurrent, driveRightCurrent;
@@ -83,21 +93,29 @@ public class RobotMap {
 		driveLeftTalon1 = new TalonSRX(driveLeftPort1);
 		driveLeftTalon2 = new TalonSRX(driveLeftPort2);
 		driveLeftTalon3 = new TalonSRX(driveLeftPort3);
+		//driveLeftTalon4 = new TalonSRX(driveLeftPort4);
 		driveRightTalon1 = new TalonSRX(driveRightPort1);
 		driveRightTalon2 = new TalonSRX(driveRightPort2);
 		driveRightTalon3 = new TalonSRX(driveRightPort3);
+		//driveRightTalon4 = new TalonSRX(driveRightPort4);
 		
 		driveTalons = new TalonSRX[] {
 				driveLeftTalon1, driveLeftTalon2, driveLeftTalon3, 
 				driveRightTalon1, driveRightTalon2, driveRightTalon3, 
 		};
+//		driveTalons = new TalonSRX[] {
+//			driveLeftTalon1, driveLeftTalon2, driveLeftTalon3, driveLeftTalon4, 
+//			driveRightTalon1, driveRightTalon2, driveRightTalon3,driveRightTalon4, 
+//		};
 		for(TalonSRX t : driveTalons) {
 			t.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
 		}
 		driveLeftTalon2.set(ControlMode.Follower, driveLeftPort1);
 		driveLeftTalon3.set(ControlMode.Follower, driveLeftPort1);
+		//driveLeftTalon4.set(ControlMode.Follower, driveLeftPort1);
 		driveRightTalon2.set(ControlMode.Follower, driveRightPort1);
 		driveRightTalon3.set(ControlMode.Follower, driveRightPort1);
+		//driveRightTalon4.set(ControlMode.Follower, driveLeftPort1);
 		driveLeftTalon1.selectProfileSlot(0, 0);
 		driveRightTalon1.selectProfileSlot(0, 0);
 
@@ -110,16 +128,20 @@ public class RobotMap {
 		driveLeftTalonCurrentWrapper1 = new TalonSRXWrapper(ControlMode.Current, driveLeftTalon1);
 //		driveLeftTalonCurrentWrapper2 = new TalonSRXWrapper(ControlMode.Current, driveLeftTalon2);
 //		driveLeftTalonCurrentWrapper3 = new TalonSRXWrapper(ControlMode.Current, driveLeftTalon3);
+//		driveLeftTalonCurrentWrapper4 = new TalonSRXWrapper(ControlMode.Current, driveLeftTalon4);
 		driveRightTalonCurrentWrapper1 = new TalonSRXWrapper(ControlMode.Current, driveRightTalon1);
 //		driveRightTalonCurrentWrapper2 = new TalonSRXWrapper(ControlMode.Current, driveRightTalon2);
 //		driveRightTalonCurrentWrapper3 = new TalonSRXWrapper(ControlMode.Current, driveRightTalon3);
-		
+//		driveRightTalonCurrentWrapper3 = new TalonSRXWrapper(ControlMode.Current, driveRightTalon4);
+
 		driveLeftTalonPWMWrapper1 = new TalonSRXWrapper(ControlMode.PercentOutput, driveLeftTalon1);
 //		driveLeftTalonPWMWrapper2 = new TalonSRXWrapper(ControlMode.PercentOutput, driveLeftTalon2);
 //		driveLeftTalonPWMWrapper3 = new TalonSRXWrapper(ControlMode.PercentOutput, driveLeftTalon3);
+//		driveLeftTalonPWMWrapper4 = new TalonSRXWrapper(ControlMode.PercentOutput, driveLeftTalon4);
 		driveRightTalonPWMWrapper1 = new TalonSRXWrapper(ControlMode.PercentOutput, driveRightTalon1);
 //		driveRightTalonPWMWrapper2 = new TalonSRXWrapper(ControlMode.PercentOutput, driveRightTalon2);
 //		driveRightTalonPWMWrapper3 = new TalonSRXWrapper(ControlMode.PercentOutput, driveRightTalon3);
+//		driveRightTalonPWMWrapper4 = new TalonSRXWrapper(ControlMode.PercentOutput, driveRightTalon4);
 
 
 		
