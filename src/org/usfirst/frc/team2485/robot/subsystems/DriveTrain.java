@@ -325,13 +325,7 @@ public class DriveTrain extends Subsystem {
 
 	public void reset() {
 
-<<<<<<< HEAD
-		System.out.println("reset");
-=======
-		RobotMap.driveLeftCurrent.set(0);
-		RobotMap.driveRightCurrent.set(0);
 		enablePID(false);
->>>>>>> branch 'master' of https://github.com/team2485/frc-2018.git
 		RobotMap.driveLeftPWM.set(0);
 		RobotMap.driveRightPWM.set(0);
 	
