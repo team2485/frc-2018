@@ -42,6 +42,7 @@ public class DriveTrain extends Subsystem {
 
 	public static final double STEERING_DEADBAND = 0.25;
 	public static final double THROTTLE_DEADBAND = 0.25;
+	public static final double LOW_ENC_RATE = 2;
 
 
 	private WarlordsPIDController distancePID = new WarlordsPIDController();
@@ -148,7 +149,7 @@ public class DriveTrain extends Subsystem {
 
 	public DriveTrain() {
 		kp_distancePIDSource.setPidSource(() -> {
-			return Math.min(ConstantsIO.kPMax_Distance, 2*ConstantsIO.accelerationMax/encoderAvgVelocityPIDSource.pidGet());
+			return Math.min(ConstantsIO.kPMax_Distance, 2*ConstantsIO.accelerationMax/Math.abs(encoderAvgVelocityPIDSource.pidGet()));
 		});
 		//    	velocityPIDSource.setPidSource(() -> {
 		//    		return ;
@@ -262,6 +263,16 @@ public class DriveTrain extends Subsystem {
 		RobotMap.driveLeftPWM.set(left);
 		RobotMap.driveRightPWM.set(right);
 	}
+	
+	public double getDistancePIDOutput() {
+		return distanceTN.getOutput();
+	}
+	
+	public double getVelocityPIDOutput() {
+		return velocityTN.getOutput();
+	}
+	
+	
 
 	public void WARLordsDrive(double throttle, double steering) {
 
@@ -297,6 +308,7 @@ public class DriveTrain extends Subsystem {
 
 	public void reset() {
 
+		System.out.println("reset");
 		RobotMap.driveLeftPWM.set(0);
 		RobotMap.driveRightPWM.set(0);
 		velocityPID.disable();
@@ -344,10 +356,12 @@ public class DriveTrain extends Subsystem {
 		anglePID.setSetpoint(angle);
 		distancePID.setSetpoint(distance);
 		curvatureTN.setOutput(curvature);
+		distancePID.setAbsoluteTolerance(tolerance);
 		
 		distancePID.setOutputRange(-maxSpeed, maxSpeed);
 		anglePID.setOutputRange(-maxSpeed / RobotMap.ROBOT_WIDTH, maxSpeed / RobotMap.ROBOT_WIDTH);
-		return false;
+		
+		return distancePID.isOnTarget() && Math.abs(encoderAvgVelocityPIDSource.pidGet()) < LOW_ENC_RATE;
 	}
 	
 	public void updateConstants() {

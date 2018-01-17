@@ -72,6 +72,7 @@ public class Robot extends IterativeRobot {
 	public void autonomousInit() {
 		ConstantsIO.init();
 		RobotMap.updateConstants();
+		RobotMap.drivetrain.reset();
 		/*
 		 * String autoSelected = SmartDashboard.getString("Auto Selector",
 		 * "Default"); switch(autoSelected) { case "My Auto": autonomousCommand
@@ -85,7 +86,7 @@ public class Robot extends IterativeRobot {
 		RobotMap.pigeon.setFusedHeading(0, 0);
 //		Scheduler.getInstance().add(new HighLowCurrentTest(-8, -4, -8, -4, 4000));
 //		Scheduler.getInstance().add(new SetVelocities(30, 0));
-		Scheduler.getInstance().add(new DriveStraight(1200, 100, 100000));
+		Scheduler.getInstance().add(new DriveStraight(400, 0, 250, 10000, 2));
 
 
 	}
@@ -105,6 +106,7 @@ public class Robot extends IterativeRobot {
 	public void teleopInit() {
 		ConstantsIO.init();
 		RobotMap.updateConstants();
+		RobotMap.drivetrain.reset();
 		// This makes sure that the autonomous stops running when
 		// teleop starts running. If you want the autonomous to
 		// continue until interrupted by another command, remove
@@ -139,6 +141,9 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Distance Error", RobotMap.drivetrain.getDistError());
 		SmartDashboard.putNumber("Angle Error", RobotMap.drivetrain.getAngleError());
 		
+		SmartDashboard.putNumber("Distance PID Output", RobotMap.drivetrain.getDistancePIDOutput());
+		SmartDashboard.putNumber("Velocity PID Output", RobotMap.drivetrain.getVelocityPIDOutput());
+		SmartDashboard.putNumber("Left Current Output", RobotMap.driveLeftTalon1.getMotorOutputPercent());
 		SmartDashboard.putNumber("Left Current", RobotMap.driveLeftTalon1.getOutputCurrent());
 		SmartDashboard.putNumber("Right Current", RobotMap.driveRightTalon1.getOutputCurrent());
 

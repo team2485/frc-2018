@@ -61,6 +61,7 @@ public class DriveStraight extends Command{
 	
 	@Override
 	protected void end() {
+		RobotMap.drivetrain.reset();
 		super.end();
 
 	}
