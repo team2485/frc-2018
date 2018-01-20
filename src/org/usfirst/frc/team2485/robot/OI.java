@@ -1,5 +1,7 @@
 package org.usfirst.frc.team2485.robot;
 
+import org.usfirst.frc.team2485.robot.commands.IntakeWithControllers;
+
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 
@@ -83,6 +85,9 @@ public class OI {
 		XBOX_RBUMPER = new JoystickButton(XBOX, XBOX_RBUMPER_PORT);
 		
 		XBOX_XBOX = new JoystickButton(XBOX, XBOX_XBOX_PORT);
+		
+		XBOX_A.whenPressed(new IntakeWithControllers(0.8));
+		XBOX_B.whenPressed(new IntakeWithControllers(0));
 		
 //		JOYSTICK_1 = new JoystickButton(JOYSTICK, 1); 
 //		JOYSTICK_2 = new JoystickButton(JOYSTICK, 2);

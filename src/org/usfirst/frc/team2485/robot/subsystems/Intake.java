@@ -16,16 +16,15 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 public class Intake extends Subsystem {
 	private TalonSRX left;
 	private TalonSRX right;
-	public static final double kIntakePWM = 0.5;
 	
 	public Intake() {
 		this.left = RobotMap.armLeftTalon;
 		this.right = RobotMap.armRightTalon;
 	}
 
-	public void startRollers() {
-		left.set(ControlMode.PercentOutput, kIntakePWM);
-		right.set(ControlMode.PercentOutput, kIntakePWM);
+	public void setRollers(double pwm) {
+		left.set(ControlMode.PercentOutput, pwm);
+		right.set(ControlMode.PercentOutput, pwm);
 	}
 	
 	public void stopRollers() {
