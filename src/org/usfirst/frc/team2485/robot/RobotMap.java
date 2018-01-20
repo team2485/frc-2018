@@ -7,6 +7,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.sensors.PigeonIMU;
 
 import org.usfirst.frc.team2485.robot.subsystems.DriveTrain;
+import org.usfirst.frc.team2485.robot.subsystems.Intake;
 import org.usfirst.frc.team2485.util.DeadReckoning;
 import org.usfirst.frc.team2485.util.PigeonWrapperRateAndAngle;
 import org.usfirst.frc.team2485.util.PigeonWrapperRateAndAngle.Units;
@@ -16,6 +17,7 @@ import org.usfirst.frc.team2485.util.TalonSRXWrapper;
 
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
+import edu.wpi.first.wpilibj.command.Subsystem;
 
 /**
  * The RobotMap is a mapping from the ports sensors and actuators are wired into
@@ -24,7 +26,7 @@ import edu.wpi.first.wpilibj.PowerDistributionPanel;
  * floating around.
  */
 public class RobotMap {
-
+	
 	public static final double ROBOT_WIDTH = 28;
 	public static final double WHEEL_RADIUS = 2;
 	
@@ -37,8 +39,9 @@ public class RobotMap {
 	public static final int driveLeftPort2 = 6;
 	public static final int driveLeftPort3 = 7;
 	//public static final int driveLeftPort4 ;
-	
-	
+
+	public static TalonSRX armLeftTalon;
+	public static TalonSRX armRightTalon;
 	
 	public static TalonSRX driveLeftTalon1;
 	public static TalonSRX driveLeftTalon2;
@@ -87,11 +90,15 @@ public class RobotMap {
 	public static PowerDistributionPanel PDP;
 	
 	public static DriveTrain drivetrain;
+	public static Intake intake;
 	
 	public static void init() {
 		
 		// Construct Hardware
 		PDP = new PowerDistributionPanel();
+		
+		armLeftTalon = new TalonSRX(8); //Random port for now.
+		armRightTalon = new TalonSRX(9); //Also random port.
 		
 		driveLeftTalon1 = new TalonSRX(driveLeftPort1);
 		driveLeftTalon2 = new TalonSRX(driveLeftPort2);
@@ -113,6 +120,11 @@ public class RobotMap {
 		for(TalonSRX t : driveTalons) {
 			t.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
 		}
+		
+		//Still using random ports for now
+		armLeftTalon.set(ControlMode.Follower, 8);
+		armRightTalon.set(ControlMode.Follower, 9);
+		
 		driveLeftTalon2.set(ControlMode.Follower, driveLeftPort1);
 		driveLeftTalon3.set(ControlMode.Follower, driveLeftPort1);
 		//driveLeftTalon4.set(ControlMode.Follower, driveLeftPort1);
@@ -183,6 +195,7 @@ public class RobotMap {
 		
 		// Construct Subsystems
 		drivetrain = new DriveTrain();
+		intake = new Intake();
 	}
 
 	public static void updateConstants() {
