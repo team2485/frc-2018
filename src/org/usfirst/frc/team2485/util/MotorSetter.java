@@ -14,5 +14,13 @@ public class MotorSetter extends WarlordsControlSystem{
 			out.pidWrite(setpoint);
 		}
 	}
+	
+	@Override
+	public void disable() {
+		super.disable();
+		for (PIDOutput out : super.outputs) {
+			out.pidWrite(0);
+		}
+	}
 
 }

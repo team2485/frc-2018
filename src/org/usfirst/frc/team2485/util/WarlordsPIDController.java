@@ -95,7 +95,9 @@ public class WarlordsPIDController extends WarlordsControlSystem {
 		super.disable();
 		this.integralTerm = 0;
 		this.lastPropTerm = 0;
-		errorBuffer.clear();
+		synchronized (errorBuffer) {
+			errorBuffer.clear();
+		}
 	}
 	
 	/**

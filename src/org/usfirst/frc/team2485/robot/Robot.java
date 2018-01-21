@@ -2,14 +2,19 @@
 package org.usfirst.frc.team2485.robot;
 
 import org.usfirst.frc.team2485.robot.commands.DriveStraight;
+import org.usfirst.frc.team2485.robot.commands.DriveTo;
 import org.usfirst.frc.team2485.robot.commands.HighLowCurrentTest;
+import org.usfirst.frc.team2485.robot.commands.ResetDriveTrain;
 import org.usfirst.frc.team2485.robot.commands.SetVelocities;
+import org.usfirst.frc.team2485.util.AutoPath;
 import org.usfirst.frc.team2485.util.ConstantsIO;
 import org.usfirst.frc.team2485.util.DeadReckoning;
 import org.usfirst.frc.team2485.util.ThresholdHandler;
+import org.usfirst.frc.team2485.util.AutoPath.Pair;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -87,8 +92,12 @@ public class Robot extends IterativeRobot {
 		RobotMap.driveLeftEncoderWrapperDistance.reset();
 		RobotMap.pigeon.setFusedHeading(0, 0);
 //		Scheduler.getInstance().add(new HighLowCurrentTest(-8, -4, -8, -4, 4000));
-//		Scheduler.getInstance().add(new SetVelocities(30, 0));
-		Scheduler.getInstance().add(new DriveStraight(400, 0, 250, 10000, 2));
+//		Scheduler.getInstance().add(new SetVelocities(60, 0));
+		CommandGroup cg = new CommandGroup();
+		cg.addSequential(new DriveTo(new AutoPath(AutoPath.getPointsForBezier(10000, new Pair(0, 0), 
+				new Pair(0, 100), new Pair(100, 100))), 100, false, 5000));
+		cg.addSequential(new ResetDriveTrain());
+		Scheduler.getInstance().add(cg);
 
 
 	}
@@ -143,6 +152,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Velocity Error", RobotMap.drivetrain.getVelocityError());
 		SmartDashboard.putNumber("Distance Error", RobotMap.drivetrain.getDistError());
 		SmartDashboard.putNumber("Angle Error", RobotMap.drivetrain.getAngleError());
+		SmartDashboard.putNumber("Angular Velocity Error", RobotMap.drivetrain.getAngleRateError());
 		
 		SmartDashboard.putNumber("Distance PID Output", RobotMap.drivetrain.getDistancePIDOutput());
 		SmartDashboard.putNumber("Velocity PID Output", RobotMap.drivetrain.getVelocityPIDOutput());
@@ -155,9 +165,9 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Right Current Error", RobotMap.driveRightTalon1.getClosedLoopError(0));
 		
 		SmartDashboard.putNumber("Velocity TN", RobotMap.drivetrain.velocityTN.pidGet());
-		SmartDashboard.putNumber("Ang Vel TN", RobotMap.drivetrain.angVelocityTN.pidGet());
+		SmartDashboard.putNumber("Ang Vel TN", RobotMap.drivetrain.curvatureTN.pidGet());
 		SmartDashboard.putNumber("Left + Right", RobotMap.driveLeftTalonCurrentWrapper1.get() + RobotMap.driveRightTalonCurrentWrapper1.get());
-		
+		SmartDashboard.putNumber("Curvature Error", RobotMap.drivetrain.getTeleopAngVelError());
 		RobotMap.pigeon.getYawPitchRoll(ypr);
 		
 		SmartDashboard.putNumber("Pitch", ypr[1]);

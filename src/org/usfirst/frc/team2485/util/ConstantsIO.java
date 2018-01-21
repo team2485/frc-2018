@@ -41,6 +41,12 @@ public class ConstantsIO {
 	public static double kD_DriveAngVel;
 	public static double kF_DriveAngVel;
 	
+	public static double kP_AngVelTeleop;
+	public static double kI_AngVelTeleop;
+	public static double kD_AngVelTeleop;
+	public static double kF_AngVelTeleop;
+
+	
 	public static int IMax;
 
 	public static double voltageMax;
@@ -91,6 +97,12 @@ public class ConstantsIO {
 		kI_DriveAngVel = Double.parseDouble(data.get("kI_DriveAngVel"));
 		kD_DriveAngVel = Double.parseDouble(data.get("kD_DriveAngVel"));
 		kF_DriveAngVel = Double.parseDouble(data.get("kF_DriveAngVel"));
+		
+//		kP_AngVelTeleop = Double.parseDouble(data.get("kP_AngVelTeleop"));
+//		kI_AngVelTeleop = Double.parseDouble(data.get("kI_AngVelTeleop"));
+//		kD_AngVelTeleop = Double.parseDouble(data.get("kD_AngVelTeleop"));
+//		kF_AngVelTeleop = Double.parseDouble(data.get("kF_AngVelTeleop"));
+
 		
 		
 	}

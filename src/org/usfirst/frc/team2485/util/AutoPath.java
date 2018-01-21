@@ -107,11 +107,11 @@ public class AutoPath {
 	}
 
 	public double getCurvatureAtDist(double dist) {
-		return getPointAtDist(dist).curvature * RobotMap.ROBOT_WIDTH/2;
+		return getPointAtDist(dist).curvature;
 	}
 	
 	public double getHeadingAtDist(double dist) {
-		return Math.toDegrees(getPointAtDist(dist).heading);
+		return getPointAtDist(dist).heading;
 	}
 	
 	public double getPathLength() {
