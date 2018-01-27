@@ -301,7 +301,7 @@ public class DriveTrain extends Subsystem {
 		return ThresholdHandler.deadbandAndScale(pwm, deadband, 0, 1);
 	}
 
-	public void WARLordsDrive(double throttle, double steering , boolean quickturn) {
+	/** public void WARLordsDrive(double throttle, double steering , boolean quickturn) {
 		velocityPID.disable();
 		distancePID.disable();
 		anglePID.disable();
@@ -344,7 +344,7 @@ public class DriveTrain extends Subsystem {
 		
 		
 		
-	}
+	} */
 	
 	public double getAngleRateError() {
 		return curvaturePID.getAvgError();
@@ -418,13 +418,20 @@ public class DriveTrain extends Subsystem {
 		
 	}
 	
-	public void testDrive(double throttle, double steering) {
+	public void WARlordsDrive(double throttle, double steering) {
 		throttle = mapPWM(throttle, THROTTLE_DEADBAND);
 		steering = mapPWM(steering, STEERING_DEADBAND);
 		
 		enablePID(false);
-		angVelTeleopPID.enable();
-		angVelTeleopPID.setSetpoint(0);
+		
+		double velAvg = (RobotMap.driveLeftEncoderWrapperRate.pidGet() + RobotMap.driveRightEncoderWrapperRate.pidGet())/2;
+		if (velAvg > 5) {
+			angVelTeleopPID.enable();
+			angVelTeleopPID.setSetpoint((2/RobotMap.ROBOT_WIDTH) * steering);
+		} else {
+			angVelTeleopPID.disable();
+			angVelTeleopTN.setOutput(0);
+		}
 		
 		double left = throttle + angVelTeleopTN.getOutput();
 		double right = throttle - angVelTeleopTN.getOutput();
