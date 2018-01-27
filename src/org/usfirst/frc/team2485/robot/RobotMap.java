@@ -15,6 +15,7 @@ import org.usfirst.frc.team2485.util.SpeedControllerWrapper;
 import org.usfirst.frc.team2485.util.TalonSRXEncoderWrapper;
 import org.usfirst.frc.team2485.util.TalonSRXWrapper;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.command.Subsystem;
@@ -39,6 +40,8 @@ public class RobotMap {
 	public static final int driveLeftPort2 = 6;
 	public static final int driveLeftPort3 = 7;
 	//public static final int driveLeftPort4 ;
+	
+	public static final int irSensorPort = 0;
 
 	public static TalonSRX armLeftTalon;
 	public static TalonSRX armRightTalon;
@@ -84,6 +87,8 @@ public class RobotMap {
 	public static TalonSRXEncoderWrapper driveRightEncoderWrapperRate;
 	public static TalonSRXEncoderWrapper driveLeftEncoderWrapperDistance;
 	public static TalonSRXEncoderWrapper driveRightEncoderWrapperDistance;
+	
+	public static DigitalInput irSensor;
 	
 	public static DeadReckoning deadReckoning;
 	
@@ -133,11 +138,9 @@ public class RobotMap {
 		//driveRightTalon4.set(ControlMode.Follower, driveLeftPort1);
 		driveLeftTalon1.selectProfileSlot(0, 0);
 		driveRightTalon1.selectProfileSlot(0, 0);
-
-	
 		
 		pigeon = new PigeonIMU(driveRightTalon1);
-		
+		irSensor = new DigitalInput(irSensorPort);
 
 		// Construct Wrappers
 		driveLeftTalonCurrentWrapper1 = new TalonSRXWrapper(ControlMode.Current, driveLeftTalon1);
@@ -162,7 +165,6 @@ public class RobotMap {
 		
 		driveLeftCurrent = new SpeedControllerWrapper(driveLeftTalonCurrentWrapper1);
 		driveRightCurrent = new SpeedControllerWrapper(driveRightTalonCurrentWrapper1);
-		
 		driveLeftPWM = new SpeedControllerWrapper(driveLeftTalonPWMWrapper1);
 		driveRightPWM = new SpeedControllerWrapper(driveRightTalonPWMWrapper1);
 		
@@ -191,8 +193,6 @@ public class RobotMap {
 		driveRightEncoderWrapperDistance.setDistancePerRevolution(WHEEL_RADIUS * 2 * Math.PI * 24.0 / 54);
 		driveLeftEncoderWrapperRate.setDistancePerRevolution(-WHEEL_RADIUS * 2 * Math.PI * 24.0 / 54);
 		driveRightEncoderWrapperRate.setDistancePerRevolution(WHEEL_RADIUS * 2 * Math.PI * 24.0 / 54);
-		
-		
 		// Construct Subsystems
 		drivetrain = new DriveTrain();
 		intake = new Intake();
