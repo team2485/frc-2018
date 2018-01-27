@@ -14,8 +14,8 @@ import edu.wpi.first.wpilibj.command.Subsystem;
  */
 
 public class Intake extends Subsystem {
-	private TalonSRX left;
-	private TalonSRX right;
+	public TalonSRX left;
+	public TalonSRX right;
 	
 	public Intake() {
 		this.left = RobotMap.armLeftTalon;
@@ -31,10 +31,9 @@ public class Intake extends Subsystem {
 		left.set(ControlMode.PercentOutput, 0);
 		right.set(ControlMode.PercentOutput, 0);
 	}
-
+	
 	@Override
 	protected void initDefaultCommand() {
-		// TODO Auto-generated method stub
-		
+		//IDK
 	}
 }
