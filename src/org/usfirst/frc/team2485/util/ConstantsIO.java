@@ -46,6 +46,15 @@ public class ConstantsIO {
 	public static double kD_AngVelTeleop;
 	public static double kF_AngVelTeleop;
 
+	public static double kP_ElbowAng;
+	
+	public static double kP_ElbowAngVel;
+	public static double kI_ElbowAngVel;
+	
+	public static double kP_WristAng;
+	
+	public static double kP_WristAngVel;
+	public static double kI_WristAngVel;
 	
 	public static int IMax;
 
@@ -102,6 +111,18 @@ public class ConstantsIO {
 //		kI_AngVelTeleop = Double.parseDouble(data.get("kI_AngVelTeleop"));
 //		kD_AngVelTeleop = Double.parseDouble(data.get("kD_AngVelTeleop"));
 //		kF_AngVelTeleop = Double.parseDouble(data.get("kF_AngVelTeleop"));
+		
+		kP_ElbowAng = Double.parseDouble(data.get("kP_ElbowAng"));
+		
+		kP_ElbowAngVel = Double.parseDouble(data.get("kP_ElbowAngVel"));
+		kI_ElbowAngVel = Double.parseDouble(data.get("kI_ElbowAngVel"));
+		
+		
+		kP_WristAng = Double.parseDouble(data.get("kP_WristAng"));
+		
+		kP_WristAngVel = Double.parseDouble(data.get("kP_WristAngVel"));
+		kI_WristAngVel = Double.parseDouble(data.get("kI_WristAngVel"));
+	
 
 		
 		

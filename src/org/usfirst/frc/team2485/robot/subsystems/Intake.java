@@ -18,8 +18,8 @@ public class Intake extends Subsystem {
 	public TalonSRX right;
 	
 	public Intake() {
-		this.left = RobotMap.armLeftTalon;
-		this.right = RobotMap.armRightTalon;
+		this.left = RobotMap.intakeLeftTalon;
+		this.right = RobotMap.intakeRightTalon;
 	}
 
 	public void setRollers(double pwm) {

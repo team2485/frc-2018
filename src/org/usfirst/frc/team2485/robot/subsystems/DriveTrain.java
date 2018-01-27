@@ -45,8 +45,6 @@ public class DriveTrain extends Subsystem {
 	public static final double THROTTLE_DEADBAND = 0.25;
 	public static final double LOW_ENC_RATE = 2;
 
-
-
 	private WarlordsPIDController distancePID = new WarlordsPIDController();
 	private WarlordsPIDController anglePID = new WarlordsPIDController();
 	private WarlordsPIDController velocityPID = new WarlordsPIDController();
