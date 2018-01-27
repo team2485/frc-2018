@@ -31,7 +31,15 @@ public class Intake extends Subsystem {
 		left.set(ControlMode.PercentOutput, 0);
 		right.set(ControlMode.PercentOutput, 0);
 	}
-	
+
+	public boolean hasCube() {
+		if(RobotMap.irSensor.get() == false) {
+			return true;			
+		}else {
+			return false;
+		}	
+	}
+
 	@Override
 	protected void initDefaultCommand() {
 		//IDK
