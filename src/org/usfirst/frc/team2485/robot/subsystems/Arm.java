@@ -22,8 +22,6 @@ public class Arm extends Subsystem {
 	 * j = moment of inertia
 	 */
 	
-	public static final double J1 = toMetricInertia(289);
-	public static final double J2 = toMetricInertia(565);
 	public static final double L1 = toMeters(30);
 	public static final double L2 = toMeters(28);
 	public static final double d1 = toMeters(15);
@@ -31,11 +29,13 @@ public class Arm extends Subsystem {
 	public static final double m1 = toKilograms(3);
 	public static final double m2 = toKilograms(10);
 	public static final double g = 9.80665;
-	public static final double PI = 3.141592653589;
+
+	public static final double J1 = toMetricInertia(289) + (m1 * d1 * d1);
+	public static final double J2 = toMetricInertia(565) + (m2 * d2 * d2);
 	
-	public static final double currentStall = 1; //temp
-	public static final double torqueStall = 1;
-	public static final double gearRatio = 1;
+	public static final double currentStall = 134; 
+	public static final double torqueStall = 0.71;
+	public static final double gearRatio = 800; //temporary
 	
 	private WarlordsPIDController elbowAngPID = new WarlordsPIDController();
 	private WarlordsPIDController elbowAngVelPID = new WarlordsPIDController();
@@ -68,9 +68,12 @@ public class Arm extends Subsystem {
 		elbowCurrentSource.setPidSource(()-> {
 			double a1 = elbowAngVelTN.pidGet();
 			double a2 = wristAngVelTN.pidGet();
-			double theta1 = 2*PI*RobotMap.elbowEncoderWrapperDistance.pidGet();
-			double theta2 = 2*PI*RobotMap.wristEncoderWrapperDistance.pidGet();
-			double w2 = 2*PI*RobotMap.wristEncoderWrapperRate.pidGet();
+
+			double theta1 = 2*Math.PI*RobotMap.elbowEncoderWrapperDistance.pidGet();
+			double theta2 = (2*Math.PI*RobotMap.wristEncoderWrapperDistance.pidGet()) + theta1;
+			
+			double w1 = 2*Math.PI*RobotMap.elbowEncoderWrapperRate.pidGet();
+			double w2 = 2*Math.PI*RobotMap.wristEncoderWrapperRate.pidGet() + w1;
 			
 			double inertia = (J1 * a1) + 
 					(J2 * a2) + 
@@ -87,7 +90,7 @@ public class Arm extends Subsystem {
 		});
 		
 		elbowSetter.setSetpointSource(elbowCurrentSource);
-		elbowSetter.setOutputs(RobotMap.elbowWrapper);
+		elbowSetter.setOutputs(RobotMap.elbowCurrentWrapper);
 		
 //Wrist
 		
@@ -100,7 +103,7 @@ public class Arm extends Subsystem {
 		
 		wristCurrentSource.setPidSource(()-> {
 			double a2 = wristAngVelTN.pidGet();
-			double theta2 = 2*PI*RobotMap.wristEncoderWrapperDistance.pidGet();
+			double theta2 = 2*Math.PI*RobotMap.wristEncoderWrapperDistance.pidGet();
 			
 			double inertia = (J2 * a2);
 			double load = (d2 * g * m2 * Math.cos(theta2));
@@ -110,7 +113,7 @@ public class Arm extends Subsystem {
 		});
 		
 		wristSetter.setSetpointSource(wristCurrentSource);
-		wristSetter.setOutputs(RobotMap.wristWrapper);
+		wristSetter.setOutputs(RobotMap.wristCurrentWrapper);
 		
 	}
 	

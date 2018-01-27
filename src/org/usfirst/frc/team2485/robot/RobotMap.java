@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.sensors.PigeonIMU;
 
 import org.usfirst.frc.team2485.robot.subsystems.Arm;
@@ -56,8 +57,8 @@ public class RobotMap {
 	public static TalonSRX intakeLeftTalon;
 	public static TalonSRX intakeRightTalon;
 	
-	public static TalonSRX elbowTalon1;
-	public static TalonSRX elbowTalon2;
+	public static TalonSRX elbowTalon;
+	public static VictorSPX elbowVictor;
 	public static TalonSRX wristTalon;
 	
 	public static TalonSRX[] elbowTalons;
@@ -79,8 +80,8 @@ public class RobotMap {
 	public static TalonSRXWrapper elbowTalonWrapper1;
 	public static TalonSRXWrapper elbowTalonWrapper2;
 	public static TalonSRXWrapper wristTalonWrapper;
-	public static SpeedControllerWrapper elbowWrapper;
-	public static SpeedControllerWrapper wristWrapper;
+	public static SpeedControllerWrapper elbowCurrentWrapper;
+	public static SpeedControllerWrapper wristCurrentWrapper;
 	
 	public static TalonSRXWrapper driveLeftTalonCurrentWrapper1;
 	public static TalonSRXWrapper driveLeftTalonCurrentWrapper2;
@@ -143,20 +144,19 @@ public class RobotMap {
 		intakeRightWrapper = new TalonSRXWrapper(ControlMode.Current, intakeRightTalon);
 		
 //ARM
-		elbowTalon1 = new TalonSRX(elbowPort1); 
-		elbowTalon2 = new TalonSRX(elbowPort2); 
-		elbowTalons = new TalonSRX[] {elbowTalon1, elbowTalon2};
+		elbowTalon = new TalonSRX(elbowPort1); 
+		elbowVictor = new VictorSPX(elbowPort2); 
 		wristTalon = new TalonSRX(wristPort);
 		
-		elbowTalon1.set(ControlMode.Current, elbowPort1);
-		elbowTalon2.set(ControlMode.Follower, elbowPort1);
+		elbowTalon.set(ControlMode.Current, elbowPort1);
+		elbowVictor.set(ControlMode.Follower, elbowPort1);
 		wristTalon.set(ControlMode.Current, wristPort);
 		
-		elbowTalonWrapper1 = new TalonSRXWrapper(ControlMode.Current, elbowTalon1);
+		elbowTalonWrapper1 = new TalonSRXWrapper(ControlMode.Current, elbowTalon);
 		wristTalonWrapper = new TalonSRXWrapper(ControlMode.Current, wristTalon);
 		
-		elbowWrapper = new SpeedControllerWrapper(elbowTalonWrapper1);
-		wristWrapper = new SpeedControllerWrapper(wristTalonWrapper);
+		elbowCurrentWrapper = new SpeedControllerWrapper(elbowTalonWrapper1);
+		wristCurrentWrapper = new SpeedControllerWrapper(wristTalonWrapper);
 		
 //DRIVETRAIN
 		driveLeftTalon1 = new TalonSRX(driveLeftPort1);
@@ -218,9 +218,9 @@ public class RobotMap {
 		driveLeftEncoderWrapperRate.setDistancePerRevolution(-WHEEL_RADIUS * 2 * Math.PI * 24.0 / 54);
 		driveRightEncoderWrapperRate.setDistancePerRevolution(WHEEL_RADIUS * 2 * Math.PI * 24.0 / 54);
 		
-		elbowEncoderWrapperDistance = new TalonSRXEncoderWrapper(elbowTalon1, PIDSourceType.kDisplacement);
+		elbowEncoderWrapperDistance = new TalonSRXEncoderWrapper(elbowTalon, PIDSourceType.kDisplacement);
 		wristEncoderWrapperDistance = new TalonSRXEncoderWrapper(wristTalon, PIDSourceType.kDisplacement);
-		elbowEncoderWrapperRate = new TalonSRXEncoderWrapper(elbowTalon1, PIDSourceType.kRate);
+		elbowEncoderWrapperRate = new TalonSRXEncoderWrapper(elbowTalon, PIDSourceType.kRate);
 		wristEncoderWrapperRate = new TalonSRXEncoderWrapper(wristTalon, PIDSourceType.kRate);
 		
 		
