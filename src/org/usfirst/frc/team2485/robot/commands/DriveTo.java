@@ -22,7 +22,7 @@ public class DriveTo extends Command{
 		this.timeout = timeout;
 		this.tolerance = 0;
 		setInterruptible(true);
-		requires(RobotMap.drivetrain);
+		requires(RobotMap.driveTrain);
 	}
 	
 	public void setFinishedCondition(FinishedCondition finishedCondition) {
@@ -37,12 +37,12 @@ public class DriveTo extends Command{
 	protected void initialize() {
 		super.initialize();
 		startTime = System.currentTimeMillis();
-		RobotMap.drivetrain.zeroEncoders();
+		RobotMap.driveTrain.zeroEncoders();
 	}
 	@Override
 	protected void execute() {
 
-		double arcLength = RobotMap.drivetrain.getAverageEncoderDistance(), 
+		double arcLength = RobotMap.driveTrain.getAverageEncoderDistance(), 
 				pathLength = path.getPathLength();
 		
 		if (reverse) {
@@ -50,7 +50,7 @@ public class DriveTo extends Command{
 			pathLength *= -1;
 		}
 		
-		finished = RobotMap.drivetrain.driveTo(pathLength, maxVelocity, 
+		finished = RobotMap.driveTrain.driveTo(pathLength, maxVelocity, 
 				path.getHeadingAtDist(arcLength), path.getCurvatureAtDist(arcLength), tolerance) ||
 				finishedCondition.isFinished();
 		

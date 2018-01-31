@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.command.Command;
 public class DriveWithControllers extends Command {
 
     public DriveWithControllers() {
-        requires(RobotMap.drivetrain);
+        requires(RobotMap.driveTrain);
         setInterruptible(true);
     }
 
@@ -22,10 +22,10 @@ public class DriveWithControllers extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	double y = -ThresholdHandler.deadbandAndScale(OI.XBOX.getRawAxis(OI.XBOX_LYJOYSTICK_PORT), RobotMap.drivetrain.THROTTLE_DEADBAND, 0, 1);
-    	double x = ThresholdHandler.deadbandAndScale(OI.XBOX.getRawAxis(OI.XBOX_RXJOYSTICK_PORT), RobotMap.drivetrain.STEERING_DEADBAND, 0, 1);;
+    	double y = -ThresholdHandler.deadbandAndScale(OI.XBOX.getRawAxis(OI.XBOX_LYJOYSTICK_PORT), RobotMap.driveTrain.THROTTLE_DEADBAND, 0, 1);
+    	double x = ThresholdHandler.deadbandAndScale(OI.XBOX.getRawAxis(OI.XBOX_RXJOYSTICK_PORT), RobotMap.driveTrain.STEERING_DEADBAND, 0, 1);;
     	boolean quickturn = OI.XBOX.getRawButton(OI.XBOX_LBUMPER_PORT);
-    	RobotMap.drivetrain.WARlordsDrive(y, x);
+    	RobotMap.driveTrain.WARlordsDrive(y, x);
     	//RobotMap.drivetrain.simpleDrive(y, x);
     }
 

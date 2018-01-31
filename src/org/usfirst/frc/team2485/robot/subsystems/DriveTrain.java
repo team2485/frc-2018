@@ -27,7 +27,7 @@ public class DriveTrain extends Subsystem {
 
 		public double getSpeedFactor() {
 
-			switch (this) {
+			switch (this) { 
 			case SLOW_SPEED_RATING:
 				return 0.5;
 			case NORMAL_SPEED_RATING:
@@ -253,10 +253,7 @@ public class DriveTrain extends Subsystem {
 		leftMotorSetter.setOutputs(RobotMap.driveLeftCurrent);
 		rightMotorSetter.setSetpointSource(rightCurrentPIDSource);
 		rightMotorSetter.setOutputs(RobotMap.driveRightCurrent);
-		
-//		RobotMap.driveLeftTalon1.config_kF(0, .01, 0);
-//		RobotMap.driveRightTalon1.config_kF(0, .01, 0);
-
+	
 
 	}
 
@@ -298,51 +295,6 @@ public class DriveTrain extends Subsystem {
 	public double mapPWM(double pwm, double deadband) {	
 		return ThresholdHandler.deadbandAndScale(pwm, deadband, 0, 1);
 	}
-
-	/** public void WARLordsDrive(double throttle, double steering , boolean quickturn) {
-		velocityPID.disable();
-		distancePID.disable();
-		anglePID.disable();
-		curvaturePID.disable();
-		
-		throttle = mapPWM(throttle, THROTTLE_DEADBAND);
-		steering = mapPWM(steering, STEERING_DEADBAND);
-		
-		if (throttle == 0.0) {
-			quickturn = true;
-		} 
-		
-		if (quickturn) {
-			angVelTeleopPID.disable();
-			leftMotorSetter.disable();
-			rightMotorSetter.disable();
-			
-			simpleDrive(0, steering);
-		} else {
-			
-
-			leftMotorSetter.enable();
-			rightMotorSetter.enable();
-	
-			
-			
-			double maxDriveCurrent = throttle * (getMaxCurrent() - Math.abs(curvatureTN.pidGet()));
-			double velAvg = (RobotMap.driveLeftEncoderWrapperRate.pidGet() + RobotMap.driveRightEncoderWrapperRate.pidGet())/2;
-			if (velAvg > 5) {
-				angVelTeleopPID.enable();
-				angVelTeleopPID.setSetpoint((2/RobotMap.ROBOT_WIDTH) * steering);
-			} else {
-				angVelTeleopPID.disable();
-				angVelTeleopTN.setOutput(0);
-			}
-			velocityTN.setOutput(maxDriveCurrent);
-			curvatureTN.setOutput(angVelTeleopTN.getOutput() * velAvg);
-			
-		}
-		
-		
-		
-	} */
 	
 	public double getAngleRateError() {
 		return curvaturePID.getAvgError();
@@ -488,7 +440,6 @@ public class DriveTrain extends Subsystem {
 		velocityPID.setPID(ConstantsIO.kP_DriveVelocity, ConstantsIO.kI_DriveVelocity, ConstantsIO.kD_DriveVelocity, ConstantsIO.kF_DriveVelocity);
 		curvaturePID.setPID(ConstantsIO.kP_DriveAngVel, ConstantsIO.kI_DriveAngVel, ConstantsIO.kD_DriveAngVel, ConstantsIO.kF_DriveAngVel);
 		anglePID.setPID(ConstantsIO.kP_DriveAngle, ConstantsIO.kI_DriveAngle, ConstantsIO.kD_DriveAngle);
-//		angVelTeleopPID.setPID(ConstantsIO.kP_AngVelTeleop, ConstantsIO.kI_AngVelTeleop, ConstantsIO.kD_AngVelTeleop, ConstantsIO.kF_AngVelTeleop);
 		
 	}
 
@@ -508,7 +459,6 @@ public class DriveTrain extends Subsystem {
 	}
 	
 	public double getAverageEncoderDistance() {
-		// TODO Auto-generated method stub
 		return encoderDistancePIDSource.pidGet();
 	}
 

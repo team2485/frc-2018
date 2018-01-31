@@ -127,7 +127,7 @@ public class RobotMap {
 	public static PowerDistributionPanel PDP;
 
 //SUBSYSTEMS
-	public static DriveTrain drivetrain;
+	public static DriveTrain driveTrain;
 	public static Intake intake;
 	public static Arm arm;
 
@@ -235,13 +235,13 @@ public class RobotMap {
 		
 		
 //SUBSYSTEMS
-		drivetrain = new DriveTrain();
+		driveTrain = new DriveTrain();
 		intake = new Intake();
 		arm = new Arm();
 	}
 
 	public static void updateConstants() {
-		drivetrain.updateConstants();
+		driveTrain.updateConstants();
 	}
 	
 }

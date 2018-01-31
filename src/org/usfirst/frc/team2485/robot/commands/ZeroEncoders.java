@@ -6,11 +6,11 @@ import edu.wpi.first.wpilibj.command.InstantCommand;
 
 public class ZeroEncoders extends InstantCommand{
 	public ZeroEncoders() {
-		requires(RobotMap.drivetrain);
+		requires(RobotMap.driveTrain);
 	}
 	
 	@Override
 	protected void initialize() {
-		RobotMap.drivetrain.zeroEncoders();
+		RobotMap.driveTrain.zeroEncoders();
 	}
 }
