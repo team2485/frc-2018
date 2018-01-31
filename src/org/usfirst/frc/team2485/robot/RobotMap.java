@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.sensors.PigeonIMU;
 
 import org.usfirst.frc.team2485.robot.subsystems.DriveTrain;
@@ -31,29 +32,32 @@ public class RobotMap {
 	public static final double ROBOT_WIDTH = 28;
 	public static final double WHEEL_RADIUS = 2;
 	
-	public static final int driveRightPort1 = 1;
-	public static final int driveRightPort2 = 2;
-	public static final int driveRightPort3 = 3;
-	//public static final int driveRightPort4 ;
+	public static final int driveRightPortTalon = 1;
+	public static final int driveRightPortVictor2 = 11;
+	public static final int driveRightPortVictor3 = 21;
+	public static final int driveRightPortVictor4 = 31;
 	
-	public static final int driveLeftPort1 = 5;
-	public static final int driveLeftPort2 = 6;
-	public static final int driveLeftPort3 = 7;
-	//public static final int driveLeftPort4 ;
+	public static final int driveLeftPortTalon = 2;
+	public static final int driveLeftPortVictor2 = 12;
+	public static final int driveLeftPortVictor3 = 22;
+	public static final int driveLeftPortVictor4 = 32;
 	
+	public static final int intakePortLeftTalon = 5;
+	public static final int intakePortRightTalon = 6;
+
 	public static final int irSensorPort = 0;
 
-	public static TalonSRX armLeftTalon;
-	public static TalonSRX armRightTalon;
+	public static TalonSRX intakeLeftTalon;
+	public static TalonSRX intakeRightTalon;
 	
-	public static TalonSRX driveLeftTalon1;
-	public static TalonSRX driveLeftTalon2;
-	public static TalonSRX driveLeftTalon3;
-	//public static TalonSRX driveLeftTalon4;
-	public static TalonSRX driveRightTalon1;
-	public static TalonSRX driveRightTalon2;
-	public static TalonSRX driveRightTalon3;
-	//public static TalonSRX driveRightTalon4;
+	public static TalonSRX driveLeftTalon;
+	public static VictorSPX driveLeftVictor2;
+	public static VictorSPX driveLeftVictor3;
+	public static VictorSPX driveLeftVictor4;
+	public static TalonSRX driveRightTalon;
+	public static VictorSPX driveRightVictor2;
+	public static VictorSPX driveRightVictor3;
+	public static VictorSPX driveRightVictor4;
 	public static TalonSRX[] driveTalons;
 	
 	public static TalonSRXWrapper driveLeftTalonCurrentWrapper1;
@@ -80,8 +84,8 @@ public class RobotMap {
 
 	public static PigeonIMU pigeon;
 	
-	public static PigeonWrapperRateAndAngle pigeonRateWrapper;
-	public static PigeonWrapperRateAndAngle pigeonDisplacementWrapper;
+//	public static PigeonWrapperRateAndAngle pigeonRateWrapper;
+//	public static PigeonWrapperRateAndAngle pigeonDisplacementWrapper;
 	
 	public static TalonSRXEncoderWrapper driveLeftEncoderWrapperRate;
 	public static TalonSRXEncoderWrapper driveRightEncoderWrapperRate;
@@ -102,64 +106,55 @@ public class RobotMap {
 		// Construct Hardware
 		PDP = new PowerDistributionPanel();
 		
-		armLeftTalon = new TalonSRX(8); //Random port for now.
-		armRightTalon = new TalonSRX(9); //Also random port.
+		intakeLeftTalon = new TalonSRX(intakePortLeftTalon); //Random port for now.
+		intakeRightTalon = new TalonSRX(intakePortRightTalon); //Also random port.
 		
-		driveLeftTalon1 = new TalonSRX(driveLeftPort1);
-		driveLeftTalon2 = new TalonSRX(driveLeftPort2);
-		driveLeftTalon3 = new TalonSRX(driveLeftPort3);
-		//driveLeftTalon4 = new TalonSRX(driveLeftPort4);
-		driveRightTalon1 = new TalonSRX(driveRightPort1);
-		driveRightTalon2 = new TalonSRX(driveRightPort2);
-		driveRightTalon3 = new TalonSRX(driveRightPort3);
-		//driveRightTalon4 = new TalonSRX(driveRightPort4);
+		driveLeftTalon = new TalonSRX(driveLeftPortTalon);
+		driveLeftVictor2 = new VictorSPX(driveLeftPortVictor2);
+		driveLeftVictor3 = new VictorSPX(driveLeftPortVictor3);
+		driveLeftVictor4 = new VictorSPX(driveLeftPortVictor4);
+		
+		driveRightTalon = new TalonSRX(driveRightPortTalon);
+		driveRightVictor2 = new VictorSPX(driveRightPortVictor2);
+		driveRightVictor3 = new VictorSPX(driveRightPortVictor3);
+		driveRightVictor4 = new VictorSPX(driveRightPortVictor4);
+
 		
 		driveTalons = new TalonSRX[] {
-				driveLeftTalon1, driveLeftTalon2, driveLeftTalon3, 
-				driveRightTalon1, driveRightTalon2, driveRightTalon3, 
+				driveLeftTalon, 
+				driveRightTalon
 		};
-//		driveTalons = new TalonSRX[] {
-//			driveLeftTalon1, driveLeftTalon2, driveLeftTalon3, driveLeftTalon4, 
-//			driveRightTalon1, driveRightTalon2, driveRightTalon3,driveRightTalon4, 
-//		};
+
+		
+		
+		
+		// Configure Hardware
+
 		for(TalonSRX t : driveTalons) {
 			t.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
 		}
 		
-		//Still using random ports for now
-		armLeftTalon.set(ControlMode.Follower, 8);
-		armRightTalon.set(ControlMode.Follower, 9);
+//		armLeftTalon.set(ControlMode.Follower, 8);
+//		armRightTalon.set(ControlMode.Follower, 9);
 		
-		driveLeftTalon2.set(ControlMode.Follower, driveLeftPort1);
-		driveLeftTalon3.set(ControlMode.Follower, driveLeftPort1);
-		//driveLeftTalon4.set(ControlMode.Follower, driveLeftPort1);
-		driveRightTalon2.set(ControlMode.Follower, driveRightPort1);
-		driveRightTalon3.set(ControlMode.Follower, driveRightPort1);
-		//driveRightTalon4.set(ControlMode.Follower, driveLeftPort1);
-		driveLeftTalon1.selectProfileSlot(0, 0);
-		driveRightTalon1.selectProfileSlot(0, 0);
+		driveLeftVictor2.follow(driveLeftTalon);
+		driveLeftVictor3.follow(driveLeftTalon);
+		driveLeftVictor4.follow(driveLeftTalon);
 		
-		pigeon = new PigeonIMU(driveRightTalon1);
+		driveRightVictor2.follow(driveRightTalon);
+		driveRightVictor3.follow(driveRightTalon);
+		driveRightVictor4.follow(driveRightTalon);
+		
+		
+//		pigeon = new PigeonIMU(driveRightTalon);
 		irSensor = new DigitalInput(irSensorPort);
 
 		// Construct Wrappers
-		driveLeftTalonCurrentWrapper1 = new TalonSRXWrapper(ControlMode.Current, driveLeftTalon1);
-//		driveLeftTalonCurrentWrapper2 = new TalonSRXWrapper(ControlMode.Current, driveLeftTalon2);
-//		driveLeftTalonCurrentWrapper3 = new TalonSRXWrapper(ControlMode.Current, driveLeftTalon3);
-//		driveLeftTalonCurrentWrapper4 = new TalonSRXWrapper(ControlMode.Current, driveLeftTalon4);
-		driveRightTalonCurrentWrapper1 = new TalonSRXWrapper(ControlMode.Current, driveRightTalon1);
-//		driveRightTalonCurrentWrapper2 = new TalonSRXWrapper(ControlMode.Current, driveRightTalon2);
-//		driveRightTalonCurrentWrapper3 = new TalonSRXWrapper(ControlMode.Current, driveRightTalon3);
-//		driveRightTalonCurrentWrapper3 = new TalonSRXWrapper(ControlMode.Current, driveRightTalon4);
+		driveLeftTalonCurrentWrapper1 = new TalonSRXWrapper(ControlMode.Current, driveLeftTalon);
+		driveRightTalonCurrentWrapper1 = new TalonSRXWrapper(ControlMode.Current, driveRightTalon);
 
-		driveLeftTalonPWMWrapper1 = new TalonSRXWrapper(ControlMode.PercentOutput, driveLeftTalon1);
-//		driveLeftTalonPWMWrapper2 = new TalonSRXWrapper(ControlMode.PercentOutput, driveLeftTalon2);
-//		driveLeftTalonPWMWrapper3 = new TalonSRXWrapper(ControlMode.PercentOutput, driveLeftTalon3);
-//		driveLeftTalonPWMWrapper4 = new TalonSRXWrapper(ControlMode.PercentOutput, driveLeftTalon4);
-		driveRightTalonPWMWrapper1 = new TalonSRXWrapper(ControlMode.PercentOutput, driveRightTalon1);
-//		driveRightTalonPWMWrapper2 = new TalonSRXWrapper(ControlMode.PercentOutput, driveRightTalon2);
-//		driveRightTalonPWMWrapper3 = new TalonSRXWrapper(ControlMode.PercentOutput, driveRightTalon3);
-//		driveRightTalonPWMWrapper4 = new TalonSRXWrapper(ControlMode.PercentOutput, driveRightTalon4);
+		driveLeftTalonPWMWrapper1 = new TalonSRXWrapper(ControlMode.PercentOutput, driveLeftTalon);
+		driveRightTalonPWMWrapper1 = new TalonSRXWrapper(ControlMode.PercentOutput, driveRightTalon);
 
 
 		
@@ -171,20 +166,17 @@ public class RobotMap {
 		driveLeftCurrent.setInverted(true);
 		driveLeftPWM.setInverted(true);
 		
-		pigeonRateWrapper = new PigeonWrapperRateAndAngle(PIDSourceType.kRate, Units.RADS);
-		pigeonDisplacementWrapper = new PigeonWrapperRateAndAngle(PIDSourceType.kDisplacement, Units.RADS);
+//		pigeonRateWrapper = new PigeonWrapperRateAndAngle(PIDSourceType.kRate, Units.RADS);
+//		pigeonDisplacementWrapper = new PigeonWrapperRateAndAngle(PIDSourceType.kDisplacement, Units.RADS);
 		
-		driveLeftEncoderWrapperRate = new TalonSRXEncoderWrapper(driveLeftTalon3, PIDSourceType.kRate);
-		driveRightEncoderWrapperRate = new TalonSRXEncoderWrapper(driveRightTalon3, PIDSourceType.kRate);
-		driveLeftEncoderWrapperDistance = new TalonSRXEncoderWrapper(driveLeftTalon3,  PIDSourceType.kDisplacement);
-		driveRightEncoderWrapperDistance = new TalonSRXEncoderWrapper(driveRightTalon3, PIDSourceType.kDisplacement);
+		driveLeftEncoderWrapperRate = new TalonSRXEncoderWrapper(driveLeftTalon, PIDSourceType.kRate);
+		driveRightEncoderWrapperRate = new TalonSRXEncoderWrapper(driveRightTalon, PIDSourceType.kRate);
+		driveLeftEncoderWrapperDistance = new TalonSRXEncoderWrapper(driveLeftTalon,  PIDSourceType.kDisplacement);
+		driveRightEncoderWrapperDistance = new TalonSRXEncoderWrapper(driveRightTalon, PIDSourceType.kDisplacement);
 		
-		driveLeftTalon3.setSensorPhase(true);
-		driveRightTalon3.setSensorPhase(false);
-		driveLeftTalon3.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, 0);
-		driveRightTalon3.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, 0);
-		driveLeftTalon3.configVelocityMeasurementWindow(1, 0);
-		driveRightTalon3.configVelocityMeasurementWindow(1, 0);
+		driveRightVictor3.setSensorPhase(false);
+		driveRightVictor3.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, 0);
+		driveRightVictor3.configVelocityMeasurementWindow(1, 0);
 		
 		deadReckoning = new DeadReckoning(pigeon, driveLeftEncoderWrapperDistance, driveRightEncoderWrapperDistance);
 		

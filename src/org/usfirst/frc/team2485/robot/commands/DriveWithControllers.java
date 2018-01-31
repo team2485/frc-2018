@@ -2,6 +2,7 @@ package org.usfirst.frc.team2485.robot.commands;
 
 import org.usfirst.frc.team2485.robot.OI;
 import org.usfirst.frc.team2485.robot.RobotMap;
+import org.usfirst.frc.team2485.robot.subsystems.DriveTrain;
 import org.usfirst.frc.team2485.util.ThresholdHandler;
 
 import edu.wpi.first.wpilibj.command.Command;
@@ -22,11 +23,11 @@ public class DriveWithControllers extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	double y = -ThresholdHandler.deadbandAndScale(OI.XBOX.getRawAxis(OI.XBOX_LYJOYSTICK_PORT), RobotMap.drivetrain.THROTTLE_DEADBAND, 0, 1);
-    	double x = ThresholdHandler.deadbandAndScale(OI.XBOX.getRawAxis(OI.XBOX_RXJOYSTICK_PORT), RobotMap.drivetrain.STEERING_DEADBAND, 0, 1);;
-    	boolean quickturn = OI.XBOX.getRawButton(OI.XBOX_LBUMPER_PORT);
-    	RobotMap.drivetrain.WARlordsDrive(y, x);
-    	//RobotMap.drivetrain.simpleDrive(y, x);
+    	double y = -ThresholdHandler.deadbandAndScale(OI.XBOX.getRawAxis(OI.XBOX_LYJOYSTICK_PORT), DriveTrain.THROTTLE_DEADBAND, 0, 1);
+    	double x = ThresholdHandler.deadbandAndScale(OI.XBOX.getRawAxis(OI.XBOX_RXJOYSTICK_PORT), DriveTrain.STEERING_DEADBAND, 0, 1);;
+//    	boolean quickturn = OI.XBOX.getRawButton(OI.XBOX_LBUMPER_PORT);
+//    	RobotMap.drivetrain.WARlordsDrive(y, x);
+    	RobotMap.drivetrain.simpleDrive(y, x);
     }
 
     // Make this return true when this Command no longer needs to run execute()
