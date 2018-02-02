@@ -33,9 +33,9 @@ public class HighLowCurrentTest extends Command{
 	protected void execute() {
 		long cycleTime = (System.currentTimeMillis() - startTime) % period;
 		if (cycleTime > period / 2) { // low
-			RobotMap.drivetrain.setCurrents(lowLeft, lowRight);
+			RobotMap.driveTrain.setCurrents(lowLeft, lowRight);
 		} else { // high
-			RobotMap.drivetrain.setCurrents(highLeft, highRight);
+			RobotMap.driveTrain.setCurrents(highLeft, highRight);
 		}
 	}
 	@Override

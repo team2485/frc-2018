@@ -55,7 +55,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void disabledInit() {
 		Scheduler.getInstance().removeAll();
-		RobotMap.drivetrain.reset();
+		RobotMap.driveTrain.reset();
 	}
 
 	@Override
@@ -79,7 +79,7 @@ public class Robot extends IterativeRobot {
 	public void autonomousInit() {
 //		ConstantsIO.init();
 		RobotMap.updateConstants();
-		RobotMap.drivetrain.reset();
+		RobotMap.driveTrain.reset();
 		/*
 		 * String autoSelected = SmartDashboard.getString("Auto Selector",
 		 * "Default"); switch(autoSelected) { case "My Auto": autonomousCommand
@@ -117,7 +117,7 @@ public class Robot extends IterativeRobot {
 	public void teleopInit() {
 //		ConstantsIO.init();
 		RobotMap.updateConstants();
-		RobotMap.drivetrain.reset();
+		RobotMap.driveTrain.reset();
 //		RobotMap.deadReckoning.start();
 		// This makes sure that the autonomous stops running when
 		// teleop starts running. If you want the autonomous to
@@ -144,18 +144,18 @@ public class Robot extends IterativeRobot {
 	public void updateSmartDashboard() {
 //		SmartDashboard.putNumber("Yaw", RobotMap.pigeonDisplacementWrapper.pidGet());
 //		SmartDashboard.putNumber("Yaw Rate", RobotMap.pigeonRateWrapper.pidGet());
-		SmartDashboard.putNumber("Yaw Rate Error", RobotMap.drivetrain.getAngleRateError());
+		SmartDashboard.putNumber("Yaw Rate Error", RobotMap.driveTrain.getAngleRateError());
 		SmartDashboard.putNumber("Left Encoder Dist", RobotMap.driveLeftEncoderWrapperDistance.pidGet());
 		SmartDashboard.putNumber("Right Encoder Dist", RobotMap.driveRightEncoderWrapperDistance.pidGet());
 		SmartDashboard.putNumber("Left Encoder Rate", RobotMap.driveLeftEncoderWrapperRate.pidGet());
 		SmartDashboard.putNumber("Right Encoder Rate", RobotMap.driveRightEncoderWrapperRate.pidGet());
-		SmartDashboard.putNumber("Velocity Error", RobotMap.drivetrain.getVelocityError());
-		SmartDashboard.putNumber("Distance Error", RobotMap.drivetrain.getDistError());
-		SmartDashboard.putNumber("Angle Error", RobotMap.drivetrain.getAngleError());
-		SmartDashboard.putNumber("Angular Velocity Error", RobotMap.drivetrain.getAngleRateError());
+		SmartDashboard.putNumber("Velocity Error", RobotMap.driveTrain.getVelocityError());
+		SmartDashboard.putNumber("Distance Error", RobotMap.driveTrain.getDistError());
+		SmartDashboard.putNumber("Angle Error", RobotMap.driveTrain.getAngleError());
+		SmartDashboard.putNumber("Angular Velocity Error", RobotMap.driveTrain.getAngleRateError());
 		
-		SmartDashboard.putNumber("Distance PID Output", RobotMap.drivetrain.getDistancePIDOutput());
-		SmartDashboard.putNumber("Velocity PID Output", RobotMap.drivetrain.getVelocityPIDOutput());
+		SmartDashboard.putNumber("Distance PID Output", RobotMap.driveTrain.getDistancePIDOutput());
+		SmartDashboard.putNumber("Velocity PID Output", RobotMap.driveTrain.getVelocityPIDOutput());
 		SmartDashboard.putNumber("Left Current Output", RobotMap.driveLeftTalon.getMotorOutputPercent());
 		SmartDashboard.putNumber("Left Current", RobotMap.driveLeftTalon.getOutputCurrent());
 		SmartDashboard.putNumber("Right Current", RobotMap.driveRightTalon.getOutputCurrent());
@@ -164,10 +164,10 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Left Current Error", RobotMap.driveLeftTalon.getClosedLoopError(0));
 		SmartDashboard.putNumber("Right Current Error", RobotMap.driveRightTalon.getClosedLoopError(0));
 		
-		SmartDashboard.putNumber("Velocity TN", RobotMap.drivetrain.velocityTN.pidGet());
-		SmartDashboard.putNumber("Ang Vel TN", RobotMap.drivetrain.curvatureTN.pidGet());
+		SmartDashboard.putNumber("Velocity TN", RobotMap.driveTrain.velocityTN.pidGet());
+		SmartDashboard.putNumber("Ang Vel TN", RobotMap.driveTrain.curvatureTN.pidGet());
 		SmartDashboard.putNumber("Left + Right", RobotMap.driveLeftTalonCurrentWrapper1.get() + RobotMap.driveRightTalonCurrentWrapper1.get());
-		SmartDashboard.putNumber("Curvature Error", RobotMap.drivetrain.getTeleopAngVelError());
+		SmartDashboard.putNumber("Curvature Error", RobotMap.driveTrain.getTeleopAngVelError());
 //		RobotMap.pigeon.getYawPitchRoll(ypr);
 		
 		SmartDashboard.putNumber("Pitch", ypr[1]);

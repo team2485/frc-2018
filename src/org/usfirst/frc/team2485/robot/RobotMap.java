@@ -98,7 +98,7 @@ public class RobotMap {
 	
 	public static PowerDistributionPanel PDP;
 	
-	public static DriveTrain drivetrain;
+	public static DriveTrain driveTrain;
 	public static Intake intake;
 	
 	public static void init() {
@@ -186,12 +186,12 @@ public class RobotMap {
 		driveLeftEncoderWrapperRate.setDistancePerRevolution(-WHEEL_RADIUS * 2 * Math.PI * 24.0 / 54);
 		driveRightEncoderWrapperRate.setDistancePerRevolution(WHEEL_RADIUS * 2 * Math.PI * 24.0 / 54);
 		// Construct Subsystems
-		drivetrain = new DriveTrain();
+		driveTrain = new DriveTrain();
 		intake = new Intake();
 	}
 
 	public static void updateConstants() {
-		drivetrain.updateConstants();
+		driveTrain.updateConstants();
 	}
 	
 }

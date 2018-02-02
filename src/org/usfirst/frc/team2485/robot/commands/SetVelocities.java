@@ -15,7 +15,7 @@ private double linearVelocity, angularVelocity;
 	
 	@Override
 	protected void execute() {
-		RobotMap.drivetrain.setVelocities(linearVelocity, angularVelocity);;
+		RobotMap.driveTrain.setVelocities(linearVelocity, angularVelocity);;
 	}
 
 	@Override
