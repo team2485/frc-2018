@@ -41,7 +41,7 @@ public class Robot extends IterativeRobot {
 	public void robotInit() {
 		OI.init();
 		RobotMap.init();
-		ConstantsIO.init();
+//		ConstantsIO.init();
 		RobotMap.updateConstants();
 		// chooser.addObject("My Auto", new MyAutoCommand());
 		SmartDashboard.putData("Auto mode", chooser);
@@ -77,7 +77,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousInit() {
-		ConstantsIO.init();
+//		ConstantsIO.init();
 		RobotMap.updateConstants();
 		RobotMap.driveTrain.reset();
 		/*
@@ -115,10 +115,10 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void teleopInit() {
-		ConstantsIO.init();
+//		ConstantsIO.init();
 		RobotMap.updateConstants();
 		RobotMap.driveTrain.reset();
-		RobotMap.deadReckoning.start();
+//		RobotMap.deadReckoning.start();
 		// This makes sure that the autonomous stops running when
 		// teleop starts running. If you want the autonomous to
 		// continue until interrupted by another command, remove
@@ -134,16 +134,14 @@ public class Robot extends IterativeRobot {
 	public void teleopPeriodic() {
 		Scheduler.getInstance().run();
 		updateSmartDashboard();
-		double y = -ThresholdHandler.deadbandAndScale(OI.XBOX.getRawAxis(OI.XBOX_LYJOYSTICK_PORT), RobotMap.driveTrain.THROTTLE_DEADBAND, 0, 1);
-    	double x = ThresholdHandler.deadbandAndScale(OI.XBOX.getRawAxis(OI.XBOX_RXJOYSTICK_PORT), RobotMap.driveTrain.STEERING_DEADBAND, 0, 1);;
-    	
-    	RobotMap.driveTrain.simpleDrive(y, x);
+
 
 	}
 
 	public void updateSmartDashboard() {
-		SmartDashboard.putNumber("Yaw", RobotMap.pigeonDisplacementWrapper.pidGet());
-		SmartDashboard.putNumber("Yaw Rate", RobotMap.pigeonRateWrapper.pidGet());
+
+//		SmartDashboard.putNumber("Yaw", RobotMap.pigeonDisplacementWrapper.pidGet());
+//		SmartDashboard.putNumber("Yaw Rate", RobotMap.pigeonRateWrapper.pidGet());
 		SmartDashboard.putNumber("Yaw Rate Error", RobotMap.driveTrain.getAngleRateError());
 		SmartDashboard.putNumber("Left Encoder Dist", RobotMap.driveLeftEncoderWrapperDistance.pidGet());
 		SmartDashboard.putNumber("Right Encoder Dist", RobotMap.driveRightEncoderWrapperDistance.pidGet());
@@ -153,28 +151,26 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Distance Error", RobotMap.driveTrain.getDistError());
 		SmartDashboard.putNumber("Angle Error", RobotMap.driveTrain.getAngleError());
 		SmartDashboard.putNumber("Angular Velocity Error", RobotMap.driveTrain.getAngleRateError());
-		
+	
 		SmartDashboard.putNumber("Distance PID Output", RobotMap.driveTrain.getDistancePIDOutput());
 		SmartDashboard.putNumber("Velocity PID Output", RobotMap.driveTrain.getVelocityPIDOutput());
-		SmartDashboard.putNumber("Left Current Output", RobotMap.driveLeftTalon1.getMotorOutputPercent());
-		SmartDashboard.putNumber("Left Current", RobotMap.driveLeftTalon1.getOutputCurrent());
-		SmartDashboard.putNumber("Right Current", RobotMap.driveRightTalon1.getOutputCurrent());
+		SmartDashboard.putNumber("Left Current Output", RobotMap.driveLeftTalon.getMotorOutputPercent());
+		SmartDashboard.putNumber("Left Current", RobotMap.driveLeftTalon.getOutputCurrent());
+		SmartDashboard.putNumber("Right Current", RobotMap.driveRightTalon.getOutputCurrent());
 
 		
-		SmartDashboard.putNumber("Left Current Error", RobotMap.driveLeftTalon1.getClosedLoopError(0));
-		SmartDashboard.putNumber("Right Current Error", RobotMap.driveRightTalon1.getClosedLoopError(0));
+		SmartDashboard.putNumber("Left Current Error", RobotMap.driveLeftTalon.getClosedLoopError(0));
+		SmartDashboard.putNumber("Right Current Error", RobotMap.driveRightTalon.getClosedLoopError(0));
 		
 		SmartDashboard.putNumber("Velocity TN", RobotMap.driveTrain.velocityTN.pidGet());
 		SmartDashboard.putNumber("Ang Vel TN", RobotMap.driveTrain.curvatureTN.pidGet());
 		SmartDashboard.putNumber("Left + Right", RobotMap.driveLeftTalonCurrentWrapper1.get() + RobotMap.driveRightTalonCurrentWrapper1.get());
 		SmartDashboard.putNumber("Curvature Error", RobotMap.driveTrain.getTeleopAngVelError());
-		RobotMap.pigeon.getYawPitchRoll(ypr);
+		SmartDashboard.putNumber("Curvature Error", RobotMap.driveTrain.getTeleopAngVelError());
+//		RobotMap.pigeon.getYawPitchRoll(ypr);
 		
-		SmartDashboard.putNumber("Pitch", ypr[1]);
-		SmartDashboard.putNumber("Roll", ypr[2]);
-		
-		SmartDashboard.putNumber("X", RobotMap.deadReckoning.getX());
-		SmartDashboard.putNumber("Y", RobotMap.deadReckoning.getY());
+//		SmartDashboard.putNumber("X", RobotMap.deadReckoning.getX());
+//		SmartDashboard.putNumber("Y", RobotMap.deadReckoning.getY());
 	}
 	/**
 	 * This function is called periodically during test mode

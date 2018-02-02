@@ -84,61 +84,13 @@ public class DriveTrain extends Subsystem {
 	private MotorSetter rightMotorSetter = new MotorSetter();
 	
 
-	public double getMaxVoltage() {
-		double vBat = RobotMap.PDP.getVoltage();
-		double Vl1 = RobotMap.driveLeftTalon1.getMotorOutputVoltage();
-		double Vl2 = RobotMap.driveLeftTalon2.getMotorOutputVoltage();
-		double Vl3 = RobotMap.driveLeftTalon3.getMotorOutputVoltage();
-		double VlAvg = Math.abs((Vl1+Vl2+Vl3)/3);
-
-		double Vr1 = RobotMap.driveRightTalon1.getMotorOutputVoltage();
-		double Vr2 = RobotMap.driveRightTalon2.getMotorOutputVoltage();
-		double Vr3 = RobotMap.driveRightTalon3.getMotorOutputVoltage();
-		double VrAvg = Math.abs((Vr1+Vr2+Vr3)/3);
-
-		double iMax = ConstantsIO.IMax;
-
-		double Ir1 = RobotMap.driveRightTalon1.getOutputCurrent();
-		double Ir2 = RobotMap.driveRightTalon2.getOutputCurrent();
-		double Ir3 = RobotMap.driveRightTalon3.getOutputCurrent();
-		double iL = (Ir1+Ir2+Ir3)/3;
-
-		double Il1 = RobotMap.driveLeftTalon1.getOutputCurrent();
-		double Il2 = RobotMap.driveLeftTalon2.getOutputCurrent();
-		double Il3 = RobotMap.driveLeftTalon3.getOutputCurrent();
-		double iR = (Il1+Il2+Il3)/3;
-
-		double v = vBat;
-
-		if(iL>iMax/2) {
-			v=Math.min(v,VlAvg*iMax/iL);
-		}
-		if(iR >iMax/2) {
-			v=Math.min(v,VrAvg*iMax/iR);
-		}
-		return v;
-	}
 	
 	public double getMaxCurrent() {
-		double pwmL1 = RobotMap.driveLeftTalon1.getMotorOutputPercent();
-		double pwmL2 = RobotMap.driveLeftTalon2.getMotorOutputPercent();
-		double pwmL3 = RobotMap.driveLeftTalon3.getMotorOutputPercent();
-		double pwmL = (pwmL1 + pwmL2 + pwmL3)/3;
-		
-		double pwmR1 = RobotMap.driveRightTalon1.getMotorOutputPercent();
-		double pwmR2 = RobotMap.driveRightTalon2.getMotorOutputPercent();
-		double pwmR3 = RobotMap.driveRightTalon3.getMotorOutputPercent();
-		double pwmR = (pwmR1 + pwmR2 + pwmR3)/3;
+		double pwmL = RobotMap.driveLeftTalon.getMotorOutputPercent();;
+		double pwmR = RobotMap.driveRightTalon.getMotorOutputPercent();
 
-		double Ir1 = RobotMap.driveRightTalon1.getOutputCurrent();
-		double Ir2 = RobotMap.driveRightTalon2.getOutputCurrent();
-		double Ir3 = RobotMap.driveRightTalon3.getOutputCurrent();
-		double iL = (Ir1+Ir2+Ir3)/3;
-
-		double Il1 = RobotMap.driveLeftTalon1.getOutputCurrent();
-		double Il2 = RobotMap.driveLeftTalon2.getOutputCurrent();
-		double Il3 = RobotMap.driveLeftTalon3.getOutputCurrent();
-		double iR = (Il1+Il2+Il3)/3;
+		double iL = RobotMap.driveRightTalon.getOutputCurrent();
+		double iR = RobotMap.driveLeftTalon.getOutputCurrent();
 		
 		double i = ConstantsIO.IMax;
 		
@@ -173,13 +125,13 @@ public class DriveTrain extends Subsystem {
 		//    	});
 		//    	
 		
-		curvaturePIDSource.setPidSource(() -> {
-			if (Math.abs(encoderAvgVelocityPIDSource.pidGet()) > LOW_ENC_RATE) {
-				return RobotMap.pigeonRateWrapper.pidGet() / encoderAvgVelocityPIDSource.pidGet();
-			} else {
-				return 0;
-			}
-		});
+//		curvaturePIDSource.setPidSource(() -> {
+//			if (Math.abs(encoderAvgVelocityPIDSource.pidGet()) > LOW_ENC_RATE) {
+//				return RobotMap.pigeonRateWrapper.pidGet() / encoderAvgVelocityPIDSource.pidGet();
+//			} else {
+//				return 0;
+//			}
+//		});
 
 		encoderDistancePIDSource.setPidSource(() -> {
 			return (RobotMap.driveLeftEncoderWrapperDistance.pidGet() + RobotMap.driveRightEncoderWrapperDistance.pidGet()) / 2;
@@ -210,7 +162,7 @@ public class DriveTrain extends Subsystem {
 		//angle
 
 		anglePID.setOutputs(angleTN);
-		anglePID.setSources(RobotMap.pigeonDisplacementWrapper);
+//		anglePID.setSources(RobotMap.pigeonDisplacementWrapper);
 		anglePID.setContinuous(true);
 		anglePID.setInputRange(0, 2 * Math.PI);
   
@@ -235,7 +187,7 @@ public class DriveTrain extends Subsystem {
 		
 		
 		angVelTeleopPID.setOutputs(angVelTeleopTN);
-		angVelTeleopPID.setSources(RobotMap.pigeonRateWrapper);
+//		angVelTeleopPID.setSources(RobotMap.pigeonRateWrapper);
 		
 		
 		curvatureSetpointSource.setPidSource(() -> {
@@ -258,7 +210,7 @@ public class DriveTrain extends Subsystem {
 	}
 
 	public void initDefaultCommand() {
-//		setDefaultCommand(new DriveWithControllers());
+		setDefaultCommand(new DriveWithControllers());
 	}
 
 	public void simpleDrive(double throttle, double steering) {

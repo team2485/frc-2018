@@ -8,7 +8,7 @@ public class IntakeWithControllers extends Command {
 	double pwm;
 	
 	public IntakeWithControllers(double pwm) {
-		requires(RobotMap.intake);
+//		requires(RobotMap.intake);
 		this.pwm = pwm;
 	}
 	
