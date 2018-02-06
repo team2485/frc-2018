@@ -5,8 +5,6 @@ import org.usfirst.frc.team2485.robot.RobotMap;
 import org.usfirst.frc.team2485.robot.subsystems.Arm;
 import org.usfirst.frc.team2485.util.ThresholdHandler;
 
-import com.sun.awt.SecurityWarning;
-
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
@@ -25,27 +23,25 @@ public class WristWithControllers extends Command {
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
     	boolean isManual = false;
-    	Arm arm = RobotMap.arm;
-    	double axis = ThresholdHandler.deadbandAndScale(OI.OPERATOR.getRawAxis(OI.XBOX_LYJOYSTICK_PORT), OI.XBOX_DEADBAND, -1, 1);
+    	double axis = ThresholdHandler.deadbandAndScale(OI.OPERATOR.getRawAxis(OI.XBOX_LYJOYSTICK_PORT), OI.XBOX_DEADBAND, 0, 1); // joystick command
+    	double theta2 = RobotMap.arm.getWristAngle();
     	
-    	double theta = arm.getWristAngle();
-    	
-    	if (Math.abs(axis) < Arm.CRITICAL_ANGLE && Math.abs(arm.getWristAngle()) > arm.getMinWristPos() ) {
+    	if (axis != 0 && Math.abs(RobotMap.arm.getElbowAngle()) > Arm.CRITICAL_ANGLE) {
     		isManual = true;
-    		arm.setWristManual(axis);
-    	} else if (!arm.wristPIDisEnabled()) {
-    		if (arm.getElbowAngle() > theta) {
-    			arm.setThetaHigh(theta);
+    		RobotMap.arm.setWristManual(axis);
+    	} else if (!RobotMap.arm.wristPIDisEnabled()) {
+    		if (RobotMap.arm.getElbowAngle() > 0) {
+    			RobotMap.arm.setThetaHigh(theta2);
     		} else {
-    			arm.setThetaLow(theta);
+    			RobotMap.arm.setThetaLow(theta2);
     		}
     	}
     	
     	if (!isManual) {
-    		if (arm.getElbowAngle() < theta) {
-    			arm.setWristPos(Math.max(arm.getThetaLow(), arm.getMinWristPos()));
+    		if (RobotMap.arm.getElbowAngle() < 0) {
+    			RobotMap.arm.setWristPos(Math.max(RobotMap.arm.getThetaLow(), RobotMap.arm.getMinWristPos()));
     		} else {
-    			arm.setWristPos(Math.max(arm.getThetaLow(), arm.getMinWristPos()));
+    			RobotMap.arm.setWristPos(Math.max(RobotMap.arm.getThetaLow(), RobotMap.arm.getMinWristPos()));
     		}
     	}
     }

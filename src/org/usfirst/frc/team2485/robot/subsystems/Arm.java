@@ -16,9 +16,10 @@ public class Arm extends Subsystem {
 	
 	public static final double CRITICAL_ANGLE = 60; //temp
 	public static final double CRITICAL_DISTANCE = toMeters(0); //temp //distance from mast to 16 inches past frame perimeter 
+	public static final double ALHPA_MAX = 2;
 	
-	public double thetaHigh;
-	public double thetaLow;
+	private double thetaHigh;
+	private double thetaLow;
 	
 	public double getThetaLow() {
 		return thetaLow;
@@ -173,7 +174,7 @@ public class Arm extends Subsystem {
     public void setWristManual(double pwm) {
     	wristAngPID.disable();
     	wristAngVelPID.disable();
-    	wristAngVelTN.setOutput(pwm);
+    	wristAngVelTN.setOutput(pwm * ALHPA_MAX);
     }
     
     public double getMinWristPos() {
