@@ -91,13 +91,13 @@ public class Robot extends IterativeRobot {
 		RobotMap.driveRightEncoderWrapperDistance.reset();
 		RobotMap.driveLeftEncoderWrapperDistance.reset();
 		RobotMap.pigeon.setFusedHeading(0, 0);
-//		Scheduler.getInstance().add(new HighLowCurrentTest(-8, -4, -8, -4, 4000));
+		Scheduler.getInstance().add(new HighLowCurrentTest(-1, -1, -1, -1, 2000));
 //		Scheduler.getInstance().add(new SetVelocities(60, 0));
-		CommandGroup cg = new CommandGroup();
-		cg.addSequential(new DriveTo(new AutoPath(AutoPath.getPointsForBezier(10000, new Pair(0, 0), 
-				new Pair(0, 100), new Pair(100, 100))), 100, false, 5000));
-		cg.addSequential(new ResetDriveTrain());
-		Scheduler.getInstance().add(cg);
+//		CommandGroup cg = new CommandGroup();
+//		cg.addSequential(new DriveTo(new AutoPath(AutoPath.getPointsForBezier(10000, new Pair(0, 0), 
+//				new Pair(0, 100), new Pair(100, 100))), 100, false, 5000));
+//		cg.addSequential(new ResetDriveTrain());
+//		Scheduler.getInstance().add(cg);
 
 
 	}
@@ -160,11 +160,11 @@ public class Robot extends IterativeRobot {
 
 		
 		SmartDashboard.putNumber("Left Current Error", RobotMap.driveLeftTalon.getClosedLoopError(0));
-		SmartDashboard.putNumber("Right Current Error", RobotMap.driveRightTalon.getClosedLoopError(0));
+		SmartDashboard.putNumber("Right Current Error", -RobotMap.driveRightTalon.getClosedLoopError(0));
 		
 		SmartDashboard.putNumber("Velocity TN", RobotMap.driveTrain.velocityTN.pidGet());
 		SmartDashboard.putNumber("Ang Vel TN", RobotMap.driveTrain.curvatureTN.pidGet());
-		SmartDashboard.putNumber("Left + Right", RobotMap.driveLeftTalonCurrentWrapper1.get() + RobotMap.driveRightTalonCurrentWrapper1.get());
+		SmartDashboard.putNumber("Current", (Math.abs(RobotMap.driveLeftTalon.getOutputCurrent()) + Math.abs(RobotMap.driveLeftTalon.getOutputCurrent()))/2);
 		SmartDashboard.putNumber("Curvature Error", RobotMap.driveTrain.getTeleopAngVelError());
 		SmartDashboard.putNumber("Curvature Error", RobotMap.driveTrain.getTeleopAngVelError());
 //		RobotMap.pigeon.getYawPitchRoll(ypr);

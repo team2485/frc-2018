@@ -14,6 +14,31 @@ import edu.wpi.first.wpilibj.command.Subsystem;
  */
 public class Arm extends Subsystem {
 	
+	public static final double CRITICAL_ANGLE = 60; //temp
+	public static final double CRITICAL_DISTANCE = toMeters(0); //temp //distance from mast to 16 inches past frame perimeter 
+	
+	public static enum ArmPosition {
+		INTAKE (0, 0),
+		SWITCH (0, 0),
+		SCALE (0, 0),
+		SCALE_BACKWARDS (0, 0);
+		
+		private final double elbowPos;
+		private final double wristPos;
+		ArmPosition(double elbowPos, double wristPos) {
+			this.elbowPos = elbowPos;
+			this.wristPos = wristPos;
+		}		    
+		public double getElbowPos() {
+			return this.elbowPos;
+		}
+		public double getWristPos() {
+			return this.wristPos;
+		}
+
+	}
+	
+	
 	/* arm = 1
 	 * hand = 2
 	 * L = length
@@ -47,14 +72,13 @@ public class Arm extends Subsystem {
 	private TransferNode wristAngTN = new TransferNode(0);
 	private TransferNode wristAngVelTN = new TransferNode(0);
 
-	private PIDSourceWrapper elbowCurrentSource;
-	private PIDSourceWrapper wristCurrentSource;
+	private PIDSourceWrapper elbowCurrentSource = new PIDSourceWrapper();
+	private PIDSourceWrapper wristCurrentSource = new PIDSourceWrapper();
 	
-	private MotorSetter elbowSetter;
-	private MotorSetter wristSetter;
+	private MotorSetter elbowSetter = new MotorSetter();
+	private MotorSetter wristSetter = new MotorSetter();
 	
 	public Arm() {
-		updateConstants();
 
 //Elbow		
 	
@@ -69,8 +93,8 @@ public class Arm extends Subsystem {
 			double a1 = elbowAngVelTN.pidGet();
 			double a2 = wristAngVelTN.pidGet();
 
-			double theta1 = 2*Math.PI*RobotMap.elbowEncoderWrapperDistance.pidGet();
-			double theta2 = (2*Math.PI*RobotMap.wristEncoderWrapperDistance.pidGet()) + theta1;
+			double theta1 = elbowAngle();
+			double theta2 = wristAngle();
 			
 			double w1 = 2*Math.PI*RobotMap.elbowEncoderWrapperRate.pidGet();
 			double w2 = 2*Math.PI*RobotMap.wristEncoderWrapperRate.pidGet() + w1;
@@ -120,6 +144,43 @@ public class Arm extends Subsystem {
     public void initDefaultCommand() {
         
     }
+   
+    public void setWristPos(double pos) {
+    	wristAngPID.enable();
+    	wristAngVelPID.enable();
+    	wristAngPID.setSetpoint(pos);
+    }
+    
+    public void setWristManual(double pwm) {
+    	wristAngPID.disable();
+    	wristAngVelPID.disable();
+    	wristAngVelTN.setOutput(pwm);
+    }
+    
+    public double getMinWristPos() {
+    	return Math.acos((CRITICAL_DISTANCE - (d1 * Math.cos(elbowAngle()))) / d2);
+    }
+    
+    public void setElbowPos(double pos) {
+    	elbowAngPID.enable();
+    	elbowAngVelPID.enable();
+    	elbowAngPID.setSetpoint(pos);
+    }
+    
+    public void setArmSetpoint(ArmPosition pos) {
+    	double elbowSetpoint = pos.getElbowPos();
+    	double wristSetpoint = pos.getWristPos();
+    	
+    }
+    
+    public double elbowAngle() {
+    	return 2*Math.PI*RobotMap.elbowEncoderWrapperDistance.pidGet();
+    }
+    
+    public double wristAngle() {
+    	return (2*Math.PI*RobotMap.wristEncoderWrapperDistance.pidGet()) + elbowAngle();
+    }
+    
     
     
     public void updateConstants() {

@@ -185,6 +185,11 @@ public class RobotMap {
 
 		for(TalonSRX t : driveTalons) {
 			t.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
+			t.enableCurrentLimit(true);
+			t.configContinuousCurrentLimit(15, 0);
+			t.configPeakCurrentLimit(15, 0);
+//			t.configPeakCurrentDuration(100, 0);
+
 		}
 		
 		
@@ -196,9 +201,6 @@ public class RobotMap {
 		driveRightVictor3.follow(driveRightTalon);
 		driveRightVictor4.follow(driveRightTalon);
 		
-		
-//		pigeon = new PigeonIMU(driveRightTalon);
-		irSensor = new DigitalInput(irSensorPort);
 
 		// Construct Wrappers
 		driveLeftTalonCurrentWrapper1 = new TalonSRXWrapper(ControlMode.Current, driveLeftTalon);
@@ -220,7 +222,6 @@ public class RobotMap {
 		irSensor = new DigitalInput(irSensorPort);
 //		pigeonRateWrapper = new PigeonWrapperRateAndAngle(PIDSourceType.kRate, Units.RADS);
 //		pigeonDisplacementWrapper = new PigeonWrapperRateAndAngle(PIDSourceType.kDisplacement, Units.RADS);
-		deadReckoning = new DeadReckoning(pigeon, driveLeftEncoderWrapperDistance, driveRightEncoderWrapperDistance);
 
 		driveLeftEncoderWrapperRate = new TalonSRXEncoderWrapper(driveLeftTalon, PIDSourceType.kRate);
 		driveRightEncoderWrapperRate = new TalonSRXEncoderWrapper(driveRightTalon, PIDSourceType.kRate);
@@ -249,6 +250,8 @@ public class RobotMap {
 		driveTrain = new DriveTrain();
 		intake = new Intake();
 		arm = new Arm();
+		deadReckoning = new DeadReckoning(pigeon, driveLeftEncoderWrapperDistance, driveRightEncoderWrapperDistance);
+
 	}
 
 	public static void updateConstants() {

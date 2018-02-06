@@ -210,7 +210,7 @@ public class DriveTrain extends Subsystem {
 	}
 
 	public void initDefaultCommand() {
-		setDefaultCommand(new DriveWithControllers());
+//		setDefaultCommand(new DriveWithControllers());
 	}
 
 	public void simpleDrive(double throttle, double steering) {
@@ -335,8 +335,8 @@ public class DriveTrain extends Subsystem {
 			angVelTeleopTN.setOutput(0);
 		}
 		
-		double left = throttle + angVelTeleopTN.getOutput();
-		double right = throttle - angVelTeleopTN.getOutput();
+		double left = throttle + steering;
+		double right = throttle - steering;
 
 		System.out.println(throttle);
 		if (Math.abs(left) > 1) {
@@ -385,7 +385,7 @@ public class DriveTrain extends Subsystem {
 		for (TalonSRX driveTalon : RobotMap.driveTalons) {
 			driveTalon.enableVoltageCompensation(false);
 //			driveTalon.configVoltageCompSaturation(ConstantsIO.voltageMax, 0);
-			driveTalon.enableCurrentLimit(false);
+//			driveTalon.enableCurrentLimit(false);
 //			driveTalon.configContinuousCurrentLimit(ConstantsIO.IMax, 0);
 //			driveTalon.configOpenloopRamp(.2, 0);
 		}
