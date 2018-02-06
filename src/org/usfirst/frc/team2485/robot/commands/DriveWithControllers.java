@@ -23,9 +23,9 @@ public class DriveWithControllers extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	double y = -ThresholdHandler.deadbandAndScale(OI.XBOX.getRawAxis(OI.XBOX_LYJOYSTICK_PORT), DriveTrain.THROTTLE_DEADBAND, 0, 1);
-    	double x = ThresholdHandler.deadbandAndScale(OI.XBOX.getRawAxis(OI.XBOX_RXJOYSTICK_PORT), DriveTrain.STEERING_DEADBAND, 0, 1);;
-    	boolean quickturn = OI.XBOX.getRawButton(OI.XBOX_LBUMPER_PORT);
+    	double y = -ThresholdHandler.deadbandAndScale(OI.DRIVER.getRawAxis(OI.XBOX_LYJOYSTICK_PORT), DriveTrain.THROTTLE_DEADBAND, 0, 1);
+    	double x = ThresholdHandler.deadbandAndScale(OI.DRIVER.getRawAxis(OI.XBOX_RXJOYSTICK_PORT), DriveTrain.STEERING_DEADBAND, 0, 1);;
+    	boolean quickturn = OI.DRIVER.getRawButton(OI.XBOX_LBUMPER_PORT);
     	RobotMap.driveTrain.WARlordsDrive(y, x);
     }
 

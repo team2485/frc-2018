@@ -17,7 +17,26 @@ public class Arm extends Subsystem {
 	public static final double CRITICAL_ANGLE = 60; //temp
 	public static final double CRITICAL_DISTANCE = toMeters(0); //temp //distance from mast to 16 inches past frame perimeter 
 	
-	public static enum ArmPosition {
+	public double thetaHigh;
+	public double thetaLow;
+	
+	public double getThetaLow() {
+		return thetaLow;
+	}
+
+	public void setThetaLow(double thetaLow) {
+		this.thetaLow = thetaLow;
+	}
+
+	public double getThetaHigh() {
+		return thetaHigh;
+	}
+
+	public void setThetaHigh(double thetaHigh) {
+		this.thetaHigh = thetaHigh;
+	}
+
+	public static enum ArmSetpoint {
 		INTAKE (0, 0),
 		SWITCH (0, 0),
 		SCALE (0, 0),
@@ -25,7 +44,7 @@ public class Arm extends Subsystem {
 		
 		private final double elbowPos;
 		private final double wristPos;
-		ArmPosition(double elbowPos, double wristPos) {
+		ArmSetpoint(double elbowPos, double wristPos) {
 			this.elbowPos = elbowPos;
 			this.wristPos = wristPos;
 		}		    
@@ -93,8 +112,8 @@ public class Arm extends Subsystem {
 			double a1 = elbowAngVelTN.pidGet();
 			double a2 = wristAngVelTN.pidGet();
 
-			double theta1 = elbowAngle();
-			double theta2 = wristAngle();
+			double theta1 = getElbowAngle();
+			double theta2 = getWristAngle();
 			
 			double w1 = 2*Math.PI*RobotMap.elbowEncoderWrapperRate.pidGet();
 			double w2 = 2*Math.PI*RobotMap.wristEncoderWrapperRate.pidGet() + w1;
@@ -158,7 +177,7 @@ public class Arm extends Subsystem {
     }
     
     public double getMinWristPos() {
-    	return Math.acos((CRITICAL_DISTANCE - (d1 * Math.cos(elbowAngle()))) / d2);
+    	return Math.acos((CRITICAL_DISTANCE - (L1 * Math.cos(getElbowAngle()))) / L2);
     }
     
     public void setElbowPos(double pos) {
@@ -167,21 +186,21 @@ public class Arm extends Subsystem {
     	elbowAngPID.setSetpoint(pos);
     }
     
-    public void setArmSetpoint(ArmPosition pos) {
-    	double elbowSetpoint = pos.getElbowPos();
-    	double wristSetpoint = pos.getWristPos();
-    	
-    }
-    
-    public double elbowAngle() {
+    public double getElbowAngle() {
     	return 2*Math.PI*RobotMap.elbowEncoderWrapperDistance.pidGet();
     }
     
-    public double wristAngle() {
-    	return (2*Math.PI*RobotMap.wristEncoderWrapperDistance.pidGet()) + elbowAngle();
+    public double getWristAngle() {
+    	return (2*Math.PI*RobotMap.wristEncoderWrapperDistance.pidGet()) + getElbowAngle();
     }
     
+    public boolean wristPIDisEnabled() {
+    	return wristAngPID.isEnabled() && wristAngVelPID.isEnabled();
+    }
     
+    public boolean elbowPIDisEnabled() {
+    	return elbowAngPID.isEnabled() && elbowAngVelPID.isEnabled();
+    }
     
     public void updateConstants() {
     	elbowAngPID.setPID(ConstantsIO.kP_ElbowAng, 0, 0);
