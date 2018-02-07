@@ -1,20 +1,16 @@
 package org.usfirst.frc.team2485.robot.subsystems;
 
+import org.usfirst.frc.team2485.robot.OI;
 import org.usfirst.frc.team2485.robot.RobotMap;
-import org.usfirst.frc.team2485.robot.commands.DriveWithControllers;
 import org.usfirst.frc.team2485.util.ConstantsIO;
 import org.usfirst.frc.team2485.util.MotorSetter;
 import org.usfirst.frc.team2485.util.PIDSourceWrapper;
-import org.usfirst.frc.team2485.util.PigeonWrapperRateAndAngle;
-import org.usfirst.frc.team2485.util.PigeonWrapperRateAndAngle.Units;
 import org.usfirst.frc.team2485.util.ThresholdHandler;
 import org.usfirst.frc.team2485.util.TransferNode;
 import org.usfirst.frc.team2485.util.WarlordsPIDController;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
-import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 /**
@@ -40,9 +36,6 @@ public class DriveTrain extends Subsystem {
 
 	private double driveSpeed = DriveSpeed.NORMAL_SPEED_RATING.getSpeedFactor();
 
-
-	public static final double STEERING_DEADBAND = 0.25;
-	public static final double THROTTLE_DEADBAND = 0.25;
 	public static final double LOW_ENC_RATE = 2;
 
 	private WarlordsPIDController distancePID = new WarlordsPIDController();
@@ -70,9 +63,7 @@ public class DriveTrain extends Subsystem {
 	private PIDSourceWrapper rightCurrentPIDSource = new PIDSourceWrapper();
 
 	private PIDSourceWrapper curvatureSetpointSource = new PIDSourceWrapper();
-	
-	private PIDSourceWrapper angVelOutputSource = new PIDSourceWrapper();
-	
+		
 	private PIDSourceWrapper minVelocityORSource = new PIDSourceWrapper();
 	private PIDSourceWrapper maxVelocityORSource = new PIDSourceWrapper();
 	
@@ -124,14 +115,6 @@ public class DriveTrain extends Subsystem {
 		//    				((RobotMap.driveLeftEncoderWrapperRate.pidGet() + RobotMap.driveRightEncoderWrapperRate.pidGet()) / 2)) ;
 		//    	});
 		//    	
-		
-//		curvaturePIDSource.setPidSource(() -> {
-//			if (Math.abs(encoderAvgVelocityPIDSource.pidGet()) > LOW_ENC_RATE) {
-//				return RobotMap.pigeonRateWrapper.pidGet() / encoderAvgVelocityPIDSource.pidGet();
-//			} else {
-//				return 0;
-//			}
-//		});
 
 		encoderDistancePIDSource.setPidSource(() -> {
 			return (RobotMap.driveLeftEncoderWrapperDistance.pidGet() + RobotMap.driveRightEncoderWrapperDistance.pidGet()) / 2;
@@ -183,7 +166,7 @@ public class DriveTrain extends Subsystem {
 		curvaturePID.setSetpointSource(curvatureSetpointSource);
 		curvaturePID.setOutputs(curvatureTN);
 		curvaturePID.setSources(curvaturePIDSource);
-//		curvaturePID.setOutputSources(maxAngVelocityORSource, minAngVelocityORSource);
+		curvaturePID.setOutputSources(maxAngVelocityORSource, minAngVelocityORSource);
 		
 		
 		angVelTeleopPID.setOutputs(angVelTeleopTN);
@@ -215,8 +198,8 @@ public class DriveTrain extends Subsystem {
 
 	public void simpleDrive(double throttle, double steering) {
 		
-		throttle = mapPWM(throttle, THROTTLE_DEADBAND);
-		steering = mapPWM(steering, STEERING_DEADBAND);
+		throttle = mapPWM(throttle, OI.XBOX_TRIGGER_DEADBAND);
+		steering = mapPWM(steering, OI.XBOX_AXIS_DEADBAND);
 		
 		enablePID(false);
 		double left = throttle + steering;
@@ -320,25 +303,13 @@ public class DriveTrain extends Subsystem {
 		
 	}
 	
-	public void WARlordsDrive(double throttle, double steering) {
-		throttle = mapPWM(throttle, THROTTLE_DEADBAND);
-		steering = mapPWM(steering, STEERING_DEADBAND);
+	public void WARlordsDrive(double throttle, double steering) { 
 		
 		enablePID(false);
-		
-		double velAvg = (RobotMap.driveLeftEncoderWrapperRate.pidGet() + RobotMap.driveRightEncoderWrapperRate.pidGet())/2;
-		if (velAvg > 5) {
-			angVelTeleopPID.enable();
-			angVelTeleopPID.setSetpoint((2/RobotMap.ROBOT_WIDTH) * steering);
-		} else {
-			angVelTeleopPID.disable();
-			angVelTeleopTN.setOutput(0);
-		}
 		
 		double left = throttle + steering;
 		double right = throttle - steering;
 
-		System.out.println(throttle);
 		if (Math.abs(left) > 1) {
 			right /= Math.abs(left);
 			left /= Math.abs(left);

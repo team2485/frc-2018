@@ -12,7 +12,7 @@ public class DeadReckoning {
 	private double lastAngle;
 	private boolean running;
 	private PigeonIMU gyro;
-	private double velocity;
+//	private double velocity;
 	private TalonSRXEncoderWrapper leftEnc, rightEnc;
 
 	public DeadReckoning(PigeonIMU gyro, TalonSRXEncoderWrapper leftEnc, TalonSRXEncoderWrapper rightEnc) {
@@ -32,7 +32,7 @@ public class DeadReckoning {
 	public synchronized void zero() {
 		x = 0;
 		y = 0;
-		velocity = 0;
+//		velocity = 0;
 		gyro.setFusedHeading(0, 0); 
 		gyro.setYaw(0, 0); //these lines effectively "reset" the pigeon imu.
 		leftEnc.reset();

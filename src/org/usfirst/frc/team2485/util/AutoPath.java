@@ -3,8 +3,6 @@ package org.usfirst.frc.team2485.util;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.usfirst.frc.team2485.robot.RobotMap;
-
 /**
  * @author Ben Dorsey
  */

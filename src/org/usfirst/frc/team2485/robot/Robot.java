@@ -1,22 +1,11 @@
 
 package org.usfirst.frc.team2485.robot;
 
-import org.usfirst.frc.team2485.robot.commands.DriveStraight;
-import org.usfirst.frc.team2485.robot.commands.DriveTo;
 import org.usfirst.frc.team2485.robot.commands.HighLowCurrentTest;
-import org.usfirst.frc.team2485.robot.commands.ResetDriveTrain;
-import org.usfirst.frc.team2485.robot.commands.SetVelocities;
-import org.usfirst.frc.team2485.util.AutoPath;
-import org.usfirst.frc.team2485.util.ConstantsIO;
-import org.usfirst.frc.team2485.util.DeadReckoning;
-import org.usfirst.frc.team2485.util.ThresholdHandler;
-import org.usfirst.frc.team2485.util.AutoPath.Pair;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.Scheduler;
-import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -180,7 +169,6 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void testPeriodic() {
-		LiveWindow.run();
 	}
 
 }

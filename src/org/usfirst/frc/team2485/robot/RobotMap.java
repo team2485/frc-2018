@@ -1,5 +1,13 @@
 package org.usfirst.frc.team2485.robot;
 
+import org.usfirst.frc.team2485.robot.subsystems.Arm;
+import org.usfirst.frc.team2485.robot.subsystems.DriveTrain;
+import org.usfirst.frc.team2485.robot.subsystems.Intake;
+import org.usfirst.frc.team2485.util.DeadReckoning;
+import org.usfirst.frc.team2485.util.SpeedControllerWrapper;
+import org.usfirst.frc.team2485.util.TalonSRXEncoderWrapper;
+import org.usfirst.frc.team2485.util.TalonSRXWrapper;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
@@ -7,20 +15,9 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.sensors.PigeonIMU;
 
-import org.usfirst.frc.team2485.robot.subsystems.Arm;
-import org.usfirst.frc.team2485.robot.subsystems.DriveTrain;
-import org.usfirst.frc.team2485.robot.subsystems.Intake;
-import org.usfirst.frc.team2485.util.DeadReckoning;
-import org.usfirst.frc.team2485.util.PigeonWrapperRateAndAngle;
-import org.usfirst.frc.team2485.util.PigeonWrapperRateAndAngle.Units;
-import org.usfirst.frc.team2485.util.SpeedControllerWrapper;
-import org.usfirst.frc.team2485.util.TalonSRXEncoderWrapper;
-import org.usfirst.frc.team2485.util.TalonSRXWrapper;
-
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
-import edu.wpi.first.wpilibj.command.Subsystem;
 
 /**
  * The RobotMap is a mapping from the ports sensors and actuators are wired into

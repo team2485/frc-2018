@@ -3,12 +3,12 @@ package org.usfirst.frc.team2485.robot.commands;
 import org.usfirst.frc.team2485.robot.RobotMap;
 
 import edu.wpi.first.wpilibj.command.Command;
-import edu.wpi.first.wpilibj.command.InstantCommand;
 
 public class SetVelocities extends Command{
 private double linearVelocity, angularVelocity;
 	
 	public SetVelocities(double linearVelocity, double angularVelocity) {
+		requires(RobotMap.driveTrain);
 		this.linearVelocity = linearVelocity;
 		this.angularVelocity = angularVelocity;
 	}
