@@ -16,7 +16,7 @@ public class Arm extends Subsystem {
 	
 	public static final double CRITICAL_ANGLE = 60; //temp
 	public static final double CRITICAL_DISTANCE = toMeters(0); //temp //distance from mast to 16 inches past frame perimeter 
-	public static final double ALHPA_MAX = 2;
+	public static final double ALPHA_MAX = 2;
 	
 	private double thetaHigh;
 	private double thetaLow;
@@ -174,11 +174,25 @@ public class Arm extends Subsystem {
     public void setWristManual(double pwm) {
     	wristAngPID.disable();
     	wristAngVelPID.disable();
-    	wristAngVelTN.setOutput(pwm * ALHPA_MAX);
+    	wristAngVelTN.setOutput(pwm * ALPHA_MAX);
+    }
+    
+    public void setArmManual(double pwm) {
+    	elbowAngPID.disable();
+    	elbowAngVelPID.disable();
+    	elbowAngVelTN.setOutput(pwm * ALPHA_MAX);
     }
     
     public double getMinWristPos() {
     	return Math.acos((CRITICAL_DISTANCE - (L1 * Math.cos(getElbowAngle()))) / L2);
+    }
+    
+    public void zeroElbowEnc() {
+    	RobotMap.elbowEncoderWrapperDistance.reset();
+    }
+    
+    public void zeroWristEnc() {
+    	RobotMap.wristEncoderWrapperDistance.reset();
     }
     
     public void setElbowPos(double pos) {
@@ -194,6 +208,115 @@ public class Arm extends Subsystem {
     public double getWristAngle() {
     	return (2*Math.PI*RobotMap.wristEncoderWrapperDistance.pidGet()) + getElbowAngle();
     }
+    
+    //Testing
+    public void setElbowCurrent(double current) {
+    	if (elbowPIDisEnabled()) {
+    		elbowAngPID.disable();
+    		elbowAngVelPID.disable();
+    		elbowAngTN.setOutput(0);
+    		elbowAngVelTN.setOutput(0);
+    	}
+    	if (wristPIDisEnabled()) {
+    		wristAngPID.disable();
+    		wristAngVelPID.disable();
+    		wristAngTN.setOutput(0);
+    		wristAngVelTN.setOutput(0);
+    	}
+    	
+
+    	
+    	RobotMap.elbowTalon.configForwardSoftLimitThreshold(512, 0);
+    	RobotMap.elbowTalon.configForwardSoftLimitEnable(true, 0);
+    	RobotMap.elbowTalon.configReverseSoftLimitThreshold(0, 0);
+    	RobotMap.elbowTalon.configReverseSoftLimitEnable(true, 0);
+
+    	RobotMap.elbowCurrentWrapper.set(current);
+    }
+    
+    public void setWristCurrent(double current) {
+    	if (elbowPIDisEnabled()) {
+    		elbowAngPID.disable();
+    		elbowAngVelPID.disable();
+    		elbowAngTN.setOutput(0);
+    		elbowAngVelTN.setOutput(0);
+    	}
+    	if (wristPIDisEnabled()) {
+    		wristAngPID.disable();
+    		wristAngVelPID.disable();
+    		wristAngTN.setOutput(0);
+    		wristAngVelTN.setOutput(0);
+    	}
+    	
+    	RobotMap.wristTalon.configForwardSoftLimitThreshold(512, 0);
+    	RobotMap.wristTalon.configForwardSoftLimitEnable(true, 0);
+    	RobotMap.wristTalon.configReverseSoftLimitThreshold(0, 0);
+    	RobotMap.wristTalon.configReverseSoftLimitEnable(true, 0);
+
+    	RobotMap.wristCurrentWrapper.set(current);
+    }
+    
+    public void setElbowVelocity(double angVel) {
+    	if(!elbowPIDisEnabled()) {
+    		elbowAngVelPID.enable();
+    		elbowAngPID.disable();
+    	}
+    	
+    	RobotMap.elbowTalon.configForwardSoftLimitThreshold(512, 0);
+    	RobotMap.elbowTalon.configForwardSoftLimitEnable(true, 0);
+    	RobotMap.elbowTalon.configReverseSoftLimitThreshold(0, 0);
+    	RobotMap.elbowTalon.configReverseSoftLimitEnable(true, 0);
+    	
+    	elbowAngVelPID.setSetpoint(angVel);
+    }
+    
+    public void setWristVelocity(double angVel) {
+    	if(!wristPIDisEnabled()) {
+    		wristAngVelPID.enable();
+    		wristAngPID.disable();
+    	}
+    	
+    	RobotMap.wristTalon.configForwardSoftLimitThreshold(512, 0);
+    	RobotMap.wristTalon.configForwardSoftLimitEnable(true, 0);
+    	RobotMap.wristTalon.configReverseSoftLimitThreshold(0, 0);
+    	RobotMap.wristTalon.configReverseSoftLimitEnable(true, 0);
+    	
+    	wristAngVelPID.setSetpoint(angVel);
+    }
+    
+    public double getWristAngVelError() {
+    	return wristAngVelPID.getAvgError();
+    }
+    
+    public double getWristAngError() {
+    	return wristAngPID.getAvgError();
+    }
+    
+    public double getElbowAngVelError() {
+    	return wristAngVelPID.getAvgError();
+    }
+    
+    public double getElbowAngError() {
+    	return wristAngPID.getAvgError();
+    }
+    
+    public double getElbowCurrent() {
+    	return RobotMap.elbowTalon.getOutputCurrent();
+    }
+    
+    
+    public double getWristCurrent() {
+    	return RobotMap.wristTalon.getOutputCurrent();
+    }
+
+    public double getElbowCurrentError() {
+    	return RobotMap.elbowTalon.getClosedLoopError(0);
+    }
+    
+    public double getWristCurrentError() {
+    	return RobotMap.wristTalon.getClosedLoopError(0);
+    }
+  
     
     public boolean wristPIDisEnabled() {
     	return wristAngPID.isEnabled() && wristAngVelPID.isEnabled();

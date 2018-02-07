@@ -167,6 +167,9 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Current", (Math.abs(RobotMap.driveLeftTalon.getOutputCurrent()) + Math.abs(RobotMap.driveLeftTalon.getOutputCurrent()))/2);
 		SmartDashboard.putNumber("Curvature Error", RobotMap.driveTrain.getTeleopAngVelError());
 		SmartDashboard.putNumber("Curvature Error", RobotMap.driveTrain.getTeleopAngVelError());
+		
+		SmartDashboard.putNumber("Elbow Encoder Distance", RobotMap.elbowEncoderWrapperDistance.pidGet());
+		SmartDashboard.putNumber("Wrist Encoder Distance", RobotMap.wristEncoderWrapperDistance.pidGet());
 //		RobotMap.pigeon.getYawPitchRoll(ypr);
 		
 //		SmartDashboard.putNumber("X", RobotMap.deadReckoning.getX());

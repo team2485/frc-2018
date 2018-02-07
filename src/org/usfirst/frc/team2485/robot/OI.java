@@ -1,6 +1,7 @@
 package org.usfirst.frc.team2485.robot;
 
 import org.usfirst.frc.team2485.robot.commands.IntakeWithControllers;
+import org.usfirst.frc.team2485.robot.commands.ZeroArmEncoders;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
@@ -99,6 +100,9 @@ public class OI {
 		
 		DRIVER_A.whenPressed(new IntakeWithControllers(0.8));
 		DRIVER_B.whenPressed(new IntakeWithControllers(0));
+		
+		//TESTING
+		DRIVER_X.whenPressed(new ZeroArmEncoders());
 		
 	}
 	
