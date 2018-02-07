@@ -228,6 +228,11 @@ public class RobotMap {
 		driveLeftEncoderWrapperDistance = new TalonSRXEncoderWrapper(driveLeftTalon,  PIDSourceType.kDisplacement);
 		driveRightEncoderWrapperDistance = new TalonSRXEncoderWrapper(driveRightTalon, PIDSourceType.kDisplacement);
 		
+		elbowEncoderWrapperDistance = new TalonSRXEncoderWrapper(elbowTalon, PIDSourceType.kDisplacement);
+		wristEncoderWrapperDistance = new TalonSRXEncoderWrapper(wristTalon, PIDSourceType.kDisplacement);
+		elbowEncoderWrapperRate = new TalonSRXEncoderWrapper(elbowTalon, PIDSourceType.kRate);
+		wristEncoderWrapperRate = new TalonSRXEncoderWrapper(wristTalon, PIDSourceType.kRate);
+		
 		// Configure Hardware
 		driveRightTalon.setSensorPhase(false);
 		driveRightTalon.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, 0);
@@ -236,15 +241,20 @@ public class RobotMap {
 		driveLeftTalon.configVelocityMeasurementWindow(1, 0);
 		
 		
+		elbowTalon.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, 0);
+		elbowTalon.configVelocityMeasurementWindow(1, 0);
+		elbowTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
+		wristTalon.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, 0);
+		wristTalon.configVelocityMeasurementWindow(1, 0);
+		wristTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
+		
+		
 		driveLeftEncoderWrapperDistance.setDistancePerRevolution(-WHEEL_RADIUS * 2 * Math.PI * 24.0 / 54);
 		driveRightEncoderWrapperDistance.setDistancePerRevolution(WHEEL_RADIUS * 2 * Math.PI * 24.0 / 54);
 		driveLeftEncoderWrapperRate.setDistancePerRevolution(-WHEEL_RADIUS * 2 * Math.PI * 24.0 / 54);
 		driveRightEncoderWrapperRate.setDistancePerRevolution(WHEEL_RADIUS * 2 * Math.PI * 24.0 / 54);
 		
-		elbowEncoderWrapperDistance = new TalonSRXEncoderWrapper(elbowTalon, PIDSourceType.kDisplacement);
-		wristEncoderWrapperDistance = new TalonSRXEncoderWrapper(wristTalon, PIDSourceType.kDisplacement);
-		elbowEncoderWrapperRate = new TalonSRXEncoderWrapper(elbowTalon, PIDSourceType.kRate);
-		wristEncoderWrapperRate = new TalonSRXEncoderWrapper(wristTalon, PIDSourceType.kRate);
+		
 		
 //SUBSYSTEMS
 		driveTrain = new DriveTrain();

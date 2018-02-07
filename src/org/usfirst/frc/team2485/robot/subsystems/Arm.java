@@ -17,6 +17,8 @@ public class Arm extends Subsystem {
 	public static final double CRITICAL_ANGLE = 60; //temp
 	public static final double CRITICAL_DISTANCE = toMeters(0); //temp //distance from mast to 16 inches past frame perimeter 
 	public static final double ALPHA_MAX = 2;
+	public static final int ELBOW_START_POS = -600;
+	public static final int WRIST_OFFSET = 0;
 	
 	private double thetaHigh;
 	private double thetaLow;
@@ -187,12 +189,20 @@ public class Arm extends Subsystem {
     	return Math.acos((CRITICAL_DISTANCE - (L1 * Math.cos(getElbowAngle()))) / L2);
     }
     
-    public void zeroElbowEnc() {
-    	RobotMap.elbowEncoderWrapperDistance.reset();
+    public void initElbowEnc() {
+    	RobotMap.elbowTalon.setSelectedSensorPosition(ELBOW_START_POS, 0, 0);
     }
     
-    public void zeroWristEnc() {
-    	RobotMap.wristEncoderWrapperDistance.reset();
+    public void initWristEnc() {
+    	int currPos = WRIST_OFFSET + RobotMap.wristTalon.getSensorCollection().getPulseWidthPosition();
+    	while (Math.abs(currPos) > 2048) {
+    		if (currPos > 0) {
+    			currPos -= 4096;
+    		} else {
+    			currPos += 4096;
+    		}
+    	}
+    	RobotMap.wristTalon.setSelectedSensorPosition(currPos, 0, 0);
     }
     
     public void setElbowPos(double pos) {
