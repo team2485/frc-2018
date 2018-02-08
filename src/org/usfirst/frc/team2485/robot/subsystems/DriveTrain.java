@@ -42,8 +42,6 @@ public class DriveTrain extends Subsystem {
 	private WarlordsPIDController anglePID = new WarlordsPIDController();
 	private WarlordsPIDController velocityPID = new WarlordsPIDController();
 	private WarlordsPIDController curvaturePID = new WarlordsPIDController();
-	private WarlordsPIDController angVelTeleopPID = new WarlordsPIDController();
-
 	
 	private TransferNode distanceTN = new TransferNode(0);
 	private TransferNode angleTN = new TransferNode(0);
@@ -54,6 +52,7 @@ public class DriveTrain extends Subsystem {
 	private TransferNode angVelTeleopTN = new TransferNode(0);
 
 	private PIDSourceWrapper kp_distancePIDSource = new PIDSourceWrapper();
+	private PIDSourceWrapper kp_anglePIDSource = new PIDSourceWrapper();
 
 	private PIDSourceWrapper encoderDistancePIDSource = new PIDSourceWrapper();
 	private PIDSourceWrapper encoderAvgVelocityPIDSource = new PIDSourceWrapper();
@@ -96,25 +95,13 @@ public class DriveTrain extends Subsystem {
 	}
 
 	public DriveTrain() {
+		
 		kp_distancePIDSource.setPidSource(() -> {
 			return Math.min(ConstantsIO.kPMax_Distance, 2*ConstantsIO.accelerationMax/Math.abs(encoderAvgVelocityPIDSource.pidGet()));
 		});
-		//    	velocityPIDSource.setPidSource(() -> {
-		//    		return ;
-		//    	});
-		//
-		//    	deltaVelocityPIDSource.setPidSource(() -> {
-		//    		if ()
-		//    	});
-
-
-		//distance
-		//    	distancePIDSource.setPidSource(() -> {
-		//    		return Math.min(ConstantsIO.kP_Distance, 
-		//    				(2*ConstantsIO.accelerationMax) / 
-		//    				((RobotMap.driveLeftEncoderWrapperRate.pidGet() + RobotMap.driveRightEncoderWrapperRate.pidGet()) / 2)) ;
-		//    	});
-		//    	
+		kp_anglePIDSource.setPidSource(() -> {
+			return Math.min(ConstantsIO.kP_DriveAngleMax, ConstantsIO.kP_DriveAngle/Math.abs(encoderAvgVelocityPIDSource.pidGet()));
+		});
 
 		encoderDistancePIDSource.setPidSource(() -> {
 			return (RobotMap.driveLeftEncoderWrapperDistance.pidGet() + RobotMap.driveRightEncoderWrapperDistance.pidGet()) / 2;
@@ -145,9 +132,10 @@ public class DriveTrain extends Subsystem {
 		//angle
 
 		anglePID.setOutputs(angleTN);
-//		anglePID.setSources(RobotMap.pigeonDisplacementWrapper);
+		anglePID.setSources(RobotMap.pigeonDisplacementWrapper);
 		anglePID.setContinuous(true);
 		anglePID.setInputRange(0, 2 * Math.PI);
+		anglePID.setConstantsSources(kp_anglePIDSource, null, null, null);
   
 		
 		
@@ -161,17 +149,20 @@ public class DriveTrain extends Subsystem {
 		});
 	
 		
+		curvaturePIDSource.setPidSource(() -> {
+			if (Math.abs(encoderAvgVelocityPIDSource.pidGet()) > LOW_ENC_RATE) {
+				return RobotMap.pigeonRateWrapper.pidGet() / Math.abs(encoderAvgVelocityPIDSource.pidGet());
+			} else {
+				return 0;
+			}
+		});
+		
 		
 
 		curvaturePID.setSetpointSource(curvatureSetpointSource);
 		curvaturePID.setOutputs(curvatureTN);
 		curvaturePID.setSources(curvaturePIDSource);
 		curvaturePID.setOutputSources(maxAngVelocityORSource, minAngVelocityORSource);
-		
-		
-		angVelTeleopPID.setOutputs(angVelTeleopTN);
-//		angVelTeleopPID.setSources(RobotMap.pigeonRateWrapper);
-		
 		
 		curvatureSetpointSource.setPidSource(() -> {
 			return angleTN.getOutput() + curvatureSetpointTN.getOutput();
@@ -283,7 +274,6 @@ public class DriveTrain extends Subsystem {
 		velocityPID.enable();
 		anglePID.disable();
 		distancePID.disable();
-		angVelTeleopPID.disable();
 		leftMotorSetter.enable();
 		rightMotorSetter.enable();
 
@@ -332,7 +322,6 @@ public class DriveTrain extends Subsystem {
 		velocityPID.enable();
 		anglePID.enable();
 		distancePID.enable();
-		angVelTeleopPID.disable();
 		leftMotorSetter.enable();
 		rightMotorSetter.enable();
 		anglePID.setSetpoint(angle);
@@ -353,16 +342,15 @@ public class DriveTrain extends Subsystem {
 	}
 	
 	public void updateConstants() {
-		for (TalonSRX driveTalon : RobotMap.driveTalons) {
-			driveTalon.enableVoltageCompensation(false);
-//			driveTalon.configVoltageCompSaturation(ConstantsIO.voltageMax, 0);
-//			driveTalon.enableCurrentLimit(false);
-//			driveTalon.configContinuousCurrentLimit(ConstantsIO.IMax, 0);
-//			driveTalon.configOpenloopRamp(.2, 0);
+		for (TalonSRX t : RobotMap.driveTalons) {
+			t.enableVoltageCompensation(false);
+			t.enableCurrentLimit(true);
+			t.configContinuousCurrentLimit(15, 0);
+			t.configPeakCurrentLimit(15, 0);
+
 		}
 		velocityPID.setPID(ConstantsIO.kP_DriveVelocity, ConstantsIO.kI_DriveVelocity, ConstantsIO.kD_DriveVelocity, ConstantsIO.kF_DriveVelocity);
 		curvaturePID.setPID(ConstantsIO.kP_DriveAngVel, ConstantsIO.kI_DriveAngVel, ConstantsIO.kD_DriveAngVel, ConstantsIO.kF_DriveAngVel);
-		anglePID.setPID(ConstantsIO.kP_DriveAngle, ConstantsIO.kI_DriveAngle, ConstantsIO.kD_DriveAngle);
 		
 	}
 
@@ -377,7 +365,6 @@ public class DriveTrain extends Subsystem {
 			curvaturePID.disable();
 			anglePID.disable();
 			distancePID.disable();
-			angVelTeleopPID.disable();
 		}
 	}
 	

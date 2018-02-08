@@ -32,9 +32,8 @@ public class ConstantsIO {
 	
 	public static double kPMax_Distance;
 	
+	public static double kP_DriveAngleMax;
 	public static double kP_DriveAngle;
-	public static double kI_DriveAngle;
-	public static double kD_DriveAngle;
 
 	public static double kP_DriveAngVel;
 	public static double kI_DriveAngVel;
@@ -59,6 +58,7 @@ public class ConstantsIO {
 	public static int IMax;
 
 	public static double voltageMax;
+
 
 
 
@@ -99,8 +99,7 @@ public class ConstantsIO {
 		kF_DriveVelocity = Double.parseDouble(data.get("kF_DriveVelocity"));
 
 		kP_DriveAngle = Double.parseDouble(data.get("kP_DriveAngle"));
-		kI_DriveAngle = Double.parseDouble(data.get("kI_DriveAngle"));
-		kD_DriveAngle = Double.parseDouble(data.get("kD_DriveAngle"));
+		kP_DriveAngleMax = Double.parseDouble(data.get("kP_DriveAngleMax"));
 		
 		kP_DriveAngVel = Double.parseDouble(data.get("kP_DriveAngVel"));
 		kI_DriveAngVel = Double.parseDouble(data.get("kI_DriveAngVel"));
