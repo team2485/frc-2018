@@ -23,7 +23,8 @@ public class WristWithControllers extends Command {
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
     	boolean isManual = false;
-    	double axis = ThresholdHandler.deadbandAndScale(OI.operator.getRawAxis(OI.XBOX_LYJOYSTICK_PORT), OI.XBOX_DEADBAND, 0, 1); // joystick command
+    	double axis = ThresholdHandler.deadbandAndScale(OI.operator.getRawAxis(OI.XBOX_LYJOYSTICK_PORT), OI.XBOX_AXIS_DEADBAND, 0, 1); // joystick command
+
     	double theta2 = RobotMap.arm.getWristAngle();
     	
     	if (axis != 0 && Math.abs(RobotMap.arm.getElbowAngle()) > Arm.CRITICAL_ANGLE) {

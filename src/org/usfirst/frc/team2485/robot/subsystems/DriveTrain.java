@@ -279,32 +279,7 @@ public class DriveTrain extends Subsystem {
 	}
 
 	public void WARLordsDrive(double throttle, double steering) {
-		velocityPID.disable();
-		angVelocityPID.disable();
-		rightMotorSetter.disable();
-		leftMotorSetter.disable();
-	
-		boolean quickTurn = OI.driver.getRawButton(OI.XBOX_X_PORT);
-		
-		if(!quickTurn) {
-			steering *= Math.abs(throttle);
-		}
-		
-		double left = throttle + steering;
-		double right = throttle - steering;
 
-		if (Math.abs(left) > 1) {
-			right /= Math.abs(left);
-			left /= Math.abs(left);
-		}
-		if (Math.abs(right) > 1) {
-			left /= Math.abs(right);
-			right /= Math.abs(right);
-		}
-		
-
-		RobotMap.driveLeftPWM.set(left);
-		RobotMap.driveRightPWM.set(right);
 	}
 
 	public double getAngleRateError() {

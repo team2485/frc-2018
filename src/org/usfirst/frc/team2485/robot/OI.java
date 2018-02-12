@@ -1,7 +1,6 @@
 package org.usfirst.frc.team2485.robot;
 
 import org.usfirst.frc.team2485.robot.commands.IntakeWithControllers;
-import org.usfirst.frc.team2485.robot.commands.ZeroArmEncoders;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
@@ -13,7 +12,8 @@ import edu.wpi.first.wpilibj.buttons.JoystickButton;
  */
 public class OI {
 	
-	public static final double XBOX_DEADBAND = 0.25;
+	public static final double XBOX_AXIS_DEADBAND = 0.02;
+	public static final double XBOX_TRIGGER_DEADBAND = 0.25;
 	
 	public static Joystick driver;
 	public static Joystick operator;
@@ -102,7 +102,7 @@ public class OI {
 		DRIVER_B.whenPressed(new IntakeWithControllers(0));
 		
 		//TESTING
-		DRIVER_X.whenPressed(new ZeroArmEncoders());
+//		DRIVER_X.whenPressed(new ZeroArmEncoders());
 		
 	}
 	

@@ -1,12 +1,5 @@
 package org.usfirst.frc.team2485.robot;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.ctre.phoenix.motorcontrol.can.VictorSPX;
-import com.ctre.phoenix.sensors.PigeonIMU;
-
 import org.usfirst.frc.team2485.robot.subsystems.Arm;
 import org.usfirst.frc.team2485.robot.subsystems.DriveTrain;
 import org.usfirst.frc.team2485.robot.subsystems.Intake;
@@ -17,10 +10,16 @@ import org.usfirst.frc.team2485.util.SpeedControllerWrapper;
 import org.usfirst.frc.team2485.util.TalonSRXEncoderWrapper;
 import org.usfirst.frc.team2485.util.TalonSRXWrapper;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+import com.ctre.phoenix.sensors.PigeonIMU;
+
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
-import edu.wpi.first.wpilibj.command.Subsystem;
 
 /**
  * The RobotMap is a mapping from the ports sensors and actuators are wired into
@@ -178,30 +177,6 @@ public class RobotMap {
 				driveRightTalon
 		};
 
-		
-		
-		
-		// Configure Hardware
-
-		for(TalonSRX t : driveTalons) {
-			t.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
-			t.enableCurrentLimit(true);
-			t.configContinuousCurrentLimit(15, 0);
-			t.configPeakCurrentLimit(15, 0);
-//			t.configPeakCurrentDuration(100, 0);
-
-		}
-		
-		
-		driveLeftVictor2.follow(driveLeftTalon);
-		driveLeftVictor3.follow(driveLeftTalon);
-		driveLeftVictor4.follow(driveLeftTalon);
-		
-		driveRightVictor2.follow(driveRightTalon);
-		driveRightVictor3.follow(driveRightTalon);
-		driveRightVictor4.follow(driveRightTalon);
-		
-
 		// Construct Wrappers
 		driveLeftTalonCurrentWrapper1 = new TalonSRXWrapper(ControlMode.Current, driveLeftTalon);
 		driveRightTalonCurrentWrapper1 = new TalonSRXWrapper(ControlMode.Current, driveRightTalon);
@@ -217,7 +192,7 @@ public class RobotMap {
 		driveLeftCurrent.setInverted(true);
 		driveLeftPWM.setInverted(true);
 		
-//SENSORS
+		// SENSORS
 		pigeon = new PigeonIMU(driveRightTalon);
 		irSensor = new DigitalInput(irSensorPort);
 		pigeonRateWrapper = new PigeonWrapperRateAndAngle(PIDSourceType.kRate, Units.RADS);
@@ -228,12 +203,36 @@ public class RobotMap {
 		driveLeftEncoderWrapperDistance = new TalonSRXEncoderWrapper(driveLeftTalon,  PIDSourceType.kDisplacement);
 		driveRightEncoderWrapperDistance = new TalonSRXEncoderWrapper(driveRightTalon, PIDSourceType.kDisplacement);
 		
+		elbowEncoderWrapperDistance = new TalonSRXEncoderWrapper(elbowTalon, PIDSourceType.kDisplacement);
+		wristEncoderWrapperDistance = new TalonSRXEncoderWrapper(wristTalon, PIDSourceType.kDisplacement);
+		elbowEncoderWrapperRate = new TalonSRXEncoderWrapper(elbowTalon, PIDSourceType.kRate);
+		wristEncoderWrapperRate = new TalonSRXEncoderWrapper(wristTalon, PIDSourceType.kRate);
+		
+		
 		// Configure Hardware
+		 
+		for(TalonSRX t : driveTalons) {
+			t.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
+			t.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, 0);
+			t.configVelocityMeasurementWindow(1, 0);
+		}
+
+
+		driveLeftVictor2.follow(driveLeftTalon);
+		driveLeftVictor3.follow(driveLeftTalon);
+		driveLeftVictor4.follow(driveLeftTalon);
+
+		driveRightVictor2.follow(driveRightTalon);
+		driveRightVictor3.follow(driveRightTalon);
+		driveRightVictor4.follow(driveRightTalon);
 		driveRightTalon.setSensorPhase(false);
-		driveRightTalon.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, 0);
-		driveRightTalon.configVelocityMeasurementWindow(1, 0);
-		driveLeftTalon.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, 0);
-		driveLeftTalon.configVelocityMeasurementWindow(1, 0);
+		
+		elbowTalon.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, 0);
+		elbowTalon.configVelocityMeasurementWindow(1, 0);
+		elbowTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
+		wristTalon.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, 0);
+		wristTalon.configVelocityMeasurementWindow(1, 0);
+		wristTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
 		
 		
 		driveLeftEncoderWrapperDistance.setDistancePerRevolution(-WHEEL_RADIUS * 2 * Math.PI * 24.0 / 54);
@@ -241,10 +240,7 @@ public class RobotMap {
 		driveLeftEncoderWrapperRate.setDistancePerRevolution(-WHEEL_RADIUS * 2 * Math.PI * 24.0 / 54);
 		driveRightEncoderWrapperRate.setDistancePerRevolution(WHEEL_RADIUS * 2 * Math.PI * 24.0 / 54);
 		
-		elbowEncoderWrapperDistance = new TalonSRXEncoderWrapper(elbowTalon, PIDSourceType.kDisplacement);
-		wristEncoderWrapperDistance = new TalonSRXEncoderWrapper(wristTalon, PIDSourceType.kDisplacement);
-		elbowEncoderWrapperRate = new TalonSRXEncoderWrapper(elbowTalon, PIDSourceType.kRate);
-		wristEncoderWrapperRate = new TalonSRXEncoderWrapper(wristTalon, PIDSourceType.kRate);
+		
 		
 //SUBSYSTEMS
 		driveTrain = new DriveTrain();

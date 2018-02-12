@@ -1,19 +1,24 @@
 package org.usfirst.frc.team2485.util;
 
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Stroke;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.usfirst.frc.team2485.robot.RobotMap;
+import org.usfirst.frc.team2485.util.AutoPath.Pair;
+
 
 /**
  * @author Ben Dorsey
  */
 
 public class AutoPath {
-	private class Point {
-		private double x, y; 
-		private double heading, curvature;
-		private double arcLength;
+	public class Point {
+		public double x, y; 
+		public double heading, curvature;
+		public double arcLength;
 		private Point(Pair p) {
 			this.x = p.getX();
 			this.y = p.getY();
@@ -36,6 +41,7 @@ public class AutoPath {
 			return y;
 		}
 		
+		
 		public static Pair linearBezier(Pair p1, Pair p2, double t) {
 			return new Pair(p1.x * (1 - t) + p2.x * t, p1.y * (1 - t) + p2.y * t);
 		}
@@ -52,6 +58,7 @@ public class AutoPath {
 		public Pair getPointForParameter(double t); 
 	}
 	private Point[] points; 
+	private static Pair[] unitClothoid;
 	
 	public AutoPath(Pair[]... pairs) {
 		
@@ -59,6 +66,15 @@ public class AutoPath {
 		ArrayList<Pair> newPairs = new ArrayList<>();
 		for (int i = 0; i < pairs.length; i++) {
 			newPairs.addAll(Arrays.asList(pairs[i]));
+		}
+		
+		for (int i = 0; i < newPairs.size() - 1; i++) {
+			double dX = newPairs.get(i + 1).x - newPairs.get(i).x;
+			double dY = newPairs.get(i + 1).y - newPairs.get(i).y;
+			if (Math.hypot(dX, dY) < Math.pow(10, -10)) {
+				newPairs.remove(i);
+				i--;
+			}
 		}
 		
 		// convert from pairs to points
@@ -70,6 +86,41 @@ public class AutoPath {
 		generateCurve();
 		
 	} 
+	
+	public static AutoPath getAutoPathForClothoidSpline(Pair[] points, double[] distances) {
+		Pair[][] input = new Pair[distances.length * 2 + 1][];
+		
+		double percent = 1 - distances[0] / Math.hypot(points[1].x - points[0].x, 
+				points[1].y - points[0].y);
+		double xEnd = (1 - percent) * points[0].x + percent * points[1].x;
+		double yEnd = (1 - percent) * points[0].y + percent * points[1].y;
+		input[0] = AutoPath.getPointsForBezier(200, points[0], new Pair(xEnd, yEnd));
+		
+		
+		for (int i = 1; i < points.length - 1; i++) {
+
+			double lastX = points[i - 1].x, lastY = points[i - 1].y;
+			double thisX = points[i].x, thisY = points[i].y;
+			double nextX = points[i + 1].x, nextY = points[i + 1].y;
+
+			input[2 * i - 1] = AutoPath.getPointsForClothoid(new Pair(thisX, thisY), 
+					Math.atan2(thisY - lastY, thisX - lastX), Math.atan2(nextY - thisY, nextX - thisX), 
+					distances[i - 1]);
+			
+			double percentStart = distances[i - 1] / Math.hypot(nextX - thisX, nextY - thisY);
+			double percentEnd = (i == points.length - 2) ? 1 : 1 - distances[i] / Math.hypot(nextX - thisX, nextY - thisY);
+			double xStart = (1 - percentStart) * thisX + percentStart * nextX;
+			double yStart = (1 - percentStart) * thisY + percentStart * nextY;
+			xEnd = (1 - percentEnd) * thisX + percentEnd * nextX;
+			yEnd = (1 - percentEnd) * thisY + percentEnd * nextY;
+			
+			input[2 * i] = AutoPath.getPointsForBezier(200, new Pair(xStart, yStart), new Pair(xEnd, yEnd));
+
+		}
+		
+		return new AutoPath(input);
+		
+	}
 	
 	private void generateCurve() {
 		int len = points.length;
@@ -97,7 +148,15 @@ public class AutoPath {
 		points[len - 1].curvature = points[len - 2].curvature = points[len - 3].curvature;
 	}
 	
-	private Point getPointAtDist(double dist) {
+	public Pair[] getPairs() {
+		Pair[] pairs = new Pair[points.length];
+		for (int i = 0; i < points.length; i++) {
+			pairs[i] = new Pair(points[i].x, points[i].y);
+		}
+		return pairs;
+	}
+	
+	public Point getPointAtDist(double dist) {
 		for (int i = 0; i < points.length; i++) {
 			if (dist < points[i].arcLength) {
 				return points[i];
@@ -145,4 +204,81 @@ public class AutoPath {
 		};
 		return getPointsForFunction(p, numPoints);
 	}
+	
+	public static Pair[] getPointsForUnitClothoid(int numPoints) {
+		Pair[] points = new Pair[numPoints];
+		points[0] = new Pair(0, 0);
+		
+		for (int i = 1; i < numPoints; i++) {
+			double arcLength = 1.0 * i / numPoints * Math.sqrt(Math.PI);
+			double angle = 0.5 * arcLength * arcLength;
+			points[i] = new Pair(points[i - 1].x + Math.cos(angle) * 1.0 / numPoints, points[i - 1].y + Math.sin(angle) * 1.0 / numPoints); 
+		}
+		return points;
+
+	}
+	
+	public static Pair[] getPointsForClothoid(Pair vertex, double startAngle, double endAngle, double dMax) {
+		if (unitClothoid == null) {
+			unitClothoid = getPointsForUnitClothoid(2000);
+		}
+		// calculate angle delta
+		double deltaAngle = endAngle - startAngle;
+		while (Math.abs(deltaAngle) > Math.PI) {
+			if (deltaAngle > 0) {
+				deltaAngle -= 2 * Math.PI;
+			} else {
+				deltaAngle += 2 * Math.PI;	
+			}
+		}
+		
+		// dMax for unit clothoid of specified angle
+		int pointsUsed = (int) (unitClothoid.length * Math.sqrt(Math.abs(deltaAngle) / Math.PI)); // half if angle is 90 degrees
+		Pair midpoint = unitClothoid[pointsUsed];
+		double dUnit = midpoint.x + midpoint.y * Math.tan(Math.abs(deltaAngle) / 2);
+	
+		// transform points
+		Pair[] clothoid = new Pair[2 * pointsUsed + 1];
+		for (int i = 0; i <= pointsUsed; i++) {
+			double x = unitClothoid[i].x, y = unitClothoid[i].y;
+			// translate so vertex @ 0, 0
+			x -= dUnit;
+			// scale
+			x *= dMax / dUnit;
+			y *= dMax / dUnit;
+			// flip if necessary
+			if (deltaAngle < 0) {
+				y *= -1;
+			}
+			
+			// reflect so have both halves of curve
+			double distToLine = x * Math.cos(deltaAngle / 2) + y * Math.sin(deltaAngle/2);
+			double x1 = x - 2 * distToLine * Math.cos(deltaAngle/2);
+			double y1 = y - 2 * distToLine * Math.sin(deltaAngle/2);
+			clothoid[i] = new Pair(x, y);
+			clothoid[clothoid.length - 1 - i] = new Pair(x1, y1);
+
+		}
+		
+		for (int i = 0; i < clothoid.length; i++) {
+			double x = clothoid[i].x;
+			double y = clothoid[i].y;
+			
+			//rotate by theta = startAngle
+			double tempX = x * Math.cos(startAngle) - y * Math.sin(startAngle);
+			double tempY = x * Math.sin(startAngle) + y * Math.cos(startAngle);
+			x = tempX;
+			y = tempY;
+			//translate so vertex @ vertex
+			x += vertex.x;
+			y += vertex.y;
+			
+			clothoid[i].x = x;
+			clothoid[i].y = y;
+		}
+		return clothoid;
+		
+	}
+	
+	
 }
