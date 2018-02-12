@@ -32,9 +32,7 @@ public class ConstantsIO {
 	
 	public static double kPMax_Distance;
 	
-	public static double kP_DriveAngle;
-	public static double kI_DriveAngle;
-	public static double kD_DriveAngle;
+	public static double kPMax_Angle;
 
 	public static double kP_DriveAngVel;
 	public static double kI_DriveAngVel;
@@ -59,6 +57,9 @@ public class ConstantsIO {
 	public static int IMax;
 
 	public static double voltageMax;
+
+	public static double kUpRamp_DriveVelocity;
+	public static double kDownRamp_DriveVelocity;
 
 
 
@@ -97,31 +98,28 @@ public class ConstantsIO {
 		kI_DriveVelocity = Double.parseDouble(data.get("kI_DriveVelocity"));
 		kD_DriveVelocity = Double.parseDouble(data.get("kD_DriveVelocity"));
 		kF_DriveVelocity = Double.parseDouble(data.get("kF_DriveVelocity"));
+		kUpRamp_DriveVelocity = Double.parseDouble(data.get("kUpRamp_DriveVelocity"));
+		kDownRamp_DriveVelocity = Double.parseDouble(data.get("kDownRamp_DriveVelocity"));
 
-		kP_DriveAngle = Double.parseDouble(data.get("kP_DriveAngle"));
-		kI_DriveAngle = Double.parseDouble(data.get("kI_DriveAngle"));
-		kD_DriveAngle = Double.parseDouble(data.get("kD_DriveAngle"));
+		kPMax_Angle = Double.parseDouble(data.get("kP_DriveAngle"));
+		
 		
 		kP_DriveAngVel = Double.parseDouble(data.get("kP_DriveAngVel"));
 		kI_DriveAngVel = Double.parseDouble(data.get("kI_DriveAngVel"));
 		kD_DriveAngVel = Double.parseDouble(data.get("kD_DriveAngVel"));
 		kF_DriveAngVel = Double.parseDouble(data.get("kF_DriveAngVel"));
-		
-//		kP_AngVelTeleop = Double.parseDouble(data.get("kP_AngVelTeleop"));
-//		kI_AngVelTeleop = Double.parseDouble(data.get("kI_AngVelTeleop"));
-//		kD_AngVelTeleop = Double.parseDouble(data.get("kD_AngVelTeleop"));
-//		kF_AngVelTeleop = Double.parseDouble(data.get("kF_AngVelTeleop"));
-		
-		kP_ElbowAng = Double.parseDouble(data.get("kP_ElbowAng"));
-		
-		kP_ElbowAngVel = Double.parseDouble(data.get("kP_ElbowAngVel"));
-		kI_ElbowAngVel = Double.parseDouble(data.get("kI_ElbowAngVel"));
-		
-		
-		kP_WristAng = Double.parseDouble(data.get("kP_WristAng"));
-		
-		kP_WristAngVel = Double.parseDouble(data.get("kP_WristAngVel"));
-		kI_WristAngVel = Double.parseDouble(data.get("kI_WristAngVel"));
+//		
+//		
+//		kP_ElbowAng = Double.parseDouble(data.get("kP_ElbowAng"));
+//		
+//		kP_ElbowAngVel = Double.parseDouble(data.get("kP_ElbowAngVel"));
+//		kI_ElbowAngVel = Double.parseDouble(data.get("kI_ElbowAngVel"));
+//		
+//		
+//		kP_WristAng = Double.parseDouble(data.get("kP_WristAng"));
+//		
+//		kP_WristAngVel = Double.parseDouble(data.get("kP_WristAngVel"));
+//		kI_WristAngVel = Double.parseDouble(data.get("kI_WristAngVel"));
 	
 
 		

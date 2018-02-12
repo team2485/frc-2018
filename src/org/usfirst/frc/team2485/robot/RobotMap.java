@@ -111,8 +111,8 @@ public class RobotMap {
 //SENSORS
 	public static PigeonIMU pigeon;
 	
-//	public static PigeonWrapperRateAndAngle pigeonRateWrapper;
-//	public static PigeonWrapperRateAndAngle pigeonDisplacementWrapper;
+	public static PigeonWrapperRateAndAngle pigeonRateWrapper;
+	public static PigeonWrapperRateAndAngle pigeonDisplacementWrapper;
 	
 	public static TalonSRXEncoderWrapper elbowEncoderWrapperDistance;
 	public static TalonSRXEncoderWrapper wristEncoderWrapperDistance;
@@ -220,8 +220,8 @@ public class RobotMap {
 //SENSORS
 		pigeon = new PigeonIMU(driveRightTalon);
 		irSensor = new DigitalInput(irSensorPort);
-//		pigeonRateWrapper = new PigeonWrapperRateAndAngle(PIDSourceType.kRate, Units.RADS);
-//		pigeonDisplacementWrapper = new PigeonWrapperRateAndAngle(PIDSourceType.kDisplacement, Units.RADS);
+		pigeonRateWrapper = new PigeonWrapperRateAndAngle(PIDSourceType.kRate, Units.RADS);
+		pigeonDisplacementWrapper = new PigeonWrapperRateAndAngle(PIDSourceType.kDisplacement, Units.RADS);
 
 		driveLeftEncoderWrapperRate = new TalonSRXEncoderWrapper(driveLeftTalon, PIDSourceType.kRate);
 		driveRightEncoderWrapperRate = new TalonSRXEncoderWrapper(driveRightTalon, PIDSourceType.kRate);

@@ -15,8 +15,8 @@ public class OI {
 	
 	public static final double XBOX_DEADBAND = 0.25;
 	
-	public static Joystick DRIVER;
-	public static Joystick OPERATOR;
+	public static Joystick driver;
+	public static Joystick operator;
 	
 	public static final int XBOX_A_PORT = 1;
 	public static final int XBOX_B_PORT = 2;
@@ -65,38 +65,38 @@ public class OI {
 	
 	
 	public static void init() {
-		DRIVER = new Joystick(0);
-		OPERATOR = new Joystick(1);
+		driver = new Joystick(0);
+		operator = new Joystick(1);
 		
-		DRIVER_UP = new JoystickButton(DRIVER, XBOX_UP_PORT);
-		DRIVER_DOWN = new JoystickButton(DRIVER, XBOX_DOWN_PORT);
-		DRIVER_LEFT = new JoystickButton(DRIVER, XBOX_LEFT_PORT);
-		DRIVER_RIGHT = new JoystickButton(DRIVER, XBOX_RIGHT_PORT);
+		DRIVER_UP = new JoystickButton(driver, XBOX_UP_PORT);
+		DRIVER_DOWN = new JoystickButton(driver, XBOX_DOWN_PORT);
+		DRIVER_LEFT = new JoystickButton(driver, XBOX_LEFT_PORT);
+		DRIVER_RIGHT = new JoystickButton(driver, XBOX_RIGHT_PORT);
 		
-		DRIVER_A = new JoystickButton(DRIVER, XBOX_A_PORT);
-		DRIVER_B = new JoystickButton(DRIVER, XBOX_B_PORT);
-		DRIVER_X = new JoystickButton(DRIVER, XBOX_X_PORT);
-		DRIVER_Y = new JoystickButton(DRIVER, XBOX_Y_PORT);
+		DRIVER_A = new JoystickButton(driver, XBOX_A_PORT);
+		DRIVER_B = new JoystickButton(driver, XBOX_B_PORT);
+		DRIVER_X = new JoystickButton(driver, XBOX_X_PORT);
+		DRIVER_Y = new JoystickButton(driver, XBOX_Y_PORT);
 		
-		DRIVER_LBUMPER = new JoystickButton(DRIVER, XBOX_LBUMPER_PORT);
-		DRIVER_RBUMPER = new JoystickButton(DRIVER, XBOX_RBUMPER_PORT);
+		DRIVER_LBUMPER = new JoystickButton(driver, XBOX_LBUMPER_PORT);
+		DRIVER_RBUMPER = new JoystickButton(driver, XBOX_RBUMPER_PORT);
 		
-		DRIVER_XBOX = new JoystickButton(DRIVER, XBOX_XBOX_PORT);
+		DRIVER_XBOX = new JoystickButton(driver, XBOX_XBOX_PORT);
 		
-		OPERATOR_UP = new JoystickButton(DRIVER, XBOX_UP_PORT);
-		OPERATOR_DOWN = new JoystickButton(DRIVER, XBOX_DOWN_PORT);
-		OPERATOR_LEFT = new JoystickButton(DRIVER, XBOX_LEFT_PORT);
-		OPERATOR_RIGHT = new JoystickButton(DRIVER, XBOX_RIGHT_PORT);
+		OPERATOR_UP = new JoystickButton(driver, XBOX_UP_PORT);
+		OPERATOR_DOWN = new JoystickButton(driver, XBOX_DOWN_PORT);
+		OPERATOR_LEFT = new JoystickButton(driver, XBOX_LEFT_PORT);
+		OPERATOR_RIGHT = new JoystickButton(driver, XBOX_RIGHT_PORT);
 		
-		OPERATOR_A = new JoystickButton(DRIVER, XBOX_A_PORT);
-		OPERATOR_B = new JoystickButton(DRIVER, XBOX_B_PORT);
-		OPERATOR_X = new JoystickButton(DRIVER, XBOX_X_PORT);
-		OPERATOR_Y = new JoystickButton(DRIVER, XBOX_Y_PORT);
+		OPERATOR_A = new JoystickButton(driver, XBOX_A_PORT);
+		OPERATOR_B = new JoystickButton(driver, XBOX_B_PORT);
+		OPERATOR_X = new JoystickButton(driver, XBOX_X_PORT);
+		OPERATOR_Y = new JoystickButton(driver, XBOX_Y_PORT);
 		
-		OPERATOR_LBUMPER = new JoystickButton(DRIVER, XBOX_LBUMPER_PORT);
-		OPERATOR_RBUMPER = new JoystickButton(DRIVER, XBOX_RBUMPER_PORT);
+		OPERATOR_LBUMPER = new JoystickButton(driver, XBOX_LBUMPER_PORT);
+		OPERATOR_RBUMPER = new JoystickButton(driver, XBOX_RBUMPER_PORT);
 		
-		OPERATOR_XBOX = new JoystickButton(DRIVER, XBOX_XBOX_PORT);
+		OPERATOR_XBOX = new JoystickButton(driver, XBOX_XBOX_PORT);
 		
 		DRIVER_A.whenPressed(new IntakeWithControllers(0.8));
 		DRIVER_B.whenPressed(new IntakeWithControllers(0));
