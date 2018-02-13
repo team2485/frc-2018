@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.buttons.JoystickButton;
  */
 public class OI {
 	
-	public static final double XBOX_AXIS_DEADBAND = 0.02;
+	public static final double XBOX_AXIS_DEADBAND = 0.25;
 	public static final double XBOX_TRIGGER_DEADBAND = 0.25;
 	
 	public static Joystick DRIVER;

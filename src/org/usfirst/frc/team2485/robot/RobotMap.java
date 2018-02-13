@@ -31,9 +31,9 @@ public class RobotMap {
 	
 //PORTS - all temporary
 	public static final double ROBOT_WIDTH = 28;
-	public static final double WHEEL_RADIUS = 2;
+	public static final double WHEEL_RADIUS = 3;
 
-	public static final int intakeLeftPort = 9; // Temporary
+	public static final int intakeLeftPort = 5; // Temporary
 	public static final int intakeRightPort = 10;
 	
 	public static final int elbowPort1 = 11; //Temporary
@@ -127,7 +127,6 @@ public class RobotMap {
 	
 	public static DeadReckoning deadReckoning;
 	
-	public static PowerDistributionPanel PDP;
 
 //SUBSYSTEMS
 	public static DriveTrain driveTrain;
@@ -137,7 +136,7 @@ public class RobotMap {
 	public static void init() {
 		
 		// Construct Hardware
-		PDP = new PowerDistributionPanel();
+//		PDP = new PowerDistributionPanel();
 
 //INTAKE
 		intakeLeftTalon = new TalonSRX(intakeLeftPort);
@@ -193,7 +192,7 @@ public class RobotMap {
 		driveLeftPWM.setInverted(true);
 		
 		// SENSORS
-		pigeon = new PigeonIMU(driveRightTalon);
+		pigeon = new PigeonIMU(intakeLeftTalon);
 		irSensor = new DigitalInput(irSensorPort);
 		pigeonRateWrapper = new PigeonWrapperRateAndAngle(PIDSourceType.kRate, Units.RADS);
 		pigeonDisplacementWrapper = new PigeonWrapperRateAndAngle(PIDSourceType.kDisplacement, Units.RADS);
@@ -203,10 +202,10 @@ public class RobotMap {
 		driveLeftEncoderWrapperDistance = new TalonSRXEncoderWrapper(driveLeftTalon,  PIDSourceType.kDisplacement);
 		driveRightEncoderWrapperDistance = new TalonSRXEncoderWrapper(driveRightTalon, PIDSourceType.kDisplacement);
 		
-		elbowEncoderWrapperDistance = new TalonSRXEncoderWrapper(elbowTalon, PIDSourceType.kDisplacement);
-		wristEncoderWrapperDistance = new TalonSRXEncoderWrapper(wristTalon, PIDSourceType.kDisplacement);
-		elbowEncoderWrapperRate = new TalonSRXEncoderWrapper(elbowTalon, PIDSourceType.kRate);
-		wristEncoderWrapperRate = new TalonSRXEncoderWrapper(wristTalon, PIDSourceType.kRate);
+//		elbowEncoderWrapperDistance = new TalonSRXEncoderWrapper(elbowTalon, PIDSourceType.kDisplacement);
+//		wristEncoderWrapperDistance = new TalonSRXEncoderWrapper(wristTalon, PIDSourceType.kDisplacement);
+//		elbowEncoderWrapperRate = new TalonSRXEncoderWrapper(elbowTalon, PIDSourceType.kRate);
+//		wristEncoderWrapperRate = new TalonSRXEncoderWrapper(wristTalon, PIDSourceType.kRate);
 		
 		
 		// Configure Hardware
@@ -235,10 +234,10 @@ public class RobotMap {
 		wristTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
 		
 		
-		driveLeftEncoderWrapperDistance.setDistancePerRevolution(-WHEEL_RADIUS * 2 * Math.PI * 24.0 / 54);
-		driveRightEncoderWrapperDistance.setDistancePerRevolution(WHEEL_RADIUS * 2 * Math.PI * 24.0 / 54);
-		driveLeftEncoderWrapperRate.setDistancePerRevolution(-WHEEL_RADIUS * 2 * Math.PI * 24.0 / 54);
-		driveRightEncoderWrapperRate.setDistancePerRevolution(WHEEL_RADIUS * 2 * Math.PI * 24.0 / 54);
+		driveLeftEncoderWrapperDistance.setDistancePerRevolution(-WHEEL_RADIUS * 2 * Math.PI);
+		driveRightEncoderWrapperDistance.setDistancePerRevolution(WHEEL_RADIUS * 2 * Math.PI);
+		driveLeftEncoderWrapperRate.setDistancePerRevolution(-WHEEL_RADIUS * 2 * Math.PI);
+		driveRightEncoderWrapperRate.setDistancePerRevolution(WHEEL_RADIUS * 2 * Math.PI);
 		
 		
 		

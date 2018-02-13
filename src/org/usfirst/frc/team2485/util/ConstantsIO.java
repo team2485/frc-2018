@@ -55,6 +55,9 @@ public class ConstantsIO {
 	public static double kP_WristAngVel;
 	public static double kI_WristAngVel;
 	
+	public static double kUpRamp_Velocity;
+	public static double kDownRamp_Velocity;
+	
 	public static int IMax;
 
 	public static double voltageMax;
@@ -106,22 +109,25 @@ public class ConstantsIO {
 		kD_DriveAngVel = Double.parseDouble(data.get("kD_DriveAngVel"));
 		kF_DriveAngVel = Double.parseDouble(data.get("kF_DriveAngVel"));
 		
+		kUpRamp_Velocity = Double.parseDouble(data.get("kUpRamp_Velocity"));
+		kDownRamp_Velocity = Double.parseDouble(data.get("kDownRamp_Velocity"));
+		
 //		kP_AngVelTeleop = Double.parseDouble(data.get("kP_AngVelTeleop"));
 //		kI_AngVelTeleop = Double.parseDouble(data.get("kI_AngVelTeleop"));
 //		kD_AngVelTeleop = Double.parseDouble(data.get("kD_AngVelTeleop"));
 //		kF_AngVelTeleop = Double.parseDouble(data.get("kF_AngVelTeleop"));
 		
-		kP_ElbowAng = Double.parseDouble(data.get("kP_ElbowAng"));
-		
-		kP_ElbowAngVel = Double.parseDouble(data.get("kP_ElbowAngVel"));
-		kI_ElbowAngVel = Double.parseDouble(data.get("kI_ElbowAngVel"));
-		
-		
-		kP_WristAng = Double.parseDouble(data.get("kP_WristAng"));
-		
-		kP_WristAngVel = Double.parseDouble(data.get("kP_WristAngVel"));
-		kI_WristAngVel = Double.parseDouble(data.get("kI_WristAngVel"));
-	
+//		kP_ElbowAng = Double.parseDouble(data.get("kP_ElbowAng"));
+//		
+//		kP_ElbowAngVel = Double.parseDouble(data.get("kP_ElbowAngVel"));
+//		kI_ElbowAngVel = Double.parseDouble(data.get("kI_ElbowAngVel"));
+//		
+//		
+//		kP_WristAng = Double.parseDouble(data.get("kP_WristAng"));
+//		
+//		kP_WristAngVel = Double.parseDouble(data.get("kP_WristAngVel"));
+//		kI_WristAngVel = Double.parseDouble(data.get("kI_WristAngVel"));
+//	
 
 		
 		

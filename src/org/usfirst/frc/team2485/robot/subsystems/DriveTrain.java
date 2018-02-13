@@ -2,9 +2,11 @@ package org.usfirst.frc.team2485.robot.subsystems;
 
 import org.usfirst.frc.team2485.robot.OI;
 import org.usfirst.frc.team2485.robot.RobotMap;
+import org.usfirst.frc.team2485.robot.commands.DriveWithControllers;
 import org.usfirst.frc.team2485.util.ConstantsIO;
 import org.usfirst.frc.team2485.util.MotorSetter;
 import org.usfirst.frc.team2485.util.PIDSourceWrapper;
+import org.usfirst.frc.team2485.util.RampRate;
 import org.usfirst.frc.team2485.util.ThresholdHandler;
 import org.usfirst.frc.team2485.util.TransferNode;
 import org.usfirst.frc.team2485.util.WarlordsPIDController;
@@ -43,13 +45,15 @@ public class DriveTrain extends Subsystem {
 	private WarlordsPIDController velocityPID = new WarlordsPIDController();
 	private WarlordsPIDController curvaturePID = new WarlordsPIDController();
 	
+	private RampRate velocityRampRate = new RampRate();
+	
 	private TransferNode distanceTN = new TransferNode(0);
 	private TransferNode angleTN = new TransferNode(0);
 	public TransferNode velocityTN = new TransferNode(0);
+	public TransferNode velocitySetpointTN = new TransferNode(0);
 	public TransferNode curvatureTN = new TransferNode(0);
 
-	private TransferNode curvatureSetpointTN = new TransferNode(0);
-	private TransferNode angVelTeleopTN = new TransferNode(0);
+	public TransferNode curvatureSetpointTN = new TransferNode(0);
 
 	private PIDSourceWrapper kp_distancePIDSource = new PIDSourceWrapper();
 	private PIDSourceWrapper kp_anglePIDSource = new PIDSourceWrapper();
@@ -79,16 +83,16 @@ public class DriveTrain extends Subsystem {
 		double pwmL = RobotMap.driveLeftTalon.getMotorOutputPercent();;
 		double pwmR = RobotMap.driveRightTalon.getMotorOutputPercent();
 
-		double iL = RobotMap.driveRightTalon.getOutputCurrent();
-		double iR = RobotMap.driveLeftTalon.getOutputCurrent();
+		double iL = RobotMap.driveLeftTalon.getOutputCurrent();
+		double iR = RobotMap.driveRightTalon.getOutputCurrent();
 		
 		double i = ConstantsIO.IMax;
 		
-		if (pwmL > .5) {
-			i = Math.min(i, iL/pwmL);
+		if (Math.abs(pwmL) > .5) {
+			i = Math.min(i, Math.abs(iL/pwmL));
 		}
-		if (pwmR > .5) {
-			i = Math.min(i, iR/pwmR);
+		if (Math.abs(pwmR) > .5) {
+			i = Math.min(i, Math.abs(iR/pwmR));
 		}
 		
 		return i;
@@ -125,9 +129,11 @@ public class DriveTrain extends Subsystem {
 		
 		velocityPID.setOutputs(velocityTN);
 		velocityPID.setSources(encoderAvgVelocityPIDSource);
-		velocityPID.setSetpointSource(distanceTN);
+		velocityPID.setSetpointSource(velocitySetpointTN);
 		velocityPID.setOutputSources(maxVelocityORSource, minVelocityORSource);
 		
+		velocityRampRate.setSetpointSource(distanceTN);
+		velocityRampRate.setOutputs(velocitySetpointTN);
 
 		//angle
 
@@ -169,10 +175,10 @@ public class DriveTrain extends Subsystem {
 		});
 		
 		leftCurrentPIDSource.setPidSource(() -> {
-			return velocityTN.pidGet() + curvatureTN.pidGet() * encoderAvgVelocityPIDSource.pidGet();
+			return velocityTN.pidGet() + curvatureTN.pidGet() * Math.abs(encoderAvgVelocityPIDSource.pidGet());
 		});
 		rightCurrentPIDSource.setPidSource(() -> {
-			return velocityTN.pidGet() - curvatureTN.pidGet() * encoderAvgVelocityPIDSource.pidGet();
+			return velocityTN.pidGet() - curvatureTN.pidGet() * Math.abs(encoderAvgVelocityPIDSource.pidGet());
 		});
 
 		leftMotorSetter.setSetpointSource(leftCurrentPIDSource);
@@ -184,7 +190,7 @@ public class DriveTrain extends Subsystem {
 	}
 
 	public void initDefaultCommand() {
-//		setDefaultCommand(new DriveWithControllers());
+		setDefaultCommand(new DriveWithControllers());
 	}
 
 	public void simpleDrive(double throttle, double steering) {
@@ -258,6 +264,7 @@ public class DriveTrain extends Subsystem {
 		rightMotorSetter.disable();
 		leftMotorSetter.disable();
 		
+		
 
 	}
 	
@@ -270,18 +277,20 @@ public class DriveTrain extends Subsystem {
 	}
 
 	public void setVelocities(double linearVel, double curvature) {
-		
-		velocityPID.enable();
+		System.out.println(velocityPID.isEnabled());
+
 		anglePID.disable();
 		distancePID.disable();
 		leftMotorSetter.enable();
 		rightMotorSetter.enable();
+		velocityPID.enable();
 
 		// allows us to set setpoints directly
 		velocityPID.setSetpointSource(null);
 		curvaturePID.setSetpointSource(null);
 
 		velocityPID.setSetpoint(linearVel);
+		
 		
 		if (Math.abs(encoderAvgVelocityPIDSource.pidGet()) > LOW_ENC_RATE) {
 			curvaturePID.enable();
@@ -322,6 +331,7 @@ public class DriveTrain extends Subsystem {
 		velocityPID.enable();
 		anglePID.enable();
 		distancePID.enable();
+		velocityRampRate.enable();
 		leftMotorSetter.enable();
 		rightMotorSetter.enable();
 		anglePID.setSetpoint(angle);
@@ -344,14 +354,14 @@ public class DriveTrain extends Subsystem {
 	public void updateConstants() {
 		for (TalonSRX t : RobotMap.driveTalons) {
 			t.enableVoltageCompensation(false);
-			t.enableCurrentLimit(true);
-			t.configContinuousCurrentLimit(15, 0);
-			t.configPeakCurrentLimit(15, 0);
+			t.enableCurrentLimit(false);
+			t.configContinuousCurrentLimit(ConstantsIO.IMax, 0);
+			t.configPeakCurrentLimit(ConstantsIO.IMax, 0);
 
 		}
 		velocityPID.setPID(ConstantsIO.kP_DriveVelocity, ConstantsIO.kI_DriveVelocity, ConstantsIO.kD_DriveVelocity, ConstantsIO.kF_DriveVelocity);
 		curvaturePID.setPID(ConstantsIO.kP_DriveAngVel, ConstantsIO.kI_DriveAngVel, ConstantsIO.kD_DriveAngVel, ConstantsIO.kF_DriveAngVel);
-		
+		velocityRampRate.setRampRates(ConstantsIO.kUpRamp_Velocity, ConstantsIO.kDownRamp_Velocity);
 	}
 
 	public void enablePID(boolean enable) {
@@ -360,11 +370,16 @@ public class DriveTrain extends Subsystem {
 			curvaturePID.enable();
 			anglePID.enable();
 			distancePID.enable();
+			velocityRampRate.enable();
 		} else {
 			velocityPID.disable();
 			curvaturePID.disable();
 			anglePID.disable();
 			distancePID.disable();
+			velocityRampRate.disable();
+			distanceTN.setOutput(0);
+			velocityTN.setOutput(0);
+			velocitySetpointTN.setOutput(0);
 		}
 	}
 	
@@ -372,7 +387,4 @@ public class DriveTrain extends Subsystem {
 		return encoderDistancePIDSource.pidGet();
 	}
 
-	public double getTeleopAngVelError() {
-		return angVelTeleopTN.getOutput();
-	}
 }
