@@ -230,6 +230,7 @@ public class WarlordsPIDController extends WarlordsControlSystem {
 			kF = kFSource.pidGet();
 		}
 		
+		
 		sensorVal = sources[0].pidGet();
 		double error = setpoint - sensorVal;
 

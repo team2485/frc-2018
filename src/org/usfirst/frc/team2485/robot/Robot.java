@@ -1,7 +1,11 @@
 
 package org.usfirst.frc.team2485.robot;
 
+import org.usfirst.frc.team2485.robot.commands.DriveTo;
 import org.usfirst.frc.team2485.robot.commands.HighLowCurrentTest;
+import org.usfirst.frc.team2485.util.AutoPath;
+import org.usfirst.frc.team2485.util.AutoPath.Pair;
+import org.usfirst.frc.team2485.util.ConstantsIO;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Command;
@@ -66,7 +70,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousInit() {
-//		ConstantsIO.init();
+		ConstantsIO.init();
 		RobotMap.updateConstants();
 		RobotMap.driveTrain.reset();
 		/*
@@ -80,7 +84,18 @@ public class Robot extends IterativeRobot {
 		RobotMap.driveRightEncoderWrapperDistance.reset();
 		RobotMap.driveLeftEncoderWrapperDistance.reset();
 		RobotMap.pigeon.setFusedHeading(0, 0);
-		Scheduler.getInstance().add(new HighLowCurrentTest(-1, -1, -1, -1, 2000));
+		RobotMap.pigeon.setYaw(0, 0);
+		Pair[] controlPoints = {
+				new Pair(0,	0), new Pair(0, 120), new Pair(120, 120)
+			};
+			double[] dists = {
+					70
+			};
+			AutoPath path = AutoPath.getAutoPathForClothoidSpline(controlPoints, dists);
+			System.out.println(path.getPathLength());
+			System.out.println(path.getHeadingAtDist(20));
+			Scheduler.getInstance().add(new DriveTo(path, 40, false, 100000));
+//		Scheduler.getInstance().add(new HighLowCurrentTest(-1, -1, -1, -1, 2000));
 //		Scheduler.getInstance().add(new SetVelocities(60, 0));
 //		CommandGroup cg = new CommandGroup();
 //		cg.addSequential(new DriveTo(new AutoPath(AutoPath.getPointsForBezier(10000, new Pair(0, 0), 
@@ -97,7 +112,8 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousPeriodic() {
 		Scheduler.getInstance().run();
-//		RobotMap.drivetrain.driveTo(200, 100, 0, 0);
+//		RobotMap.driveTrain.setVelocities(30, 0);
+		
 		updateSmartDashboard();
 //		RobotMap.drivetrain.setCurrents(-1, -1);
 	}
@@ -129,8 +145,9 @@ public class Robot extends IterativeRobot {
 
 	public void updateSmartDashboard() {
 
-//		SmartDashboard.putNumber("Yaw", RobotMap.pigeonDisplacementWrapper.pidGet());
-//		SmartDashboard.putNumber("Yaw Rate", RobotMap.pigeonRateWrapper.pidGet());
+		SmartDashboard.putNumber("Yaw", RobotMap.pigeonDisplacementWrapper.pidGet());
+		SmartDashboard.putNumber("Yaw Rate", RobotMap.pigeonRateWrapper.pidGet());
+		SmartDashboard.putNumber("velocity setpoint", RobotMap.driveTrain.velocitySetpointTN.getOutput());
 		SmartDashboard.putNumber("Yaw Rate Error", RobotMap.driveTrain.getAngleRateError());
 		SmartDashboard.putNumber("Left Encoder Dist", RobotMap.driveLeftEncoderWrapperDistance.pidGet());
 		SmartDashboard.putNumber("Right Encoder Dist", RobotMap.driveRightEncoderWrapperDistance.pidGet());
@@ -154,9 +171,11 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Velocity TN", RobotMap.driveTrain.velocityTN.pidGet());
 		SmartDashboard.putNumber("Ang Vel TN", RobotMap.driveTrain.curvatureTN.pidGet());
 		SmartDashboard.putNumber("Current", (Math.abs(RobotMap.driveLeftTalon.getOutputCurrent()) + Math.abs(RobotMap.driveLeftTalon.getOutputCurrent()))/2);
-		
-		SmartDashboard.putNumber("Elbow Encoder Distance", RobotMap.elbowEncoderWrapperDistance.pidGet());
-		SmartDashboard.putNumber("Wrist Encoder Distance", RobotMap.wristEncoderWrapperDistance.pidGet());
+
+
+		SmartDashboard.putNumber("Curvature Setpoint TN", RobotMap.driveTrain.curvatureSetpointTN.getOutput());
+//		SmartDashboard.putNumber("Elbow Encoder Distance", RobotMap.elbowEncoderWrapperDistance.pidGet());
+//		SmartDashboard.putNumber("Wrist Encoder Distance", RobotMap.wristEncoderWrapperDistance.pidGet());
 //		RobotMap.pigeon.getYawPitchRoll(ypr);
 		
 //		SmartDashboard.putNumber("X", RobotMap.deadReckoning.getX());
