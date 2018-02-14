@@ -122,6 +122,14 @@ public class AutoPath {
 		
 	}
 	
+//	public static Pair[] getPointsForArc(Pair center, double startAngle, double endAngle, double radius) {
+//		
+//		return getPointsForFunction((double t) -> {
+//			double angle = t * endAngle + (1 - t)*startAngle;
+//			return new Pair(center.x + , y)
+//		}, 10000);
+//	}
+	
 	private void generateCurve() {
 		int len = points.length;
 		points[0].arcLength = 0;

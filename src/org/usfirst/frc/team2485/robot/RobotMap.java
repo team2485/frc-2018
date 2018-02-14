@@ -34,7 +34,7 @@ public class RobotMap {
 	public static final double WHEEL_RADIUS = 3;
 
 	public static final int intakeLeftPort = 5; // Temporary
-	public static final int intakeRightPort = 10;
+	public static final int intakeRightPort = 6;
 	
 	public static final int elbowPort1 = 11; //Temporary
 	public static final int elbowPort2 = 12;
@@ -50,8 +50,6 @@ public class RobotMap {
 	public static final int driveLeftPortVictor3 = 22;
 	public static final int driveLeftPortVictor4 = 32;
 	
-	public static final int intakePortLeftTalon = 5;
-	public static final int intakePortRightTalon = 6;
 
 	public static final int irSensorPort = 0;
 
@@ -142,8 +140,8 @@ public class RobotMap {
 		intakeLeftTalon = new TalonSRX(intakeLeftPort);
 		intakeRightTalon = new TalonSRX(intakeRightPort);
 		
-		intakeLeftWrapper = new TalonSRXWrapper(ControlMode.Current, intakeLeftTalon);
-		intakeRightWrapper = new TalonSRXWrapper(ControlMode.Current, intakeRightTalon);
+		intakeLeftWrapper = new TalonSRXWrapper(ControlMode.PercentOutput, intakeLeftTalon);
+		intakeRightWrapper = new TalonSRXWrapper(ControlMode.PercentOutput, intakeRightTalon);
 		
 //ARM
 		elbowTalon = new TalonSRX(elbowPort1); 

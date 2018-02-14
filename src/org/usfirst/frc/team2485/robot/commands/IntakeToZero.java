@@ -11,7 +11,7 @@ public class IntakeToZero extends Command {
 	long startTime;
 	
 	public IntakeToZero(double pwm, long duration) {
-		requires(RobotMap.intake);
+//		requires(RobotMap.intake);
 		this.pwm = pwm;
 		this.duration = duration;
 	}

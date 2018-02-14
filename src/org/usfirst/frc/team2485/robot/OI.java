@@ -98,8 +98,8 @@ public class OI {
 		
 		OPERATOR_XBOX = new JoystickButton(driver, XBOX_XBOX_PORT);
 		
-		DRIVER_A.whenPressed(new IntakeWithControllers(0.8));
-		DRIVER_B.whenPressed(new IntakeWithControllers(0));
+//		DRIVER_A.whenPressed(new IntakeWithControllers(0.8));
+//		DRIVER_B.whenPressed(new IntakeWithControllers(0));
 		
 		//TESTING
 //		DRIVER_X.whenPressed(new ZeroArmEncoders());

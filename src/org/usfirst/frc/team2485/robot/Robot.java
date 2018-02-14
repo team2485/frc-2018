@@ -3,9 +3,11 @@ package org.usfirst.frc.team2485.robot;
 
 import org.usfirst.frc.team2485.robot.commands.DriveTo;
 import org.usfirst.frc.team2485.robot.commands.HighLowCurrentTest;
+import org.usfirst.frc.team2485.robot.commands.SetVelocities;
 import org.usfirst.frc.team2485.util.AutoPath;
 import org.usfirst.frc.team2485.util.AutoPath.Pair;
 import org.usfirst.frc.team2485.util.ConstantsIO;
+import org.usfirst.frc.team2485.util.ThresholdHandler;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Command;
@@ -96,7 +98,7 @@ public class Robot extends IterativeRobot {
 			System.out.println(path.getHeadingAtDist(20));
 			Scheduler.getInstance().add(new DriveTo(path, 40, false, 100000));
 //		Scheduler.getInstance().add(new HighLowCurrentTest(-1, -1, -1, -1, 2000));
-//		Scheduler.getInstance().add(new SetVelocities(60, 0));
+//		Scheduler.getInstance().add(new SetVelocities(30, 0.01));
 //		CommandGroup cg = new CommandGroup();
 //		cg.addSequential(new DriveTo(new AutoPath(AutoPath.getPointsForBezier(10000, new Pair(0, 0), 
 //				new Pair(0, 100), new Pair(100, 100))), 100, false, 5000));
@@ -112,7 +114,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousPeriodic() {
 		Scheduler.getInstance().run();
-//		RobotMap.driveTrain.setVelocities(30, 0);
+//		RobotMap.driveTrain.setVelocities(60, 0.02);
 		
 		updateSmartDashboard();
 //		RobotMap.drivetrain.setCurrents(-1, -1);
@@ -139,6 +141,7 @@ public class Robot extends IterativeRobot {
 	public void teleopPeriodic() {
 		Scheduler.getInstance().run();
 		updateSmartDashboard();
+		RobotMap.intake.setRollers(ThresholdHandler.deadbandAndScale(OI.operator.getRawAxis(OI.XBOX_RYJOYSTICK_PORT), .2, 0, 1));
 
 
 	}

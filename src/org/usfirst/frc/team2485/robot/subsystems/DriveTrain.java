@@ -284,12 +284,15 @@ public class DriveTrain extends Subsystem {
 		leftMotorSetter.enable();
 		rightMotorSetter.enable();
 		velocityPID.enable();
+		velocityRampRate.enable();
 
 		// allows us to set setpoints directly
-		velocityPID.setSetpointSource(null);
+//		velocityPID.setSetpointSource(null);
+		velocityRampRate.setSetpointSource(null);
 		curvaturePID.setSetpointSource(null);
 
-		velocityPID.setSetpoint(linearVel);
+		velocityRampRate.setSetpoint(linearVel);
+		
 		
 		
 		if (Math.abs(encoderAvgVelocityPIDSource.pidGet()) > LOW_ENC_RATE) {
