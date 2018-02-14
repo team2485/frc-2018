@@ -31,13 +31,10 @@ public class ConstantsIO {
 	public static double kF_DriveVelocity;
 	
 	public static double kPMax_Distance;
-	
-<<<<<<< HEAD
+
 	public static double kPMax_Angle;
-=======
 	public static double kP_DriveAngleMax;
 	public static double kP_DriveAngle;
->>>>>>> branch 'master' of https://github.com/team2485/frc-2018.git
 
 	public static double kP_DriveAngVel;
 	public static double kI_DriveAngVel;
@@ -63,11 +60,8 @@ public class ConstantsIO {
 
 	public static double voltageMax;
 
-<<<<<<< HEAD
 	public static double kUpRamp_DriveVelocity;
 	public static double kDownRamp_DriveVelocity;
-=======
->>>>>>> branch 'master' of https://github.com/team2485/frc-2018.git
 
 
 
