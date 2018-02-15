@@ -69,16 +69,20 @@ public class Arm extends Subsystem {
 	 * j = moment of inertia
 	 */
 	
-	public static final double L1 = toMeters(30);
-	public static final double L2 = toMeters(28);
-	public static final double d1 = toMeters(15);
-	public static final double d2 = toMeters(19);
-	public static final double m1 = toKilograms(3);
-	public static final double m2 = toKilograms(10);
+	public static final double L1 = toMeters(30.83);
+	public static final double L2 = toMeters(29.534);
+	public static final double LBox = toMeters(13);
+	public static final double d1 = toMeters(14.5);
+	public static final double d2 = toMeters(20.44);
+	public static final double m1 = toKilograms(3.55);
+	public static final double m2 = toKilograms(12.5);
+	public static final double mBox = toKilograms(3.5);
 	public static final double g = 9.80665;
+	public static final double I1 = 386.33;
+	public static final double I2 = 499;
 
-	public static final double J1 = toMetricInertia(289) + (m1 * d1 * d1);
-	public static final double J2 = toMetricInertia(565) + (m2 * d2 * d2);
+	public static final double J1 = toMetricInertia(I1) + (m1 * d1 * d1);
+	public static final double J2 = toMetricInertia(I2) + (m2 * d2 * d2);
 	
 	public static final double currentStall = 134; 
 	public static final double torqueStall = 0.71;
@@ -122,14 +126,14 @@ public class Arm extends Subsystem {
 			double w2 = 2*Math.PI*RobotMap.wristEncoderWrapperRate.pidGet() + w1;
 			
 			double inertia = (J1 * a1) + 
-					(J2 * a2) + 
-					(L1*L1 * a1 * m2) + 
-					(L1 * a2 * d2 * m2 * Math.cos(theta1 - theta2));
+					(getJ2() * a2) + 
+					(L1*L1 * a1 * getM2()) + 
+					(L1 * a2 * getD2() * getM2() * Math.cos(theta1 - theta2));
 			double load = 
-					(L1 * g * m2 * Math.cos(theta1)) +
+					(L1 * g * getM2() * Math.cos(theta1)) +
 					(d1 * g * m1 * Math.cos(theta1)) +
-					(d2 * g * m2 * Math.cos(theta2));
-			double linking = (L1 * d2 * m2 * w2*w2 * Math.sin(theta1 - theta2));
+					(getD2() * g * getM2() * Math.cos(theta2));
+			double linking = (L1 * getD2() * getM2() * w2*w2 * Math.sin(theta1 - theta2));
 			double torque = inertia + load + linking;
 			
 			return torque * (currentStall / (2 * gearRatio * torqueStall));
@@ -151,8 +155,8 @@ public class Arm extends Subsystem {
 			double a2 = wristAngVelTN.pidGet();
 			double theta2 = 2*Math.PI*RobotMap.wristEncoderWrapperDistance.pidGet();
 			
-			double inertia = (J2 * a2);
-			double load = (d2 * g * m2 * Math.cos(theta2));
+			double inertia = (getJ2() * a2);
+			double load = (getD2() * g * getM2() * Math.cos(theta2));
 			double torque = inertia + load;
 			
 			return torque * (currentStall / (gearRatio * torqueStall));
@@ -165,6 +169,19 @@ public class Arm extends Subsystem {
 	
     public void initDefaultCommand() {
         
+    }
+    
+    public double getM2() {
+    	return RobotMap.intake.hasCube() ? m2 + mBox : m2;
+    }
+    
+    public double getD2() {
+    	double d2Box = (d2*m2 + LBox*mBox) / (m2 + mBox);
+    	return RobotMap.intake.hasCube() ? d2Box : d2;
+    }
+    
+    public double getJ2() {
+    	return RobotMap.intake.hasCube() ? J2 + mBox*LBox*LBox : J2;
     }
    
     public void setWristPos(double pos) {

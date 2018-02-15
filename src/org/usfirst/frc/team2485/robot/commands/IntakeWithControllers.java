@@ -1,6 +1,7 @@
 package org.usfirst.frc.team2485.robot.commands;
 
 import org.usfirst.frc.team2485.robot.RobotMap;
+import org.usfirst.frc.team2485.robot.subsystems.Arm;
 
 import edu.wpi.first.wpilibj.command.Command;
 
@@ -25,5 +26,6 @@ public class IntakeWithControllers extends Command {
 	protected boolean isFinished() {
 		return false;
 	}
+	
 
 }
