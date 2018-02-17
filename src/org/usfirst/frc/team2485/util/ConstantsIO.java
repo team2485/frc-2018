@@ -58,6 +58,8 @@ public class ConstantsIO {
 	public static double kUpRamp_Velocity;
 	public static double kDownRamp_Velocity;
 	
+	public static double kP_Drift;
+	
 	public static int IMax;
 
 	public static double voltageMax;
@@ -108,6 +110,8 @@ public class ConstantsIO {
 		kI_DriveAngVel = Double.parseDouble(data.get("kI_DriveAngVel"));
 		kD_DriveAngVel = Double.parseDouble(data.get("kD_DriveAngVel"));
 		kF_DriveAngVel = Double.parseDouble(data.get("kF_DriveAngVel"));
+		
+		kP_Drift = Double.parseDouble(data.get("kP_Drift"));
 		
 		kUpRamp_Velocity = Double.parseDouble(data.get("kUpRamp_Velocity"));
 		kDownRamp_Velocity = Double.parseDouble(data.get("kDownRamp_Velocity"));

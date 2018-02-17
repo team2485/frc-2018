@@ -11,16 +11,14 @@ public class DeadReckoning {
 	private double lastDist;
 	private double lastAngle;
 	private boolean running;
-	private PigeonIMU gyro;
+	private PigeonWrapperRateAndAngle gyro;
 //	private double velocity;
 	private TalonSRXEncoderWrapper leftEnc, rightEnc;
 
-	public DeadReckoning(PigeonIMU gyro, TalonSRXEncoderWrapper leftEnc, TalonSRXEncoderWrapper rightEnc) {
+	public DeadReckoning(PigeonWrapperRateAndAngle gyro, TalonSRXEncoderWrapper leftEnc, TalonSRXEncoderWrapper rightEnc) {
 		this.gyro = gyro;
 		this.rightEnc = rightEnc;
 		this.leftEnc = leftEnc;
-		this.leftEnc.setPIDSourceType(PIDSourceType.kDisplacement);
-		this.rightEnc.setPIDSourceType(PIDSourceType.kDisplacement);
 		new UpdateThread().start();
 	}
 
@@ -33,8 +31,7 @@ public class DeadReckoning {
 		x = 0;
 		y = 0;
 //		velocity = 0;
-		gyro.setFusedHeading(0, 0); 
-		gyro.setYaw(0, 0); //these lines effectively "reset" the pigeon imu.
+		gyro.reset();
 		leftEnc.reset();
 		rightEnc.reset();
 		lastDist = 0;
@@ -68,9 +65,8 @@ public class DeadReckoning {
 //		double acceleration = (xyz[1] * 9.8 * 100 / 16384 / 2.54) - 9.8 * 100 / 2.54 * Math.sin(Math.toRadians(ypr[1]));
 //		double deltaDist = velocity * .01 + acceleration / 2 * .0001;
 //		velocity += acceleration * .01;
-		double angle = Math.toRadians(gyro.getFusedHeading()); //use fused heading to accommodate for the 0.25 degree drift that occurs in 15 seconds.
+		double angle = gyro.pidGet(); //use fused heading to accommodate for the 0.25 degree drift that occurs in 15 seconds.
 		double avgAngle = (lastAngle + angle) / 2;
-		
 		x += deltaDist * Math.sin(avgAngle);
 		y += deltaDist * Math.cos(avgAngle);
 

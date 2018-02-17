@@ -47,6 +47,7 @@ public class DriveTrain extends Subsystem {
 	
 	private RampRate velocityRampRate = new RampRate();
 	
+	private TransferNode angleSetpointTN = new TransferNode(0);
 	private TransferNode distanceTN = new TransferNode(0);
 	private TransferNode angleTN = new TransferNode(0);
 	public TransferNode velocityTN = new TransferNode(0);
@@ -57,6 +58,8 @@ public class DriveTrain extends Subsystem {
 
 	private PIDSourceWrapper kp_distancePIDSource = new PIDSourceWrapper();
 	private PIDSourceWrapper kp_anglePIDSource = new PIDSourceWrapper();
+	
+	private PIDSourceWrapper anglePIDSetpointSource = new PIDSourceWrapper();
 
 	private PIDSourceWrapper encoderDistancePIDSource = new PIDSourceWrapper();
 	private PIDSourceWrapper encoderAvgVelocityPIDSource = new PIDSourceWrapper();
@@ -106,6 +109,10 @@ public class DriveTrain extends Subsystem {
 		kp_anglePIDSource.setPidSource(() -> {
 			return Math.min(ConstantsIO.kP_DriveAngleMax, ConstantsIO.kP_DriveAngle/Math.abs(encoderAvgVelocityPIDSource.pidGet()));
 		});
+		
+		anglePIDSetpointSource.setPidSource(() -> {
+			return angleSetpointTN.pidGet() + RobotMap.pathTracker.getDrift()*ConstantsIO.kP_Drift;
+		});
 
 		encoderDistancePIDSource.setPidSource(() -> {
 			return (RobotMap.driveLeftEncoderWrapperDistance.pidGet() + RobotMap.driveRightEncoderWrapperDistance.pidGet()) / 2;
@@ -139,6 +146,7 @@ public class DriveTrain extends Subsystem {
 
 		anglePID.setOutputs(angleTN);
 		anglePID.setSources(RobotMap.pigeonDisplacementWrapper);
+		anglePID.setSetpointSource(anglePIDSetpointSource);
 		anglePID.setContinuous(true);
 		anglePID.setInputRange(0, 2 * Math.PI);
 		anglePID.setConstantsSources(kp_anglePIDSource, null, null, null);
@@ -337,7 +345,7 @@ public class DriveTrain extends Subsystem {
 		velocityRampRate.enable();
 		leftMotorSetter.enable();
 		rightMotorSetter.enable();
-		anglePID.setSetpoint(angle);
+		angleSetpointTN.setOutput(angle);
 		distancePID.setSetpoint(distance);
 		curvatureSetpointTN.setOutput(curvature);
 		distancePID.setAbsoluteTolerance(tolerance);

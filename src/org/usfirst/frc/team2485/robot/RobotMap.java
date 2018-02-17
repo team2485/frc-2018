@@ -4,6 +4,7 @@ import org.usfirst.frc.team2485.robot.subsystems.Arm;
 import org.usfirst.frc.team2485.robot.subsystems.DriveTrain;
 import org.usfirst.frc.team2485.robot.subsystems.Intake;
 import org.usfirst.frc.team2485.util.DeadReckoning;
+import org.usfirst.frc.team2485.util.PathTracker;
 import org.usfirst.frc.team2485.util.PigeonWrapperRateAndAngle;
 import org.usfirst.frc.team2485.util.PigeonWrapperRateAndAngle.Units;
 import org.usfirst.frc.team2485.util.SpeedControllerWrapper;
@@ -36,7 +37,7 @@ public class RobotMap {
 	public static final int intakeLeftPort = 5; // Temporary
 	public static final int intakeRightPort = 6;
 	
-	public static final int elbowPort1 = 11; //Temporary
+	public static final int elbowPort1 = 3; //Temporary
 	public static final int elbowPort2 = 12;
 	public static final int wristPort = 13;
 	
@@ -104,6 +105,8 @@ public class RobotMap {
 	
 	public static SpeedControllerWrapper driveLeftCurrent, driveRightCurrent;
 	public static SpeedControllerWrapper driveLeftPWM, driveRightPWM;
+	
+	public static PathTracker pathTracker;
 
 //SENSORS
 	public static PigeonIMU pigeon;
@@ -192,8 +195,8 @@ public class RobotMap {
 		// SENSORS
 		pigeon = new PigeonIMU(intakeLeftTalon);
 		irSensor = new DigitalInput(irSensorPort);
-		pigeonRateWrapper = new PigeonWrapperRateAndAngle(PIDSourceType.kRate, Units.RADS);
-		pigeonDisplacementWrapper = new PigeonWrapperRateAndAngle(PIDSourceType.kDisplacement, Units.RADS);
+		pigeonRateWrapper = new PigeonWrapperRateAndAngle(pigeon, PIDSourceType.kRate, Units.RADS);
+		pigeonDisplacementWrapper = new PigeonWrapperRateAndAngle(pigeon, PIDSourceType.kDisplacement, Units.RADS);
 
 		driveLeftEncoderWrapperRate = new TalonSRXEncoderWrapper(driveLeftTalon, PIDSourceType.kRate);
 		driveRightEncoderWrapperRate = new TalonSRXEncoderWrapper(driveRightTalon, PIDSourceType.kRate);
@@ -224,6 +227,8 @@ public class RobotMap {
 		driveRightVictor4.follow(driveRightTalon);
 		driveRightTalon.setSensorPhase(false);
 		
+		intakeLeftTalon.setInverted(true); 
+		
 		elbowTalon.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, 0);
 		elbowTalon.configVelocityMeasurementWindow(1, 0);
 		elbowTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
@@ -237,14 +242,13 @@ public class RobotMap {
 		driveLeftEncoderWrapperRate.setDistancePerRevolution(-WHEEL_RADIUS * 2 * Math.PI);
 		driveRightEncoderWrapperRate.setDistancePerRevolution(WHEEL_RADIUS * 2 * Math.PI);
 		
-		
+		deadReckoning = new DeadReckoning(pigeonDisplacementWrapper, driveLeftEncoderWrapperDistance, driveRightEncoderWrapperDistance);
 		
 //SUBSYSTEMS
 		driveTrain = new DriveTrain();
 		intake = new Intake();
 		arm = new Arm();
-		deadReckoning = new DeadReckoning(pigeon, driveLeftEncoderWrapperDistance, driveRightEncoderWrapperDistance);
-
+		
 	}
 
 	public static void updateConstants() {

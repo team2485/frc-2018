@@ -19,7 +19,7 @@ public class DriveTo extends Command{
 		this.maxVelocity =  maxVelocity;
 		this.reverse = reverse;
 		this.timeout = timeout;
-		this.tolerance = 0;
+		this.tolerance = 2;
 		setInterruptible(true);
 		requires(RobotMap.driveTrain);
 	}

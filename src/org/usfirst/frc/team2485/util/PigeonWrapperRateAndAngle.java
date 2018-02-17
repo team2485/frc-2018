@@ -2,6 +2,8 @@ package org.usfirst.frc.team2485.util;
 
 import org.usfirst.frc.team2485.robot.RobotMap;
 
+import com.ctre.phoenix.sensors.PigeonIMU;
+
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 
@@ -11,9 +13,18 @@ public class PigeonWrapperRateAndAngle implements PIDSource {
 	}
 	private PIDSourceType pidSource;
 	private Units units;
-	public PigeonWrapperRateAndAngle(PIDSourceType pidSource, Units units) {
+	
+	PigeonIMU gyro;
+	
+	public PigeonWrapperRateAndAngle(PigeonIMU gyro, PIDSourceType pidSource, Units units) {
+		this.gyro = gyro;
 		this.pidSource = pidSource;
 		this.units = units;
+	}
+	
+	public void reset() {
+		gyro.setFusedHeading(0, 50); 
+		gyro.setYaw(0, 50); 
 	}
 	
 	@Override
@@ -29,11 +40,11 @@ public class PigeonWrapperRateAndAngle implements PIDSource {
 	@Override
 	public double pidGet() {
 		if (pidSource == PIDSourceType.kDisplacement) {
-			return (units == Units.RADS) ? Math.PI / 180 * -1 * RobotMap.pigeon.getFusedHeading() : -1 * RobotMap.pigeon.getFusedHeading();
+			return (units == Units.RADS) ? Math.PI / 180 * -1 * gyro.getFusedHeading() : -1 * gyro.getFusedHeading();
 			
 		} else {
 			double[] xyz = new double[3];
-			RobotMap.pigeon.getRawGyro(xyz);
+			gyro.getRawGyro(xyz);
 			
 			return (units == Units.RADS) ? Math.PI / 180 * -1 * xyz[2] : -1 * xyz[2];
 		}

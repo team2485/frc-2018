@@ -7,7 +7,11 @@ import org.usfirst.frc.team2485.robot.commands.SetVelocities;
 import org.usfirst.frc.team2485.util.AutoPath;
 import org.usfirst.frc.team2485.util.AutoPath.Pair;
 import org.usfirst.frc.team2485.util.ConstantsIO;
+import org.usfirst.frc.team2485.util.DeadReckoning;
+import org.usfirst.frc.team2485.util.PathTracker;
 import org.usfirst.frc.team2485.util.ThresholdHandler;
+
+import com.ctre.phoenix.motorcontrol.ControlMode;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Command;
@@ -34,9 +38,12 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
-		OI.init();
 		RobotMap.init();
-//		ConstantsIO.init();
+		ConstantsIO.init();
+		OI.init();
+		RobotMap.deadReckoning.start();
+		
+
 		RobotMap.updateConstants();
 		// chooser.addObject("My Auto", new MyAutoCommand());
 		SmartDashboard.putData("Auto mode", chooser);
@@ -51,6 +58,7 @@ public class Robot extends IterativeRobot {
 	public void disabledInit() {
 		Scheduler.getInstance().removeAll();
 		RobotMap.driveTrain.reset();
+//		RobotMap.deadReckoning.stop();
 	}
 
 	@Override
@@ -83,20 +91,26 @@ public class Robot extends IterativeRobot {
 		 */
 
 		// schedule the autonomous command (example)
+		
+		//UNCOMMENT CONSTANTSIO
 		RobotMap.driveRightEncoderWrapperDistance.reset();
 		RobotMap.driveLeftEncoderWrapperDistance.reset();
 		RobotMap.pigeon.setFusedHeading(0, 0);
 		RobotMap.pigeon.setYaw(0, 0);
+		
 		Pair[] controlPoints = {
 				new Pair(0,	0), new Pair(0, 120), new Pair(120, 120)
 			};
 			double[] dists = {
 					70
 			};
-			AutoPath path = AutoPath.getAutoPathForClothoidSpline(controlPoints, dists);
-			System.out.println(path.getPathLength());
-			System.out.println(path.getHeadingAtDist(20));
-			Scheduler.getInstance().add(new DriveTo(path, 40, false, 100000));
+		AutoPath path = AutoPath.getAutoPathForClothoidSpline(controlPoints, dists);
+		System.out.println(path.getPathLength());
+		System.out.println(path.getHeadingAtDist(20));
+		Scheduler.getInstance().add(new DriveTo(path, 40, false, 100000));
+			
+		RobotMap.pathTracker = new PathTracker(RobotMap.deadReckoning, path);
+		RobotMap.pathTracker.start();
 //		Scheduler.getInstance().add(new HighLowCurrentTest(-1, -1, -1, -1, 2000));
 //		Scheduler.getInstance().add(new SetVelocities(30, 0.01));
 //		CommandGroup cg = new CommandGroup();
@@ -114,6 +128,9 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousPeriodic() {
 		Scheduler.getInstance().run();
+		SmartDashboard.putNumber("Drift", RobotMap.pathTracker.getDrift());
+		SmartDashboard.putNumber("Path Distance", RobotMap.pathTracker.getPathDist());
+		
 //		RobotMap.driveTrain.setVelocities(60, 0.02);
 		
 		updateSmartDashboard();
@@ -141,13 +158,13 @@ public class Robot extends IterativeRobot {
 	public void teleopPeriodic() {
 		Scheduler.getInstance().run();
 		updateSmartDashboard();
-		RobotMap.intake.setRollers(ThresholdHandler.deadbandAndScale(OI.operator.getRawAxis(OI.XBOX_RYJOYSTICK_PORT), .2, 0, 1));
+		RobotMap.intakeLeftTalon.set(ControlMode.PercentOutput, ThresholdHandler.deadbandAndScale(OI.operator.getRawAxis(OI.XBOX_LYJOYSTICK_PORT), .2, 0, 1));
+		RobotMap.intakeRightTalon.set(ControlMode.PercentOutput, ThresholdHandler.deadbandAndScale(OI.operator.getRawAxis(OI.XBOX_RYJOYSTICK_PORT), .2, 0, 1));
 
 
 	}
 
 	public void updateSmartDashboard() {
-
 		SmartDashboard.putNumber("Yaw", RobotMap.pigeonDisplacementWrapper.pidGet());
 		SmartDashboard.putNumber("Yaw Rate", RobotMap.pigeonRateWrapper.pidGet());
 		SmartDashboard.putNumber("velocity setpoint", RobotMap.driveTrain.velocitySetpointTN.getOutput());
@@ -177,7 +194,11 @@ public class Robot extends IterativeRobot {
 
 
 		SmartDashboard.putNumber("Curvature Setpoint TN", RobotMap.driveTrain.curvatureSetpointTN.getOutput());
-//		SmartDashboard.putNumber("Elbow Encoder Distance", RobotMap.elbowEncoderWrapperDistance.pidGet());
+		SmartDashboard.putNumber("Elbow Encoder Raw", RobotMap.elbowTalon.getSensorCollection().getQuadraturePosition());
+		SmartDashboard.putNumber("Intake Current", RobotMap.intakeLeftTalon.getOutputCurrent());
+		SmartDashboard.putNumber("X", RobotMap.deadReckoning.getX());
+		SmartDashboard.putNumber("Y", RobotMap.deadReckoning.getY());
+		
 //		SmartDashboard.putNumber("Wrist Encoder Distance", RobotMap.wristEncoderWrapperDistance.pidGet());
 //		RobotMap.pigeon.getYawPitchRoll(ypr);
 		

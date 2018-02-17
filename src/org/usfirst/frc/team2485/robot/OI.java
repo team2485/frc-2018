@@ -12,8 +12,8 @@ import edu.wpi.first.wpilibj.buttons.JoystickButton;
  */
 public class OI {
 	
-	public static final double XBOX_AXIS_DEADBAND = 0.25;
-	public static final double XBOX_TRIGGER_DEADBAND = 0.25;
+	public static final double XBOX_AXIS_DEADBAND = 0.2;
+	public static final double XBOX_TRIGGER_DEADBAND = 0.02;
 	
 	public static Joystick driver;
 	public static Joystick operator;
@@ -98,9 +98,10 @@ public class OI {
 		
 		OPERATOR_XBOX = new JoystickButton(driver, XBOX_XBOX_PORT);
 		
-//		DRIVER_A.whenPressed(new IntakeWithControllers(0.8));
-//		DRIVER_B.whenPressed(new IntakeWithControllers(0));
-		
+		DRIVER_LBUMPER.whenPressed(new IntakeWithControllers(1));
+		DRIVER_LBUMPER.whenReleased(new IntakeWithControllers(0));
+		DRIVER_RBUMPER.whenPressed(new IntakeWithControllers(-1));
+		DRIVER_RBUMPER.whenReleased(new IntakeWithControllers(0));
 		//TESTING
 //		DRIVER_X.whenPressed(new ZeroArmEncoders());
 		

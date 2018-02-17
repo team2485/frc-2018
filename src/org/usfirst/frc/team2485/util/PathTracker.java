@@ -12,8 +12,8 @@ public class PathTracker {
 	private double drift = 0;
 	private static final double PRECISION = 0.01; // inches
 	private boolean enabled = false;
-	public PathTracker(DeadReckoning positionTractker, AutoPath path) {
-		this.positionTracker = positionTractker;
+	public PathTracker(DeadReckoning positionTracker, AutoPath path) {
+		this.positionTracker = positionTracker;
 		this.path = path;
 		new Timer().schedule(new UpdateTask(), 0, 10);
 	}
@@ -21,10 +21,12 @@ public class PathTracker {
 	public void start() {
 		drift = pathDist = 0;
 		enabled = true;
+		positionTracker.start();
 	}
 	
 	public void stop() {
 		enabled = false;
+		positionTracker.stop();
 	}
 	
 	public double getDrift() {
@@ -39,7 +41,7 @@ public class PathTracker {
 		// get actual position
 		double x = positionTracker.getX();
 		double y = positionTracker.getY();
-		// get target poisition
+		// get target position
 		Point targPoint = path.getPointAtDist(pathDist);
 		// calculate error vector (form target to cur position)
 		double deltaX = x - targPoint.x;
