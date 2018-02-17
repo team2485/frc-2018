@@ -203,9 +203,6 @@ public class DriveTrain extends Subsystem {
 
 	public void simpleDrive(double throttle, double steering) {
 		
-		throttle = mapPWM(throttle, OI.XBOX_TRIGGER_DEADBAND);
-		steering = mapPWM(steering, OI.XBOX_AXIS_DEADBAND);
-		
 		enablePID(false);
 		double left = throttle + steering;
 		double right = throttle - steering;

@@ -162,6 +162,7 @@ public class Robot extends IterativeRobot {
 		RobotMap.intakeRightTalon.set(ControlMode.PercentOutput, ThresholdHandler.deadbandAndScale(OI.operator.getRawAxis(OI.XBOX_RYJOYSTICK_PORT), .2, 0, 1));
 
 
+
 	}
 
 	public void updateSmartDashboard() {

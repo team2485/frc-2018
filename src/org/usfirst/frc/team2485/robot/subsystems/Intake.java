@@ -1,6 +1,5 @@
 package org.usfirst.frc.team2485.robot.subsystems;
 
-import org.usfirst.frc.team2485.robot.OI;
 import org.usfirst.frc.team2485.robot.RobotMap;
 import org.usfirst.frc.team2485.robot.commands.IntakeWithControllers;
 
@@ -23,6 +22,10 @@ public class Intake extends Subsystem {
 		this.left = RobotMap.intakeLeftTalon;
 		this.right = RobotMap.intakeRightTalon;
 	}
+	
+	public void initDefaultCommand() {
+		setDefaultCommand(new IntakeWithControllers());
+	}
 
 	public void setRollers(double pwm) {
 		left.set(ControlMode.PercentOutput, pwm);
@@ -40,10 +43,5 @@ public class Intake extends Subsystem {
 		}else {
 			return false;
 		}	
-	}
-
-	@Override
-	protected void initDefaultCommand() {
-//		setDefaultCommand(new IntakeWithControllers(p);
 	}
 }
