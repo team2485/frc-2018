@@ -2,12 +2,9 @@
 package org.usfirst.frc.team2485.robot;
 
 import org.usfirst.frc.team2485.robot.commands.DriveTo;
-import org.usfirst.frc.team2485.robot.commands.HighLowCurrentTest;
-import org.usfirst.frc.team2485.robot.commands.SetVelocities;
 import org.usfirst.frc.team2485.util.AutoPath;
 import org.usfirst.frc.team2485.util.AutoPath.Pair;
 import org.usfirst.frc.team2485.util.ConstantsIO;
-import org.usfirst.frc.team2485.util.DeadReckoning;
 import org.usfirst.frc.team2485.util.PathTracker;
 import org.usfirst.frc.team2485.util.ThresholdHandler;
 
@@ -105,12 +102,11 @@ public class Robot extends IterativeRobot {
 					70
 			};
 		AutoPath path = AutoPath.getAutoPathForClothoidSpline(controlPoints, dists);
-		System.out.println(path.getPathLength());
-		System.out.println(path.getHeadingAtDist(20));
 		Scheduler.getInstance().add(new DriveTo(path, 40, false, 100000));
 			
 		RobotMap.pathTracker = new PathTracker(RobotMap.deadReckoning, path);
 		RobotMap.pathTracker.start();
+		
 //		Scheduler.getInstance().add(new HighLowCurrentTest(-1, -1, -1, -1, 2000));
 //		Scheduler.getInstance().add(new SetVelocities(30, 0.01));
 //		CommandGroup cg = new CommandGroup();

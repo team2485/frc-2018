@@ -1,6 +1,5 @@
 package org.usfirst.frc.team2485.util;
 
-import org.usfirst.frc.team2485.robot.RobotMap;
 
 import com.ctre.phoenix.sensors.PigeonIMU;
 
@@ -25,6 +24,10 @@ public class PigeonWrapperRateAndAngle implements PIDSource {
 	public void reset() {
 		gyro.setFusedHeading(0, 50); 
 		gyro.setYaw(0, 50); 
+	}
+	
+	public PigeonIMU getPigeon() {
+		return gyro;
 	}
 	
 	@Override

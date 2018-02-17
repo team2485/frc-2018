@@ -1,9 +1,6 @@
 package org.usfirst.frc.team2485.util;
 
-import org.usfirst.frc.team2485.robot.RobotMap;
 
-import com.ctre.phoenix.sensors.PigeonIMU;
-import edu.wpi.first.wpilibj.PIDSourceType;
 
 public class DeadReckoning {
 
@@ -54,13 +51,13 @@ public class DeadReckoning {
 		double curDist = (leftEnc.pidGet() + rightEnc.pidGet()) / 2;
 		double deltaDist = curDist - lastDist;
 		short [] xyz = new short [3];
-		RobotMap.pigeon.getBiasedAccelerometer(xyz);
+		gyro.getPigeon().getBiasedAccelerometer(xyz);
 //		System.out.println("X"+xyz[0]);
 //		System.out.println(xyz[1]);
 //		System.out.println(xyz[2]);
 		
 		double[] ypr = new double[3];
-		RobotMap.pigeon.getYawPitchRoll(ypr);
+		gyro.getPigeon().getYawPitchRoll(ypr);
 //
 //		double acceleration = (xyz[1] * 9.8 * 100 / 16384 / 2.54) - 9.8 * 100 / 2.54 * Math.sin(Math.toRadians(ypr[1]));
 //		double deltaDist = velocity * .01 + acceleration / 2 * .0001;

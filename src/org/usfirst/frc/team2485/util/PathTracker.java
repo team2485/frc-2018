@@ -6,12 +6,14 @@ import java.util.TimerTask;
 import org.usfirst.frc.team2485.util.AutoPath.Point;
 
 public class PathTracker {
+	
 	private DeadReckoning positionTracker;
 	private AutoPath path;
 	private double pathDist = 0;
 	private double drift = 0;
 	private static final double PRECISION = 0.01; // inches
 	private boolean enabled = false;
+	
 	public PathTracker(DeadReckoning positionTracker, AutoPath path) {
 		this.positionTracker = positionTracker;
 		this.path = path;

@@ -20,7 +20,6 @@ import com.ctre.phoenix.sensors.PigeonIMU;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PIDSourceType;
-import edu.wpi.first.wpilibj.PowerDistributionPanel;
 
 /**
  * The RobotMap is a mapping from the ports sensors and actuators are wired into

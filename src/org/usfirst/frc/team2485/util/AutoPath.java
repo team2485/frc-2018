@@ -1,13 +1,7 @@
 package org.usfirst.frc.team2485.util;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Stroke;
 import java.util.ArrayList;
 import java.util.Arrays;
-
-import org.usfirst.frc.team2485.util.AutoPath.Pair;
 
 
 /**
