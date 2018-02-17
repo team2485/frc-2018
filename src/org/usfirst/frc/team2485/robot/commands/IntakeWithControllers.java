@@ -34,8 +34,7 @@ public class IntakeWithControllers extends Command {
 		}
 		RobotMap.intake.setRollers(pwm);
 	}
-<<<<<<< HEAD
-=======
+
 	
 	public void stop() {
 		RobotMap.intake.stopRollers();
@@ -46,6 +45,5 @@ public class IntakeWithControllers extends Command {
 		return false;
 	}
 	
->>>>>>> branch 'master' of https://github.com/team2485/frc-2018.git
 
 }
