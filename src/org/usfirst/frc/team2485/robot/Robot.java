@@ -2,6 +2,7 @@
 package org.usfirst.frc.team2485.robot;
 
 import org.usfirst.frc.team2485.robot.commands.DriveTo;
+import org.usfirst.frc.team2485.robot.subsystems.Arm;
 import org.usfirst.frc.team2485.util.AutoPath;
 import org.usfirst.frc.team2485.util.AutoPath.Pair;
 import org.usfirst.frc.team2485.util.ConstantsIO;
@@ -38,7 +39,7 @@ public class Robot extends IterativeRobot {
 		RobotMap.init();
 		ConstantsIO.init();
 		OI.init();
-		RobotMap.deadReckoning.start();
+//		RobotMap.deadReckoning.start();
 		
 
 		RobotMap.updateConstants();
@@ -90,23 +91,23 @@ public class Robot extends IterativeRobot {
 		// schedule the autonomous command (example)
 		
 		//UNCOMMENT CONSTANTSIO
-		RobotMap.driveRightEncoderWrapperDistance.reset();
-		RobotMap.driveLeftEncoderWrapperDistance.reset();
-		RobotMap.pigeon.setFusedHeading(0, 0);
-		RobotMap.pigeon.setYaw(0, 0);
-		
-		Pair[] controlPoints = {
-				new Pair(0,	0), new Pair(0, 120), new Pair(120, 120)
-			};
-			double[] dists = {
-					70
-			};
-		AutoPath path = AutoPath.getAutoPathForClothoidSpline(controlPoints, dists);
-		Scheduler.getInstance().add(new DriveTo(path, 40, false, 100000));
-			
-		RobotMap.pathTracker = new PathTracker(RobotMap.deadReckoning, path);
-		RobotMap.pathTracker.start();
-		
+//		RobotMap.driveRightEncoderWrapperDistance.reset();
+//		RobotMap.driveLeftEncoderWrapperDistance.reset();
+//		RobotMap.pigeon.setFusedHeading(0, 0);
+//		RobotMap.pigeon.setYaw(0, 0);
+//		
+//		Pair[] controlPoints = {
+//				new Pair(0,	0), new Pair(0, 120), new Pair(120, 120)
+//			};
+//			double[] dists = {
+//					70
+//			};
+//		AutoPath path = AutoPath.getAutoPathForClothoidSpline(controlPoints, dists);
+//		Scheduler.getInstance().add(new DriveTo(path, 40, false, 100000));
+//			
+//		RobotMap.pathTracker = new PathTracker(RobotMap.deadReckoning, path);
+//		RobotMap.pathTracker.start();
+//		
 //		Scheduler.getInstance().add(new HighLowCurrentTest(-1, -1, -1, -1, 2000));
 //		Scheduler.getInstance().add(new SetVelocities(30, 0.01));
 //		CommandGroup cg = new CommandGroup();
@@ -124,18 +125,27 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousPeriodic() {
 		Scheduler.getInstance().run();
-		SmartDashboard.putNumber("Drift", RobotMap.pathTracker.getDrift());
-		SmartDashboard.putNumber("Path Distance", RobotMap.pathTracker.getPathDist());
+//		SmartDashboard.putNumber("Drift", RobotMap.pathTracker.getDrift());
+//		SmartDashboard.putNumber("Path Distance", RobotMap.pathTracker.getPathDist());
+		
+//		RobotMap.arm.setElbowManual(0);
+//		RobotMap.arm.setWristManual(0);
+//		RobotMap.arm.setElbowVelocity(.05);
+		RobotMap.arm.setElbowPos(.17);
+	
 		
 //		RobotMap.driveTrain.setVelocities(60, 0.02);
 		
 		updateSmartDashboard();
 //		RobotMap.drivetrain.setCurrents(-1, -1);
+		RobotMap.arm.setWristPos(.1);
+//		RobotMap.arm.setWristVelocity(.1);
+		System.out.println(RobotMap.arm.wristPIDisEnabled());
 	}
 
 	@Override
 	public void teleopInit() {
-//		ConstantsIO.init();
+		ConstantsIO.init();
 		RobotMap.updateConstants();
 		RobotMap.driveTrain.reset();
 //		RobotMap.deadReckoning.start();
@@ -143,6 +153,8 @@ public class Robot extends IterativeRobot {
 		// teleop starts running. If you want the autonomous to
 		// continue until interrupted by another command, remove
 		// this line or comment it out.
+		RobotMap.arm.initWristEnc();
+		RobotMap.arm.initElbowEnc();
 		
 		
 	}
@@ -154,16 +166,21 @@ public class Robot extends IterativeRobot {
 	public void teleopPeriodic() {
 		Scheduler.getInstance().run();
 		updateSmartDashboard();
-		RobotMap.intakeLeftTalon.set(ControlMode.PercentOutput, ThresholdHandler.deadbandAndScale(OI.operator.getRawAxis(OI.XBOX_LYJOYSTICK_PORT), .2, 0, 1));
-		RobotMap.intakeRightTalon.set(ControlMode.PercentOutput, ThresholdHandler.deadbandAndScale(OI.operator.getRawAxis(OI.XBOX_RYJOYSTICK_PORT), .2, 0, 1));
-
+//		RobotMap.intakeLeftTalon.set(ControlMode.PercentOutput, ThresholdHandler.deadbandAndScale(OI.operator.getRawAxis(OI.XBOX_LYJOYSTICK_PORT), .2, 0, 1));
+//		RobotMap.intakeRightTalon.set(ControlMode.PercentOutput, ThresholdHandler.deadbandAndScale(OI.operator.getRawAxis(OI.XBOX_RYJOYSTICK_PORT), .2, 0, 1));
+//		RobotMap.arm.setWristCurrent(1);
+//		RobotMap.arm.setElbowCurrent(1);
+	
+//		RobotMap.arm.setWristManual(ThresholdHandler.deadbandAndScale(OI.driver.getRawAxis(1), OI.XBOX_AXIS_DEADBAND, 0, 1));
+//		RobotMap.arm.setElbowManual(ThresholdHandler.deadbandAndScale(OI.driver.getRawAxis(5), OI.XBOX_AXIS_DEADBAND, 0, 1));
+		
 
 
 	}
 
 	public void updateSmartDashboard() {
-		SmartDashboard.putNumber("Yaw", RobotMap.pigeonDisplacementWrapper.pidGet());
-		SmartDashboard.putNumber("Yaw Rate", RobotMap.pigeonRateWrapper.pidGet());
+//		SmartDashboard.putNumber("Yaw", RobotMap.pigeonDisplacementWrapper.pidGet());
+//		SmartDashboard.putNumber("Yaw Rate", RobotMap.pigeonRateWrapper.pidGet());
 		SmartDashboard.putNumber("velocity setpoint", RobotMap.driveTrain.velocitySetpointTN.getOutput());
 		SmartDashboard.putNumber("Yaw Rate Error", RobotMap.driveTrain.getAngleRateError());
 		SmartDashboard.putNumber("Left Encoder Dist", RobotMap.driveLeftEncoderWrapperDistance.pidGet());
@@ -191,10 +208,21 @@ public class Robot extends IterativeRobot {
 
 
 		SmartDashboard.putNumber("Curvature Setpoint TN", RobotMap.driveTrain.curvatureSetpointTN.getOutput());
-		SmartDashboard.putNumber("Elbow Encoder Raw", RobotMap.elbowTalon.getSensorCollection().getQuadraturePosition());
+		SmartDashboard.putNumber("Elbow Encoder", RobotMap.elbowEncoderWrapperDistance.pidGet());
+		SmartDashboard.putNumber("Wrist Encoder", RobotMap.wristEncoderWrapperDistance.pidGet());
 		SmartDashboard.putNumber("Intake Current", RobotMap.intakeLeftTalon.getOutputCurrent());
-		SmartDashboard.putNumber("X", RobotMap.deadReckoning.getX());
-		SmartDashboard.putNumber("Y", RobotMap.deadReckoning.getY());
+//		SmartDashboard.putNumber("X", RobotMap.deadReckoning.getX());
+//		SmartDashboard.putNumber("Y", RobotMap.deadReckoning.getY());
+		SmartDashboard.putNumber("Elbow Current error", RobotMap.elbowTalon.getClosedLoopError(0));
+		SmartDashboard.putNumber("Wrist Current Error", RobotMap.wristTalon.getClosedLoopError(0));
+		SmartDashboard.putNumber("Wrist Ang Vel error", RobotMap.arm.getWristAngVelError());
+		SmartDashboard.putNumber("Wrist Enc Rate", RobotMap.wristEncoderWrapperRate.pidGet());
+		SmartDashboard.putNumber("Elbow Enc Rate", RobotMap.elbowEncoderWrapperRate.pidGet());
+		SmartDashboard.putNumber("Wrist Ang Error", RobotMap.arm.getWristAngError());
+		SmartDashboard.putNumber("Elbow Ang Vel Error", RobotMap.arm.getElbowAngVelError());
+		SmartDashboard.putNumber("Elbow Ang Error", RobotMap.arm.getElbowAngError());
+		
+
 		
 //		SmartDashboard.putNumber("Wrist Encoder Distance", RobotMap.wristEncoderWrapperDistance.pidGet());
 //		RobotMap.pigeon.getYawPitchRoll(ypr);

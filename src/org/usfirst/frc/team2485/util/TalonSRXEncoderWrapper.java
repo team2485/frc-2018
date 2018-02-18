@@ -28,9 +28,9 @@ public class TalonSRXEncoderWrapper implements PIDSource{
 	@Override
 	public double pidGet() {
 		if(pidSource == PIDSourceType.kDisplacement) {
-			return ((double)(talonsrx.getSensorCollection().getQuadraturePosition())/4096)*distancePerRevolution;
+			return ((double)(talonsrx.getSelectedSensorPosition(0))/4096)*distancePerRevolution;
 		} else {
-			return ((double)(talonsrx.getSensorCollection().getQuadratureVelocity())/4096)*10*distancePerRevolution;
+			return ((double)(talonsrx.getSelectedSensorVelocity(0))/4096)*10*distancePerRevolution;
 		}
 	}
 	

@@ -1,5 +1,6 @@
 package org.usfirst.frc.team2485.robot.subsystems;
 
+import org.usfirst.frc.team2485.robot.OI;
 import org.usfirst.frc.team2485.robot.RobotMap;
 import org.usfirst.frc.team2485.robot.commands.DriveWithControllers;
 import org.usfirst.frc.team2485.util.ConstantsIO;
@@ -18,6 +19,24 @@ import edu.wpi.first.wpilibj.command.Subsystem;
  *
  */
 public class DriveTrain extends Subsystem {
+
+	public enum DriveSpeed {
+		SLOW_SPEED_RATING, NORMAL_SPEED_RATING;
+
+		public double getSpeedFactor() {
+
+			switch (this) { 
+			case SLOW_SPEED_RATING:
+				return 0.5;
+			case NORMAL_SPEED_RATING:
+				return 1.0;
+			default:
+				return 1.0;
+			}
+		}
+	}
+
+	private double driveSpeed = DriveSpeed.NORMAL_SPEED_RATING.getSpeedFactor();
 
 	public static final double LOW_ENC_RATE = 2;
 
@@ -179,7 +198,7 @@ public class DriveTrain extends Subsystem {
 	}
 
 	public void initDefaultCommand() {
-		setDefaultCommand(new DriveWithControllers());
+//		setDefaultCommand(new DriveWithControllers());
 	}
 
 	public void simpleDrive(double throttle, double steering) {
@@ -202,12 +221,6 @@ public class DriveTrain extends Subsystem {
 		RobotMap.driveRightPWM.set(right);
 	}
 	
-	public void WARlordsDrive(double throttle, double steering) { 
-		
-		simpleDrive(throttle, steering);
-		
-	}
-	
 	public double getDistancePIDOutput() {
 		return distanceTN.getOutput();
 	}
@@ -226,6 +239,10 @@ public class DriveTrain extends Subsystem {
 	
 	public double getAngleError() {
 		return anglePID.getAvgError();
+	}
+
+	public void setDriveSpeed(DriveSpeed speed) {
+		driveSpeed = speed.getSpeedFactor();
 	}
 
 	public void zeroEncoders() {
@@ -291,6 +308,26 @@ public class DriveTrain extends Subsystem {
 			curvatureTN.setOutput(0);
 		}
 		
+	}
+	
+	public void WARlordsDrive(double throttle, double steering) { 
+		
+		enablePID(false);
+		
+		double left = throttle + steering;
+		double right = throttle - steering;
+
+		if (Math.abs(left) > 1) {
+			right /= Math.abs(left);
+			left /= Math.abs(left);
+		} 
+		if (Math.abs(right) > 1) {
+			left /= Math.abs(right);
+			right /= Math.abs(right);
+		}
+
+		RobotMap.driveLeftPWM.set(left);
+		RobotMap.driveRightPWM.set(right);
 	}
 	
 	public void setCurrents(double l, double r) {

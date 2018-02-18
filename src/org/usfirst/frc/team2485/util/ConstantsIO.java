@@ -49,20 +49,36 @@ public class ConstantsIO {
 	
 	public static double kP_ElbowAngVel;
 	public static double kI_ElbowAngVel;
+	public static double kF_ElbowAngVel;
 	
 	public static double kP_WristAng;
 	
 	public static double kP_WristAngVel;
 	public static double kI_WristAngVel;
+	public static double kF_WristAngVel;
 	
 	public static double kUpRamp_Velocity;
 	public static double kDownRamp_Velocity;
+	
+	public static int kSoftLimitReverse_Wrist;
+	public static int kSoftLimitForward_Wrist;
+	public static int kSoftLimitReverse_Elbow;
+	public static int kSoftLimitForward_Elbow;
+	
+	public static double levitateWristCurrent;
+	public static double levitateElbowCurrent;
+
+
+
 	
 	public static double kP_Drift;
 	
 	public static int IMax;
 
 	public static double voltageMax;
+
+	public static double currentStallWrist;
+	public static double currentStallElbow;
 
 
 
@@ -116,22 +132,33 @@ public class ConstantsIO {
 		kUpRamp_Velocity = Double.parseDouble(data.get("kUpRamp_Velocity"));
 		kDownRamp_Velocity = Double.parseDouble(data.get("kDownRamp_Velocity"));
 		
-//		kP_AngVelTeleop = Double.parseDouble(data.get("kP_AngVelTeleop"));
-//		kI_AngVelTeleop = Double.parseDouble(data.get("kI_AngVelTeleop"));
-//		kD_AngVelTeleop = Double.parseDouble(data.get("kD_AngVelTeleop"));
-//		kF_AngVelTeleop = Double.parseDouble(data.get("kF_AngVelTeleop"));
+		kP_ElbowAng = Double.parseDouble(data.get("kP_ElbowAng"));
 		
-//		kP_ElbowAng = Double.parseDouble(data.get("kP_ElbowAng"));
-//		
-//		kP_ElbowAngVel = Double.parseDouble(data.get("kP_ElbowAngVel"));
-//		kI_ElbowAngVel = Double.parseDouble(data.get("kI_ElbowAngVel"));
-//		
-//		
-//		kP_WristAng = Double.parseDouble(data.get("kP_WristAng"));
-//		
-//		kP_WristAngVel = Double.parseDouble(data.get("kP_WristAngVel"));
-//		kI_WristAngVel = Double.parseDouble(data.get("kI_WristAngVel"));
-//	
+		kP_ElbowAngVel = Double.parseDouble(data.get("kP_ElbowAngVel"));
+		kI_ElbowAngVel = Double.parseDouble(data.get("kI_ElbowAngVel"));
+		kF_ElbowAngVel = Double.parseDouble(data.get("kF_ElbowAngVel"));
+		
+		
+		kP_WristAng = Double.parseDouble(data.get("kP_WristAng"));
+		
+		kP_WristAngVel = Double.parseDouble(data.get("kP_WristAngVel"));
+		kI_WristAngVel = Double.parseDouble(data.get("kI_WristAngVel"));
+		kF_WristAngVel = Double.parseDouble(data.get("kF_WristAngVel"));
+		
+		kSoftLimitForward_Wrist = Integer.parseInt(data.get("kSoftLimitForward_Wrist"));
+		kSoftLimitReverse_Wrist = Integer.parseInt(data.get("kSoftLimitReverse_Wrist"));
+		kSoftLimitForward_Elbow = Integer.parseInt(data.get("kSoftLimitForward_Elbow"));
+		kSoftLimitReverse_Elbow = Integer.parseInt(data.get("kSoftLimitReverse_Elbow"));
+		
+		currentStallWrist = Integer.parseInt(data.get("currentStallWrist"));
+		currentStallElbow = Integer.parseInt(data.get("currentStallElbow"));
+		
+		levitateWristCurrent = Double.parseDouble(data.get("levitateWristCurrent"));
+		levitateElbowCurrent = Double.parseDouble(data.get("levitateElbowCurrent"));
+
+
+		
+	
 
 		
 		

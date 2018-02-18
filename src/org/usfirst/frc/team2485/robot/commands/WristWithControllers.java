@@ -23,10 +23,9 @@ public class WristWithControllers extends Command {
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
     	boolean isManual = false;
-    	double axis = ThresholdHandler.deadbandAndScale(OI.operator.getRawAxis(OI.XBOX_LYJOYSTICK_PORT), OI.XBOX_AXIS_DEADBAND, 0, 1); // joystick command
+    	double axis = ThresholdHandler.deadbandAndScale(OI.driver.getRawAxis(OI.XBOX_LYJOYSTICK_PORT), OI.XBOX_AXIS_DEADBAND, 0, 1); // joystick command
 
     	double theta2 = RobotMap.arm.getWristAngle();
-    	
     	if (axis != 0 && Math.abs(RobotMap.arm.getElbowAngle()) > Arm.CRITICAL_ANGLE) {
     		isManual = true;
     		RobotMap.arm.setWristManual(axis);
@@ -39,11 +38,14 @@ public class WristWithControllers extends Command {
     	}
     	
     	if (!isManual) {
-    		if (RobotMap.arm.getElbowAngle() < 0) {
+    		if (RobotMap.arm.getElbowAngle() * RobotMap.arm.getElbowSetpoint() < 0) { // crossing from low to high
+    			RobotMap.arm.setWristPos(0.25);
+    		} else if (RobotMap.arm.getElbowAngle() < 0) {
     			RobotMap.arm.setWristPos(Math.max(RobotMap.arm.getThetaLow(), RobotMap.arm.getMinWristPos()));
     		} else {
-    			RobotMap.arm.setWristPos(Math.max(RobotMap.arm.getThetaLow(), RobotMap.arm.getMinWristPos()));
+    			RobotMap.arm.setWristPos(Math.max(RobotMap.arm.getThetaHigh(), RobotMap.arm.getMinWristPos()));
     		}
+//    		System.out.println(RobotMap.arm.getThetaHigh() + " " + RobotMap.arm.getThetaLow() + " " + RobotMap.arm.getMinWristPos());
     	}
     }
 

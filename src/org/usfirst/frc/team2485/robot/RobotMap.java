@@ -37,8 +37,8 @@ public class RobotMap {
 	public static final int intakeRightPort = 6;
 	
 	public static final int elbowPort1 = 3; //Temporary
-	public static final int elbowPort2 = 12;
-	public static final int wristPort = 13;
+	public static final int elbowPort2 = 13;
+	public static final int wristPort = 4;
 	
 	public static final int driveRightPortTalon = 1;
 	public static final int driveRightPortVictor2 = 11;
@@ -78,7 +78,7 @@ public class RobotMap {
 	public static TalonSRXWrapper intakeLeftWrapper;
 	public static TalonSRXWrapper intakeRightWrapper;
 	
-	public static TalonSRXWrapper elbowTalonWrapper1;
+	public static TalonSRXWrapper elbowTalonWrapper;
 	public static TalonSRXWrapper elbowTalonWrapper2;
 	public static TalonSRXWrapper wristTalonWrapper;
 	public static SpeedControllerWrapper elbowCurrentWrapper;
@@ -149,15 +149,14 @@ public class RobotMap {
 		elbowTalon = new TalonSRX(elbowPort1); 
 		elbowVictor = new VictorSPX(elbowPort2); 
 		wristTalon = new TalonSRX(wristPort);
+				
+		elbowVictor.follow(elbowTalon);
 		
-		elbowTalon.set(ControlMode.Current, elbowPort1);
-		elbowVictor.set(ControlMode.Follower, elbowPort1);
-		wristTalon.set(ControlMode.Current, wristPort);
-		
-		elbowTalonWrapper1 = new TalonSRXWrapper(ControlMode.Current, elbowTalon);
+
+		elbowTalonWrapper = new TalonSRXWrapper(ControlMode.Current, elbowTalon);
 		wristTalonWrapper = new TalonSRXWrapper(ControlMode.Current, wristTalon);
 		
-		elbowCurrentWrapper = new SpeedControllerWrapper(elbowTalonWrapper1);
+		elbowCurrentWrapper = new SpeedControllerWrapper(elbowTalonWrapper);
 		wristCurrentWrapper = new SpeedControllerWrapper(wristTalonWrapper);
 		
 		driveLeftTalon = new TalonSRX(driveLeftPortTalon);
@@ -202,10 +201,11 @@ public class RobotMap {
 		driveLeftEncoderWrapperDistance = new TalonSRXEncoderWrapper(driveLeftTalon,  PIDSourceType.kDisplacement);
 		driveRightEncoderWrapperDistance = new TalonSRXEncoderWrapper(driveRightTalon, PIDSourceType.kDisplacement);
 		
-//		elbowEncoderWrapperDistance = new TalonSRXEncoderWrapper(elbowTalon, PIDSourceType.kDisplacement);
-//		wristEncoderWrapperDistance = new TalonSRXEncoderWrapper(wristTalon, PIDSourceType.kDisplacement);
-//		elbowEncoderWrapperRate = new TalonSRXEncoderWrapper(elbowTalon, PIDSourceType.kRate);
-//		wristEncoderWrapperRate = new TalonSRXEncoderWrapper(wristTalon, PIDSourceType.kRate);
+		elbowEncoderWrapperDistance = new TalonSRXEncoderWrapper(elbowTalon, PIDSourceType.kDisplacement);
+		wristEncoderWrapperDistance = new TalonSRXEncoderWrapper(wristTalon, PIDSourceType.kDisplacement);
+		elbowEncoderWrapperRate = new TalonSRXEncoderWrapper(elbowTalon, PIDSourceType.kRate);
+		wristEncoderWrapperRate = new TalonSRXEncoderWrapper(wristTalon, PIDSourceType.kRate);
+
 		
 		
 		// Configure Hardware
@@ -229,12 +229,14 @@ public class RobotMap {
 		intakeLeftTalon.setInverted(true); 
 		
 		elbowTalon.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, 0);
-		elbowTalon.configVelocityMeasurementWindow(1, 0);
+		elbowTalon.configVelocityMeasurementWindow(8, 0);
 		elbowTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
 		wristTalon.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, 0);
-		wristTalon.configVelocityMeasurementWindow(1, 0);
-		wristTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
-		
+		wristTalon.configVelocityMeasurementWindow(8, 0);
+		wristTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 20);
+		wristEncoderWrapperDistance.setDistancePerRevolution(-1);
+		wristEncoderWrapperRate.setDistancePerRevolution(-1);
+	
 		
 		driveLeftEncoderWrapperDistance.setDistancePerRevolution(-WHEEL_RADIUS * 2 * Math.PI);
 		driveRightEncoderWrapperDistance.setDistancePerRevolution(WHEEL_RADIUS * 2 * Math.PI);
@@ -252,6 +254,7 @@ public class RobotMap {
 
 	public static void updateConstants() {
 		driveTrain.updateConstants();
+		arm.updateConstants();
 	}
 	
 }
