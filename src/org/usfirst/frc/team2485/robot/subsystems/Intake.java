@@ -1,7 +1,6 @@
 package org.usfirst.frc.team2485.robot.subsystems;
 
 import org.usfirst.frc.team2485.robot.RobotMap;
-import org.usfirst.frc.team2485.robot.commands.IntakeWithControllers;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -24,7 +23,6 @@ public class Intake extends Subsystem {
 	}
 	
 	public void initDefaultCommand() {
-		setDefaultCommand(new IntakeWithControllers());
 	}
 
 	public void setRollers(double pwm) {

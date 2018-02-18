@@ -1,7 +1,8 @@
 package org.usfirst.frc.team2485.robot;
 
+import org.usfirst.frc.team2485.robot.commandGroups.Eject;
 import org.usfirst.frc.team2485.robot.commands.ArmSetSetpoint;
-import org.usfirst.frc.team2485.robot.commands.IntakeWithControllers;
+import org.usfirst.frc.team2485.robot.commands.SetIntakeManual;
 import org.usfirst.frc.team2485.robot.subsystems.Arm.ArmSetpoint;
 
 import edu.wpi.first.wpilibj.Joystick;
@@ -101,12 +102,11 @@ public class OI {
 		OPERATOR_XBOX = new JoystickButton(driver, XBOX_XBOX_PORT);
 		
 
-		DRIVER_LBUMPER.whenPressed(new IntakeWithControllers(-.5));
-		DRIVER_LBUMPER.whenReleased(new IntakeWithControllers());
-		DRIVER_RBUMPER.whenPressed(new IntakeWithControllers(.5));
-		DRIVER_RBUMPER.whenReleased(new IntakeWithControllers());
-		DRIVER_Y.whenPressed(new ArmSetSetpoint(ArmSetpoint.SCALE));
-		DRIVER_A.whenPressed(new ArmSetSetpoint(ArmSetpoint.SWITCH));
+		DRIVER_LBUMPER.whenPressed(new Eject());
+		DRIVER_RBUMPER.whenPressed(new SetIntakeManual(1));
+		OPERATOR_RBUMPER.whenReleased(new SetIntakeManual(0));
+		OPERATOR_Y.whenPressed(new ArmSetSetpoint(ArmSetpoint.SCALE));
+		OPERATOR_A.whenPressed(new ArmSetSetpoint(ArmSetpoint.SWITCH));
 
 		//TESTING
 //		DRIVER_X.whenPressed(new ZeroArmEncoders());

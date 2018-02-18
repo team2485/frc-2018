@@ -91,7 +91,7 @@ public class Arm extends Subsystem {
 	public static final double gearRatioWrist = 975; //temporary
 	public static final double gearRatioElbow = 945;
 	
-	public static final double CRITICAL_ANGLE = Math.acos((CRITICAL_DISTANCE - L1) / L2) / 2 / Math.PI; //temp
+	public static final double CRITICAL_ANGLE = 0.18; //SET DIRECTLY
 
 	
 	private WarlordsPIDController elbowAngPID = new WarlordsPIDController();
@@ -108,6 +108,7 @@ public class Arm extends Subsystem {
 	private PIDSourceWrapper wristAngVelSource = new PIDSourceWrapper();
 	private PIDSourceWrapper elbowCurrentSource = new PIDSourceWrapper();
 	private PIDSourceWrapper wristCurrentSource = new PIDSourceWrapper();
+	private PIDSourceWrapper elbowMinCurrentSource = new PIDSourceWrapper();
 	
 	private MotorSetter elbowSetter = new MotorSetter();
 	private MotorSetter wristSetter = new MotorSetter();
@@ -124,6 +125,12 @@ public class Arm extends Subsystem {
 		elbowAngVelPID.setSetpointSource(elbowAngTN);
 		elbowAngVelPID.setOutputs(elbowAngVelTN);
 		elbowAngVelPID.setOutputRange(-MAX_CURRENT_ELBOW, MAX_CURRENT_ELBOW);
+		elbowAngVelPID.setOutputSources(null, elbowMinCurrentSource);
+		
+		elbowMinCurrentSource.setPidSource(() -> {
+			return RobotMap.elbowEncoderWrapperDistance.pidGet() < -CRITICAL_ANGLE ? 
+				 -1 : -MAX_CURRENT_ELBOW;
+		});
 		
 		elbowCurrentSource.setPidSource(()-> {
 			double a1 = elbowAngVelTN.pidGet();
@@ -236,7 +243,7 @@ public class Arm extends Subsystem {
     
     public double getMinWristPos() {
     	double margin = (CRITICAL_DISTANCE - (L1 * Math.cos(getElbowAngle()*2*Math.PI))) / L2;
-    	return Math.abs(margin) < 1 ? 
+    	return Math.abs(RobotMap.elbowEncoderWrapperDistance.pidGet()) < CRITICAL_ANGLE ? 
     			Math.acos(margin) / 2 / Math.PI :
     				0;
     }
