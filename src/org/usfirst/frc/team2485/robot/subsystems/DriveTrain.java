@@ -123,8 +123,6 @@ public class DriveTrain extends Subsystem {
 		velocityRampRate.setSetpointSource(distanceTN);
 		velocityRampRate.setOutputs(velocitySetpointTN);
 
-		//angle
-
 		anglePID.setOutputs(angleTN);
 		anglePID.setSources(RobotMap.pigeonDisplacementWrapper);
 		anglePID.setSetpointSource(anglePIDSetpointSource);
@@ -182,29 +180,54 @@ public class DriveTrain extends Subsystem {
 		setDefaultCommand(new DriveWithControllers());
 	}
 
-	public void simpleDrive(double throttle, double steering) {
-		
+	public void simpleDrive(double throttle, double steering, boolean quickturn) {
 		enablePID(false);
-		double left = throttle + steering;
-		double right = throttle - steering;
-
-		System.out.println(throttle);
-		if (Math.abs(left) > 1) {
-			right /= Math.abs(left);
-			left /= Math.abs(left);
-		} 
-		if (Math.abs(right) > 1) {
-			left /= Math.abs(right);
-			right /= Math.abs(right);
-		}
-
-		RobotMap.driveLeftPWM.set(left);
-		RobotMap.driveRightPWM.set(right);
-	}
-	
-	public void WARlordsDrive(double throttle, double steering) { 
 		
-		simpleDrive(throttle, steering);
+    	double leftPwm, rightPwm;
+    	
+    	double vmax = throttle;
+    	
+    	double angularPwm = 0;
+		
+    	if (quickturn) {
+    		angularPwm = steering;
+    	} else {
+    		angularPwm = steering * throttle; 
+    	}
+    	
+		if (vmax > 0 ) {
+			vmax -= Math.abs(angularPwm);
+		} else if (vmax < 0) {
+			vmax += Math.abs(angularPwm);
+		}
+    	
+		leftPwm = vmax + angularPwm;
+		rightPwm = vmax - angularPwm;
+		
+    	RobotMap.driveLeftPWM.set(leftPwm);
+    	RobotMap.driveRightPWM.set(rightPwm);
+    }
+	
+	
+	public void WARlordsDrive(double throttle, double steering, boolean quickturn) { 
+		anglePID.disable();
+		distancePID.disable();
+		velocityPID.disable();
+		
+		//simpleDrive(throttle, steering);
+		
+		if (quickturn) {
+			curvaturePID.disable();
+			
+			RobotMap.driveLeftPWM.set(steering);
+			RobotMap.driveRightPWM.set(-steering);
+		} else {
+			curvaturePID.enable();
+			
+			velocityTN.setOutput(throttle);
+			
+		}
+		
 		
 	}
 	
