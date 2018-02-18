@@ -1,6 +1,7 @@
 package org.usfirst.frc.team2485.robot.subsystems;
 
 import org.usfirst.frc.team2485.robot.RobotMap;
+import org.usfirst.frc.team2485.util.ConstantsIO;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
@@ -37,5 +38,12 @@ public class Intake extends Subsystem {
 
 	public boolean hasCube() {
 		return false;	
+	}
+	
+	public void updateConstants() {
+		RobotMap.intakeLeftTalon.configContinuousCurrentLimit(ConstantsIO.intakeIMax, 0);
+		RobotMap.intakeRightTalon.configContinuousCurrentLimit(ConstantsIO.intakeIMax, 0);
+		RobotMap.intakeLeftTalon.enableCurrentLimit(true);
+		RobotMap.intakeRightTalon.enableCurrentLimit(true);
 	}
 }

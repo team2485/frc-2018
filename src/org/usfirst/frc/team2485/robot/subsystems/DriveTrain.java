@@ -11,6 +11,7 @@ import org.usfirst.frc.team2485.util.ThresholdHandler;
 import org.usfirst.frc.team2485.util.TransferNode;
 import org.usfirst.frc.team2485.util.WarlordsPIDController;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
@@ -25,7 +26,7 @@ public class DriveTrain extends Subsystem {
 
 		public double getSpeedFactor() {
 
-			switch (this) { 
+			switch (this) {
 			case SLOW_SPEED_RATING:
 				return 0.5;
 			case NORMAL_SPEED_RATING:
@@ -40,13 +41,15 @@ public class DriveTrain extends Subsystem {
 
 	public static final double LOW_ENC_RATE = 2;
 
+	private static final double SPEED_LIMIT = .5;
+
 	private WarlordsPIDController distancePID = new WarlordsPIDController();
 	private WarlordsPIDController anglePID = new WarlordsPIDController();
 	private WarlordsPIDController velocityPID = new WarlordsPIDController();
 	private WarlordsPIDController curvaturePID = new WarlordsPIDController();
-	
+
 	private RampRate velocityRampRate = new RampRate();
-	
+
 	private TransferNode angleSetpointTN = new TransferNode(0);
 	private TransferNode distanceTN = new TransferNode(0);
 	private TransferNode angleTN = new TransferNode(0);
@@ -58,7 +61,7 @@ public class DriveTrain extends Subsystem {
 
 	private PIDSourceWrapper kp_distancePIDSource = new PIDSourceWrapper();
 	private PIDSourceWrapper kp_anglePIDSource = new PIDSourceWrapper();
-	
+
 	private PIDSourceWrapper anglePIDSetpointSource = new PIDSourceWrapper();
 
 	private PIDSourceWrapper encoderDistancePIDSource = new PIDSourceWrapper();
@@ -69,53 +72,54 @@ public class DriveTrain extends Subsystem {
 	private PIDSourceWrapper rightCurrentPIDSource = new PIDSourceWrapper();
 
 	private PIDSourceWrapper curvatureSetpointSource = new PIDSourceWrapper();
-		
+
 	private PIDSourceWrapper minVelocityORSource = new PIDSourceWrapper();
 	private PIDSourceWrapper maxVelocityORSource = new PIDSourceWrapper();
-	
+
 	private PIDSourceWrapper minAngVelocityORSource = new PIDSourceWrapper();
 	private PIDSourceWrapper maxAngVelocityORSource = new PIDSourceWrapper();
 
-
 	private MotorSetter leftMotorSetter = new MotorSetter();
 	private MotorSetter rightMotorSetter = new MotorSetter();
-	
 
-	
 	public double getMaxCurrent() {
-		double pwmL = RobotMap.driveLeftTalon.getMotorOutputPercent();;
+		double pwmL = RobotMap.driveLeftTalon.getMotorOutputPercent();
+		;
 		double pwmR = RobotMap.driveRightTalon.getMotorOutputPercent();
 
 		double iL = RobotMap.driveLeftTalon.getOutputCurrent();
 		double iR = RobotMap.driveRightTalon.getOutputCurrent();
-		
+
 		double i = ConstantsIO.IMax;
-		
+
 		if (Math.abs(pwmL) > .5) {
-			i = Math.min(i, Math.abs(iL/pwmL));
+			i = Math.min(i, Math.abs(iL / pwmL));
 		}
 		if (Math.abs(pwmR) > .5) {
-			i = Math.min(i, Math.abs(iR/pwmR));
+			i = Math.min(i, Math.abs(iR / pwmR));
 		}
-		
+
 		return i;
 	}
 
 	public DriveTrain() {
-		
+
 		kp_distancePIDSource.setPidSource(() -> {
-			return Math.min(ConstantsIO.kPMax_Distance, 2*ConstantsIO.accelerationMax/Math.abs(encoderAvgVelocityPIDSource.pidGet()));
+			return Math.min(ConstantsIO.kPMax_Distance,
+					2 * ConstantsIO.accelerationMax / Math.abs(encoderAvgVelocityPIDSource.pidGet()));
 		});
 		kp_anglePIDSource.setPidSource(() -> {
-			return Math.min(ConstantsIO.kP_DriveAngleMax, ConstantsIO.kP_DriveAngle/Math.abs(encoderAvgVelocityPIDSource.pidGet()));
+			return Math.min(ConstantsIO.kP_DriveAngleMax,
+					ConstantsIO.kP_DriveAngle / Math.abs(encoderAvgVelocityPIDSource.pidGet()));
 		});
-		
+
 		anglePIDSetpointSource.setPidSource(() -> {
-			return angleSetpointTN.pidGet() + RobotMap.pathTracker.getDrift()*ConstantsIO.kP_Drift;
+			return angleSetpointTN.pidGet() + RobotMap.pathTracker.getDrift() * ConstantsIO.kP_Drift;
 		});
 
 		encoderDistancePIDSource.setPidSource(() -> {
-			return (RobotMap.driveLeftEncoderWrapperDistance.pidGet() + RobotMap.driveRightEncoderWrapperDistance.pidGet()) / 2;
+			return (RobotMap.driveLeftEncoderWrapperDistance.pidGet()
+					+ RobotMap.driveRightEncoderWrapperDistance.pidGet()) / 2;
 		});
 
 		distancePID.setOutputs(distanceTN);
@@ -125,7 +129,7 @@ public class DriveTrain extends Subsystem {
 		encoderAvgVelocityPIDSource.setPidSource(() -> {
 			return (RobotMap.driveLeftEncoderWrapperRate.pidGet() + RobotMap.driveRightEncoderWrapperRate.pidGet()) / 2;
 		});
-		
+
 		minVelocityORSource.setPidSource(() -> {
 			return -(getMaxCurrent() - Math.abs(curvatureTN.pidGet() * encoderAvgVelocityPIDSource.pidGet()));
 		});
@@ -133,12 +137,12 @@ public class DriveTrain extends Subsystem {
 			return getMaxCurrent() - Math.abs(curvatureTN.pidGet() * encoderAvgVelocityPIDSource.pidGet());
 
 		});
-		
+
 		velocityPID.setOutputs(velocityTN);
 		velocityPID.setSources(encoderAvgVelocityPIDSource);
 		velocityPID.setSetpointSource(velocitySetpointTN);
 		velocityPID.setOutputSources(maxVelocityORSource, minVelocityORSource);
-		
+
 		velocityRampRate.setSetpointSource(distanceTN);
 		velocityRampRate.setOutputs(velocitySetpointTN);
 
@@ -148,19 +152,14 @@ public class DriveTrain extends Subsystem {
 		anglePID.setContinuous(true);
 		anglePID.setInputRange(0, 2 * Math.PI);
 		anglePID.setConstantsSources(kp_anglePIDSource, null, null, null);
-  
-		
-		
-		
-		
+
 		minAngVelocityORSource.setPidSource(() -> {
 			return -getMaxCurrent();
 		});
 		maxAngVelocityORSource.setPidSource(() -> {
 			return getMaxCurrent();
 		});
-	
-		
+
 		curvaturePIDSource.setPidSource(() -> {
 			if (Math.abs(encoderAvgVelocityPIDSource.pidGet()) > LOW_ENC_RATE) {
 				return RobotMap.pigeonRateWrapper.pidGet() / Math.abs(encoderAvgVelocityPIDSource.pidGet());
@@ -168,18 +167,16 @@ public class DriveTrain extends Subsystem {
 				return 0;
 			}
 		});
-		
-		
 
 		curvaturePID.setSetpointSource(curvatureSetpointSource);
 		curvaturePID.setOutputs(curvatureTN);
 		curvaturePID.setSources(curvaturePIDSource);
 		curvaturePID.setOutputSources(maxAngVelocityORSource, minAngVelocityORSource);
-		
+
 		curvatureSetpointSource.setPidSource(() -> {
 			return angleTN.getOutput() + curvatureSetpointTN.getOutput();
 		});
-		
+
 		leftCurrentPIDSource.setPidSource(() -> {
 			return velocityTN.pidGet() + curvatureTN.pidGet() * Math.abs(encoderAvgVelocityPIDSource.pidGet());
 		});
@@ -191,80 +188,116 @@ public class DriveTrain extends Subsystem {
 		leftMotorSetter.setOutputs(RobotMap.driveLeftCurrent);
 		rightMotorSetter.setSetpointSource(rightCurrentPIDSource);
 		rightMotorSetter.setOutputs(RobotMap.driveRightCurrent);
-	
 
 	}
 
 	public void initDefaultCommand() {
-//		setDefaultCommand(new DriveWithControllers());
+		setDefaultCommand(new DriveWithControllers());
 	}
 
 	public void simpleDrive(double throttle, double steering, boolean quickturn) {
 		enablePID(false);
-		
-    	double leftPwm, rightPwm;
-    	
-    	double vmax = throttle;
-    	
-    	double angularPwm = 0;
-		
-    	if (quickturn) {
-    		angularPwm = steering;
-    	} else {
-    		angularPwm = steering * throttle; 
-    	}
-    	
-		if (vmax > 0 ) {
+
+		double leftPwm, rightPwm;
+
+		double vmax = throttle;
+
+		double angularPwm = 0;
+
+		if (quickturn) {
+			angularPwm = steering;
+		} else {
+			angularPwm = Math.abs(throttle) * steering;
+		}
+
+		if (vmax > 0) {
 			vmax -= Math.abs(angularPwm);
 		} else if (vmax < 0) {
 			vmax += Math.abs(angularPwm);
 		}
-    	
+
 		leftPwm = vmax + angularPwm;
 		rightPwm = vmax - angularPwm;
+
+		RobotMap.driveLeftTalon.enableVoltageCompensation(false);
+		RobotMap.driveRightTalon.enableVoltageCompensation(false);
+		RobotMap.driveLeftTalon.enableCurrentLimit(true);
+		RobotMap.driveRightTalon.enableCurrentLimit(true);
+
+		if (RobotMap.arm.getElbowAngle() > 0) {
+			leftPwm *= SPEED_LIMIT;
+			rightPwm *= SPEED_LIMIT;
+			RobotMap.driveLeftTalon.configContinuousCurrentLimit(10, 0);
+			RobotMap.driveRightTalon.configContinuousCurrentLimit(10, 0);
+			RobotMap.driveLeftVictor3.set(ControlMode.PercentOutput, 0);
+			RobotMap.driveLeftVictor4.set(ControlMode.PercentOutput, 0);
+			RobotMap.driveRightVictor3.set(ControlMode.PercentOutput, 0);
+			RobotMap.driveRightVictor4.set(ControlMode.PercentOutput, 0);
+			double[] ypr = new double[3];
+			RobotMap.pigeon.getYawPitchRoll(ypr);
+			if (Math.abs(ypr[1]) > 5 && RobotMap.arm.getElbowAngle() > 0) {
+				RobotMap.driveLeftVictor2.set(ControlMode.PercentOutput, 0);
+				RobotMap.driveRightVictor2.set(ControlMode.PercentOutput, 0);
+			} else {
+				RobotMap.driveLeftVictor2.follow(RobotMap.driveLeftTalon);
+				RobotMap.driveRightVictor2.follow(RobotMap.driveRightTalon);
+			}
+
+		} else {
+			RobotMap.driveLeftTalon.configContinuousCurrentLimit(ConstantsIO.IMax, 0);
+			RobotMap.driveRightTalon.configContinuousCurrentLimit(ConstantsIO.IMax, 0);
+			RobotMap.driveLeftVictor2.follow(RobotMap.driveLeftTalon);
+			RobotMap.driveLeftVictor3.follow(RobotMap.driveLeftTalon);
+			RobotMap.driveLeftVictor4.follow(RobotMap.driveLeftTalon);
+			RobotMap.driveRightVictor2.follow(RobotMap.driveRightTalon);
+			RobotMap.driveRightVictor3.follow(RobotMap.driveRightTalon);
+			RobotMap.driveRightVictor4.follow(RobotMap.driveRightTalon);
+
+		}
 		
-    	RobotMap.driveLeftPWM.set(leftPwm);
-    	RobotMap.driveRightPWM.set(rightPwm);
-    }
-	
-	public void WARlordsDrive(double throttle, double steering, boolean quickturn) { 
+		
+
+		RobotMap.driveLeftPWM.set(leftPwm);
+		RobotMap.driveRightPWM.set(rightPwm);
+	}
+
+	public void WARlordsDrive(double throttle, double steering, boolean quickturn) {
 		anglePID.disable();
 		distancePID.disable();
 		velocityPID.disable();
-		
-		//simpleDrive(throttle, steering);
-		
+
+		// simpleDrive(throttle, steering);
+
 		if (quickturn) {
 			curvaturePID.disable();
-			
+
 			RobotMap.driveLeftPWM.set(steering);
 			RobotMap.driveRightPWM.set(-steering);
 		} else {
 			curvaturePID.enable();
-			
+
 			velocityTN.setOutput(throttle);
-			
+
 		}
-		
-		
+
 	}
-	
+
 	public double getDistancePIDOutput() {
 		return distanceTN.getOutput();
 	}
-	
+
 	public double getVelocityPIDOutput() {
 		return velocityTN.getOutput();
 	}
-	
-	public double mapPWM(double pwm, double deadband) {	
+
+	public double mapPWM(double pwm, double deadband) {
 		return ThresholdHandler.deadbandAndScale(pwm, deadband, 0, 1);
 	}
-	
+
 	public double getAngleRateError() {
 		return curvaturePID.getAvgError();
 	}
-	
+
 	public double getAngleError() {
 		return anglePID.getAvgError();
 	}
@@ -277,13 +310,13 @@ public class DriveTrain extends Subsystem {
 
 		RobotMap.driveLeftEncoderWrapperDistance.reset();
 		RobotMap.driveRightEncoderWrapperDistance.reset();
-		
 
 	}
-	
+
 	public double getVelocityError() {
 		return velocityPID.getAvgError();
 	}
+
 	public double getDistError() {
 		return distancePID.getAvgError();
 	}
@@ -293,18 +326,16 @@ public class DriveTrain extends Subsystem {
 		enablePID(false);
 		RobotMap.driveLeftPWM.set(0);
 		RobotMap.driveRightPWM.set(0);
-	
+
 		rightMotorSetter.disable();
 		leftMotorSetter.disable();
-		
-		
 
 	}
-	
+
 	public void emergencyStop() {
 		reset();
 	}
-	
+
 	public double angVelOutput() {
 		return curvatureTN.getOutput();
 	}
@@ -320,14 +351,12 @@ public class DriveTrain extends Subsystem {
 		velocityRampRate.enable();
 
 		// allows us to set setpoints directly
-//		velocityPID.setSetpointSource(null);
+		// velocityPID.setSetpointSource(null);
 		velocityRampRate.setSetpointSource(null);
 		curvaturePID.setSetpointSource(null);
 
 		velocityRampRate.setSetpoint(linearVel);
-		
-		
-		
+
 		if (Math.abs(encoderAvgVelocityPIDSource.pidGet()) > LOW_ENC_RATE) {
 			curvaturePID.enable();
 			curvaturePID.setSetpoint(curvature);
@@ -335,20 +364,20 @@ public class DriveTrain extends Subsystem {
 			curvaturePID.disable();
 			curvatureTN.setOutput(0);
 		}
-		
+
 	}
-	
-	public void WARlordsDrive(double throttle, double steering) { 
-		
+
+	public void WARlordsDrive(double throttle, double steering) {
+
 		enablePID(false);
-		
+
 		double left = throttle + steering;
 		double right = throttle - steering;
 
 		if (Math.abs(left) > 1) {
 			right /= Math.abs(left);
 			left /= Math.abs(left);
-		} 
+		}
 		if (Math.abs(right) > 1) {
 			left /= Math.abs(right);
 			right /= Math.abs(right);
@@ -357,7 +386,7 @@ public class DriveTrain extends Subsystem {
 		RobotMap.driveLeftPWM.set(left);
 		RobotMap.driveRightPWM.set(right);
 	}
-	
+
 	public void setCurrents(double l, double r) {
 		RobotMap.driveLeftCurrent.set(l);
 		RobotMap.driveRightCurrent.set(r);
@@ -380,23 +409,25 @@ public class DriveTrain extends Subsystem {
 			curvaturePID.disable();
 			curvatureTN.setOutput(0);
 		}
-		
+
 		distancePID.setOutputRange(-maxSpeed, maxSpeed);
 		anglePID.setOutputRange(-2 / RobotMap.ROBOT_WIDTH, 2 / RobotMap.ROBOT_WIDTH);
-		
+
 		return distancePID.isOnTarget() && Math.abs(encoderAvgVelocityPIDSource.pidGet()) < LOW_ENC_RATE;
 	}
-	
+
 	public void updateConstants() {
 		for (TalonSRX t : RobotMap.driveTalons) {
 			t.enableVoltageCompensation(false);
-			t.enableCurrentLimit(false);
+			t.enableCurrentLimit(true);
 			t.configContinuousCurrentLimit(ConstantsIO.IMax, 0);
 			t.configPeakCurrentLimit(ConstantsIO.IMax, 0);
 
 		}
-		velocityPID.setPID(ConstantsIO.kP_DriveVelocity, ConstantsIO.kI_DriveVelocity, ConstantsIO.kD_DriveVelocity, ConstantsIO.kF_DriveVelocity);
-		curvaturePID.setPID(ConstantsIO.kP_DriveAngVel, ConstantsIO.kI_DriveAngVel, ConstantsIO.kD_DriveAngVel, ConstantsIO.kF_DriveAngVel);
+		velocityPID.setPID(ConstantsIO.kP_DriveVelocity, ConstantsIO.kI_DriveVelocity, ConstantsIO.kD_DriveVelocity,
+				ConstantsIO.kF_DriveVelocity);
+		curvaturePID.setPID(ConstantsIO.kP_DriveAngVel, ConstantsIO.kI_DriveAngVel, ConstantsIO.kD_DriveAngVel,
+				ConstantsIO.kF_DriveAngVel);
 		velocityRampRate.setRampRates(ConstantsIO.kUpRamp_Velocity, ConstantsIO.kDownRamp_Velocity);
 	}
 
@@ -418,7 +449,7 @@ public class DriveTrain extends Subsystem {
 			velocitySetpointTN.setOutput(0);
 		}
 	}
-	
+
 	public double getAverageEncoderDistance() {
 		return encoderDistancePIDSource.pidGet();
 	}

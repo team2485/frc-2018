@@ -21,7 +21,6 @@ public class ArmSetSetpoint extends InstantCommand {
 
     // Called just before this Command runs the first time
     protected void initialize() {
-    	    	
     	RobotMap.arm.setElbowPos(theta1);
     	if (theta1 > 0) {
     		RobotMap.arm.setThetaHigh(theta2);

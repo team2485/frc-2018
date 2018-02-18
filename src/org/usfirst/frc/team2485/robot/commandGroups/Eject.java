@@ -1,5 +1,6 @@
 package org.usfirst.frc.team2485.robot.commandGroups;
 
+import org.usfirst.frc.team2485.robot.RobotMap;
 import org.usfirst.frc.team2485.robot.commands.SetIntakeManual;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;

@@ -11,7 +11,8 @@ import edu.wpi.first.wpilibj.command.Command;
  *
  */
 public class WristWithControllers extends Command {
-
+	private boolean isManual = false;
+	
     public WristWithControllers() {
     	requires(RobotMap.arm);
     }
@@ -22,19 +23,19 @@ public class WristWithControllers extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	boolean isManual = false;
-    	double axis = ThresholdHandler.deadbandAndScale(OI.operator.getRawAxis(OI.XBOX_LYJOYSTICK_PORT), OI.XBOX_AXIS_DEADBAND, 0, 1); // joystick command
+    	double axis = -ThresholdHandler.deadbandAndScale(OI.operator.getRawAxis(OI.XBOX_LYJOYSTICK_PORT), OI.XBOX_AXIS_DEADBAND, 0, 1); // joystick command
 
     	double theta2 = RobotMap.arm.getWristAngle();
     	if (axis != 0 && Math.abs(RobotMap.arm.getElbowAngle()) > Arm.CRITICAL_ANGLE) {
     		isManual = true;
     		RobotMap.arm.setWristManual(axis);
-    	} else if (!RobotMap.arm.wristPIDisEnabled()) {
+    	} else if (isManual) {
     		if (RobotMap.arm.getElbowAngle() > 0) {
     			RobotMap.arm.setThetaHigh(theta2);
     		} else {
     			RobotMap.arm.setThetaLow(theta2);
     		}
+    		isManual = false;
     	}
     	
     	if (!isManual) {

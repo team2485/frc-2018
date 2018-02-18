@@ -29,6 +29,7 @@ public class Robot extends IterativeRobot {
 	Command autonomousCommand;
 	SendableChooser<Command> chooser = new SendableChooser<>();
 	double[] ypr = new double[3];
+	private int i = 0;
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -39,6 +40,7 @@ public class Robot extends IterativeRobot {
 		RobotMap.init();
 		ConstantsIO.init();
 		OI.init();
+		RobotMap.arm.reset();
 //		RobotMap.deadReckoning.start();
 		
 
@@ -81,6 +83,9 @@ public class Robot extends IterativeRobot {
 		ConstantsIO.init();
 		RobotMap.updateConstants();
 		RobotMap.driveTrain.reset();
+		if (!RobotMap.arm.isEncodersWorking()) {
+			throw new RuntimeException("No Encoders");
+		}
 		/*
 		 * String autoSelected = SmartDashboard.getString("Auto Selector",
 		 * "Default"); switch(autoSelected) { case "My Auto": autonomousCommand
@@ -125,21 +130,22 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousPeriodic() {
 		Scheduler.getInstance().run();
+	
 //		SmartDashboard.putNumber("Drift", RobotMap.pathTracker.getDrift());
 //		SmartDashboard.putNumber("Path Distance", RobotMap.pathTracker.getPathDist());
 		
 //		RobotMap.arm.setElbowManual(0);
 //		RobotMap.arm.setWristManual(0);
 //		RobotMap.arm.setElbowVelocity(.05);
-		RobotMap.arm.setElbowPos(.17);
+//		RobotMap.arm.setElbowPos(.17);
 	
 		
 //		RobotMap.driveTrain.setVelocities(60, 0.02);
 		
 		updateSmartDashboard();
 //		RobotMap.drivetrain.setCurrents(-1, -1);
-		RobotMap.arm.setWristPos(.1);
-//		RobotMap.arm.setWristVelocity(.1);
+//		RobotMap.arm.setWristPos(.1);
+//		RobotMap.arm.setWristVelocity(.05);
 		System.out.println(RobotMap.arm.wristPIDisEnabled());
 	}
 
@@ -148,6 +154,9 @@ public class Robot extends IterativeRobot {
 		ConstantsIO.init();
 		RobotMap.updateConstants();
 		RobotMap.driveTrain.reset();
+		if (!RobotMap.arm.isEncodersWorking()) {
+			throw new RuntimeException("No Encoders");
+		}
 //		RobotMap.deadReckoning.start();
 		// This makes sure that the autonomous stops running when
 		// teleop starts running. If you want the autonomous to
@@ -166,6 +175,15 @@ public class Robot extends IterativeRobot {
 	public void teleopPeriodic() {
 		Scheduler.getInstance().run();
 		updateSmartDashboard();
+		
+		if (!RobotMap.arm.isEncodersWorking()) {
+			i++;
+			if (i > 20) {
+				throw new RuntimeException("No Encoders");
+			}
+		} else {
+			i = 0;
+		}
 //		RobotMap.intakeLeftTalon.set(ControlMode.PercentOutput, ThresholdHandler.deadbandAndScale(OI.operator.getRawAxis(OI.XBOX_LYJOYSTICK_PORT), .2, 0, 1));
 //		RobotMap.intakeRightTalon.set(ControlMode.PercentOutput, ThresholdHandler.deadbandAndScale(OI.operator.getRawAxis(OI.XBOX_RYJOYSTICK_PORT), .2, 0, 1));
 //		RobotMap.arm.setWristCurrent(1);
@@ -173,7 +191,7 @@ public class Robot extends IterativeRobot {
 	
 //		RobotMap.arm.setWristManual(ThresholdHandler.deadbandAndScale(OI.driver.getRawAxis(1), OI.XBOX_AXIS_DEADBAND, 0, 1));
 //		RobotMap.arm.setElbowManual(ThresholdHandler.deadbandAndScale(OI.driver.getRawAxis(5), OI.XBOX_AXIS_DEADBAND, 0, 1));
-		
+//		
 
 
 	}

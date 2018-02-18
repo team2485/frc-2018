@@ -1,7 +1,9 @@
 package org.usfirst.frc.team2485.robot;
 
 import org.usfirst.frc.team2485.robot.commandGroups.Eject;
+import org.usfirst.frc.team2485.robot.commands.ArmEmergencyControl;
 import org.usfirst.frc.team2485.robot.commands.ArmSetSetpoint;
+import org.usfirst.frc.team2485.robot.commands.HoldPosition;
 import org.usfirst.frc.team2485.robot.commands.SetIntakeManual;
 import org.usfirst.frc.team2485.robot.subsystems.Arm.ArmSetpoint;
 
@@ -27,8 +29,8 @@ public class OI {
 	public static final int XBOX_Y_PORT = 4;
 	public static final int XBOX_LBUMPER_PORT = 5;
 	public static final int XBOX_RBUMPER_PORT = 6;  
-	public static final int XBOX_START_PORT = 9;  
-	public static final int XBOX_BACK_PORT = 10;  
+	public static final int XBOX_LSTICK_BUTTON_PORT = 9;  
+	public static final int XBOX_RSTICK_BUTTON_PORT = 10;  
 	public static final int XBOX_XBOX_PORT = 11;  
 	public static final int XBOX_UP_PORT = 12;  
 	public static final int XBOX_DOWN_PORT = 13;  
@@ -41,6 +43,7 @@ public class OI {
 	public static final int XBOX_RTRIGGER_PORT = 3;
 	public static final int XBOX_RXJOYSTICK_PORT = 4;
 	public static final int XBOX_RYJOYSTICK_PORT = 5;
+
 	
 	public static JoystickButton DRIVER_UP;
 	public static JoystickButton DRIVER_DOWN;
@@ -65,6 +68,8 @@ public class OI {
 	public static JoystickButton OPERATOR_LBUMPER;
 	public static JoystickButton OPERATOR_RBUMPER;
 	public static JoystickButton OPERATOR_XBOX;
+	public static JoystickButton OPERATOR_LSTICK_BUTTON;
+	public static JoystickButton OPERATOR_RSTICK_BUTTON;
 	
 	
 	public static void init() {
@@ -86,27 +91,48 @@ public class OI {
 		
 		DRIVER_XBOX = new JoystickButton(driver, XBOX_XBOX_PORT);
 		
-		OPERATOR_UP = new JoystickButton(driver, XBOX_UP_PORT);
-		OPERATOR_DOWN = new JoystickButton(driver, XBOX_DOWN_PORT);
-		OPERATOR_LEFT = new JoystickButton(driver, XBOX_LEFT_PORT);
-		OPERATOR_RIGHT = new JoystickButton(driver, XBOX_RIGHT_PORT);
+		OPERATOR_UP = new JoystickButton(operator, XBOX_UP_PORT);
+		OPERATOR_DOWN = new JoystickButton(operator, XBOX_DOWN_PORT);
+		OPERATOR_LEFT = new JoystickButton(operator, XBOX_LEFT_PORT);
+		OPERATOR_RIGHT = new JoystickButton(operator, XBOX_RIGHT_PORT);
 		
-		OPERATOR_A = new JoystickButton(driver, XBOX_A_PORT);
-		OPERATOR_B = new JoystickButton(driver, XBOX_B_PORT);
-		OPERATOR_X = new JoystickButton(driver, XBOX_X_PORT);
-		OPERATOR_Y = new JoystickButton(driver, XBOX_Y_PORT);
+		OPERATOR_A = new JoystickButton(operator, XBOX_A_PORT);
+		OPERATOR_B = new JoystickButton(operator, XBOX_B_PORT);
+		OPERATOR_X = new JoystickButton(operator, XBOX_X_PORT);
+		OPERATOR_Y = new JoystickButton(operator, XBOX_Y_PORT);
 		
-		OPERATOR_LBUMPER = new JoystickButton(driver, XBOX_LBUMPER_PORT);
-		OPERATOR_RBUMPER = new JoystickButton(driver, XBOX_RBUMPER_PORT);
+		OPERATOR_LBUMPER = new JoystickButton(operator, XBOX_LBUMPER_PORT);
+		OPERATOR_RBUMPER = new JoystickButton(operator, XBOX_RBUMPER_PORT);
 		
-		OPERATOR_XBOX = new JoystickButton(driver, XBOX_XBOX_PORT);
+		OPERATOR_XBOX = new JoystickButton(operator, XBOX_XBOX_PORT);
+		
+		OPERATOR_LSTICK_BUTTON = new JoystickButton(operator, XBOX_LSTICK_BUTTON_PORT);
+		OPERATOR_RSTICK_BUTTON = new JoystickButton(operator, XBOX_RSTICK_BUTTON_PORT);
+
 		
 
-		DRIVER_LBUMPER.whenPressed(new Eject());
-		DRIVER_RBUMPER.whenPressed(new SetIntakeManual(1));
-		OPERATOR_RBUMPER.whenReleased(new SetIntakeManual(0));
+		DRIVER_B.whenPressed(new Eject());
+		DRIVER_Y.whenPressed(new SetIntakeManual(0));
+		DRIVER_A.whenPressed(new SetIntakeManual(1));
+		OPERATOR_A.whenPressed(new ArmSetSetpoint(ArmSetpoint.INTAKE));
 		OPERATOR_Y.whenPressed(new ArmSetSetpoint(ArmSetpoint.SCALE));
-		OPERATOR_A.whenPressed(new ArmSetSetpoint(ArmSetpoint.SWITCH));
+		OPERATOR_Y.whenPressed(new SetIntakeManual(0));
+		OPERATOR_B.whenPressed(new ArmSetSetpoint(ArmSetpoint.SWITCH));
+		OPERATOR_B.whenPressed(new SetIntakeManual(0));
+		OPERATOR_X.whenPressed(new ArmSetSetpoint(ArmSetpoint.SCALE_BACKWARDS));
+		OPERATOR_X.whenPressed(new SetIntakeManual(0));
+		
+		OPERATOR_A.whenReleased(new HoldPosition());
+		OPERATOR_B.whenReleased(new HoldPosition());
+		OPERATOR_X.whenReleased(new HoldPosition());
+		OPERATOR_Y.whenReleased(new HoldPosition());
+
+//		OPERATOR_LSTICK_BUTTON.whenPressed(new ArmEmergencyControl());
+		
+		
+		
+		
+		
 
 		//TESTING
 //		DRIVER_X.whenPressed(new ZeroArmEncoders());

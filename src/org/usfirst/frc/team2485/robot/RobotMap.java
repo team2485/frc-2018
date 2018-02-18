@@ -168,6 +168,7 @@ public class RobotMap {
 		driveRightVictor2 = new VictorSPX(driveRightPortVictor2);
 		driveRightVictor3 = new VictorSPX(driveRightPortVictor3);
 		driveRightVictor4 = new VictorSPX(driveRightPortVictor4);
+		
 
 		
 		driveTalons = new TalonSRX[] {

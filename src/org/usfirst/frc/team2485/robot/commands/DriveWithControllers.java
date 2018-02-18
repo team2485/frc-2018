@@ -25,9 +25,9 @@ public class DriveWithControllers extends Command {
     	double throttle = ThresholdHandler.deadbandAndScale(OI.driver.getRawAxis(OI.XBOX_RTRIGGER_PORT), OI.XBOX_TRIGGER_DEADBAND, 0, 1) 
     			- ThresholdHandler.deadbandAndScale(OI.driver.getRawAxis(OI.XBOX_LTRIGGER_PORT), OI.XBOX_TRIGGER_DEADBAND, 0, 1);
     	
-    	double steering = ThresholdHandler.deadbandAndScale(OI.driver.getRawAxis(OI.XBOX_RXJOYSTICK_PORT), 
+    	double steering = ThresholdHandler.deadbandAndScale(OI.driver.getRawAxis(OI.XBOX_LXJOSYSTICK_PORT), 
     			OI.XBOX_AXIS_DEADBAND, 0, 1);
-       	boolean quickturn = OI.driver.getRawButton(OI.XBOX_LBUMPER_PORT);
+       	boolean quickturn = OI.driver.getRawButton(OI.XBOX_X_PORT);
        	
        	
     	RobotMap.driveTrain.simpleDrive(throttle, steering, quickturn);

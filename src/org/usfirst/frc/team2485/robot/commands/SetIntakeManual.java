@@ -3,9 +3,10 @@ package org.usfirst.frc.team2485.robot.commands;
 import org.usfirst.frc.team2485.robot.RobotMap;
 
 import edu.wpi.first.wpilibj.command.Command;
+import edu.wpi.first.wpilibj.command.InstantCommand;
 
 
-public class SetIntakeManual extends Command {
+public class SetIntakeManual extends InstantCommand {
 	
 	double pwm;
 	
@@ -20,10 +21,6 @@ public class SetIntakeManual extends Command {
 		RobotMap.intake.setRollers(pwm);
 	}
 
-	@Override
-	protected boolean isFinished() {
-		return false;
-	}
 	
 
 }
