@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.command.TimedCommand;
 
 public class Eject extends CommandGroup {
 	public Eject() {
-		addSequential(new SetIntakeManual(-1));
+		addSequential(new SetIntakeManual(-0.5));
 		addSequential(new TimedCommand(1));
 		addSequential(new SetIntakeManual(0));
 	}

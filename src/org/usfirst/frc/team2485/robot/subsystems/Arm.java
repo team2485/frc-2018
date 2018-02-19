@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj.command.Subsystem;
  */
 public class Arm extends Subsystem {
 
-	public static final double CRITICAL_DISTANCE = toMeters(34); // temp //distance from mast to 16 inches past frame
+	public static final double CRITICAL_DISTANCE = toMeters(35); // temp //distance from mast to 16 inches past frame
 																	// perimeter
 	public static final double ALPHA_MAX_WRIST = 4;
 	public static final double ALPHA_MAX_ELBOW = 4;
@@ -42,7 +42,7 @@ public class Arm extends Subsystem {
 	}
 
 	public static enum ArmSetpoint {
-		INTAKE(-.2, 0), SWITCH(-.2, 0.15), SCALE(0.175, 0.1), SCALE_BACKWARDS(0.175, 0.4);
+		INTAKE(-.2, 0), SWITCH(-.2, 0.15), SECOND_STORY(-.2, 0.065), SCALE_HIGH_BACK(0.16, 0.42), SCALE_MIDDLE_BACK(0.16, 0.46), SCALE2(0.22, 0), SCALE_HIGH(0.25, 0.125), SCALE_LOW_BACK(0.16, 0.5);
 
 		private final double elbowPos;
 		private final double wristPos;
@@ -62,7 +62,8 @@ public class Arm extends Subsystem {
 
 	}
 
-	/*
+	/*/@\
+	 * 
 	 * arm = 1 hand = 2 L = length d = center of mass m = mass j = moment of inertia
 	 */
 
@@ -78,7 +79,7 @@ public class Arm extends Subsystem {
 	public static final double I1 = 386.33;
 	public static final double I2 = 499;
 	public static final double MAX_CURRENT_WRIST = 20;
-	public static final double MAX_CURRENT_ELBOW = 10;
+	public static final double MAX_CURRENT_ELBOW = 20;
 
 	public static final double J1 = toMetricInertia(I1) + (m1 * d1 * d1);
 	public static final double J2 = toMetricInertia(I2) + (m2 * d2 * d2);
@@ -101,7 +102,7 @@ public class Arm extends Subsystem {
 	private TransferNode wristAngTN = new TransferNode(0);
 	private TransferNode wristAngVelTN = new TransferNode(0);
 
-	private PIDSourceWrapper kPWristAngSource = new PIDSourceWrapper();
+	private PIDSourceWrapper kPElbowAngSource = new PIDSourceWrapper();
 	private PIDSourceWrapper wristAngSource = new PIDSourceWrapper();
 	private PIDSourceWrapper wristAngVelSource = new PIDSourceWrapper();
 	private PIDSourceWrapper elbowCurrentSource = new PIDSourceWrapper();
@@ -119,7 +120,8 @@ public class Arm extends Subsystem {
 
 		elbowAngPID.setSources(RobotMap.elbowEncoderWrapperDistance);
 		elbowAngPID.setOutputs(elbowAngTN);
-		elbowAngPID.setOutputRange(-.1, .1);
+		elbowAngPID.setOutputRange(-.1, .25);
+		elbowAngPID.setConstantsSources(kPElbowAngSource, null, null, null);
 
 		elbowAngVelPID.setSources(RobotMap.elbowEncoderWrapperRate);
 		elbowAngVelPID.setSetpointSource(elbowAngTN);
@@ -128,13 +130,13 @@ public class Arm extends Subsystem {
 		elbowAngVelPID.setOutputSources(null, elbowMinCurrentSource);
 
 		elbowMinCurrentSource.setPidSource(() -> {
-			return RobotMap.elbowEncoderWrapperDistance.pidGet() < -CRITICAL_ANGLE ? -1 : -MAX_CURRENT_ELBOW;
+			return RobotMap.elbowEncoderWrapperDistance.pidGet() < -CRITICAL_ANGLE ? -2 : -8;
 		});
 		
 		wristMaxCurrentSource.setPidSource(() -> {
-			if (RobotMap.wristEncoderWrapperRate.pidGet() == 0) {
-				return 2;
-			}
+//			if (RobotMap.wristEncoderWrapperRate.pidGet() == 0) {
+//				return 2;
+//			}
 			return RobotMap.wristEncoderWrapperDistance.pidGet() > MAX_WRIST_ANGLE ? 1 : MAX_CURRENT_WRIST;
 		});
 
@@ -175,8 +177,8 @@ public class Arm extends Subsystem {
 
 		// Wrist
 		
-		kPWristAngSource.setPidSource(() -> {
-			return Math.min(ConstantsIO.kP_WristAng, ConstantsIO.accelerationMaxWrist/RobotMap.wristEncoderWrapperRate.pidGet());
+		kPElbowAngSource.setPidSource(() -> {
+			return Math.min(ConstantsIO.kP_ElbowAng, ConstantsIO.accelerationMaxElbow/Math.abs(RobotMap.elbowEncoderWrapperRate.pidGet()));
 		});
 
 		wristAngSource.setPidSource(() -> {
@@ -190,7 +192,6 @@ public class Arm extends Subsystem {
 		wristAngPID.setSources(wristAngSource);
 		wristAngPID.setOutputs(wristAngTN);
 		wristAngPID.setOutputRange(-.3, .3);
-		wristAngPID.setConstantsSources(kPWristAngSource, null, null, null);
 
 		wristAngVelPID.setSources(wristAngVelSource);
 		wristAngVelPID.setSetpointSource(wristAngTN);
@@ -227,8 +228,15 @@ public class Arm extends Subsystem {
 	}
 	
 	public void reset() {
-		RobotMap.arm.setElbowPos(ArmSetpoint.SWITCH.elbowPos);
-    	RobotMap.arm.setThetaLow(ArmSetpoint.SWITCH.wristPos);
+//		RobotMap.arm.setElbowPos(ArmSetpoint.SWITCH.elbowPos);
+//    	RobotMap.arm.setThetaLow(ArmSetpoint.SWITCH.wristPos);
+		double theta2 = RobotMap.arm.getWristAngle();
+    	if (RobotMap.arm.getElbowAngle() > 0) {
+			RobotMap.arm.setThetaHigh(theta2);
+		} else {
+			RobotMap.arm.setThetaLow(theta2);
+		}
+		RobotMap.arm.setElbowPos(RobotMap.elbowEncoderWrapperDistance.pidGet());
     	elbowAngTN.setOutput(0);
     	wristAngTN.setOutput(0);
     	elbowAngVelTN.setOutput(0);
@@ -279,7 +287,7 @@ public class Arm extends Subsystem {
 		double margin = (CRITICAL_DISTANCE - (L1 * Math.cos(getElbowAngle() * 2 * Math.PI))) / L2;
 		return Math.abs(RobotMap.elbowEncoderWrapperDistance.pidGet()) < CRITICAL_ANGLE
 				? Math.acos(margin) / 2 / Math.PI
-				: 0;
+				: -0.25;
 	}
 
 	public void initElbowEnc() {
@@ -303,7 +311,7 @@ public class Arm extends Subsystem {
 				currPos += 4096;
 			}
 		}
-		RobotMap.wristTalon.setSelectedSensorPosition(currPos, 0, 0);
+		RobotMap.wristEncoderWrapperDistance.setPosition(currPos);
 	}
 
 	public void setElbowPos(double pos) {

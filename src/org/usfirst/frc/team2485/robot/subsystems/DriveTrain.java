@@ -3,6 +3,7 @@ package org.usfirst.frc.team2485.robot.subsystems;
 import org.usfirst.frc.team2485.robot.OI;
 import org.usfirst.frc.team2485.robot.RobotMap;
 import org.usfirst.frc.team2485.robot.commands.DriveWithControllers;
+import org.usfirst.frc.team2485.robot.subsystems.Arm.ArmSetpoint;
 import org.usfirst.frc.team2485.util.ConstantsIO;
 import org.usfirst.frc.team2485.util.MotorSetter;
 import org.usfirst.frc.team2485.util.PIDSourceWrapper;
@@ -224,38 +225,31 @@ public class DriveTrain extends Subsystem {
 		RobotMap.driveLeftTalon.enableCurrentLimit(true);
 		RobotMap.driveRightTalon.enableCurrentLimit(true);
 
-		if (RobotMap.arm.getElbowAngle() > 0) {
-			leftPwm *= SPEED_LIMIT;
-			rightPwm *= SPEED_LIMIT;
-			RobotMap.driveLeftTalon.configContinuousCurrentLimit(10, 0);
-			RobotMap.driveRightTalon.configContinuousCurrentLimit(10, 0);
+		double percentUp = (Math.sin(RobotMap.elbowEncoderWrapperDistance.pidGet()* 2 * Math.PI) - Math.sin(ArmSetpoint.SWITCH.getElbowPos() * 2 * Math.PI)) / 
+				(1 - Math.sin(ArmSetpoint.SWITCH.getElbowPos()* 2 * Math.PI));
+		double I = percentUp * (16 - 40) + 40;
+		double speed = percentUp * (.5-1) + 1;
+		
+		if(I < 24) {
+			RobotMap.driveLeftTalon.configContinuousCurrentLimit((int) (I/2), 0);
+			RobotMap.driveRightTalon.configContinuousCurrentLimit((int) (I/2), 0);
 			RobotMap.driveLeftVictor3.set(ControlMode.PercentOutput, 0);
 			RobotMap.driveLeftVictor4.set(ControlMode.PercentOutput, 0);
 			RobotMap.driveRightVictor3.set(ControlMode.PercentOutput, 0);
 			RobotMap.driveRightVictor4.set(ControlMode.PercentOutput, 0);
-			double[] ypr = new double[3];
-			RobotMap.pigeon.getYawPitchRoll(ypr);
-			if (Math.abs(ypr[1]) > 5 && RobotMap.arm.getElbowAngle() > 0) {
-				RobotMap.driveLeftVictor2.set(ControlMode.PercentOutput, 0);
-				RobotMap.driveRightVictor2.set(ControlMode.PercentOutput, 0);
-			} else {
-				RobotMap.driveLeftVictor2.follow(RobotMap.driveLeftTalon);
-				RobotMap.driveRightVictor2.follow(RobotMap.driveRightTalon);
-			}
-
+			System.out.println("I < 24");
 		} else {
-			RobotMap.driveLeftTalon.configContinuousCurrentLimit(ConstantsIO.IMax, 0);
-			RobotMap.driveRightTalon.configContinuousCurrentLimit(ConstantsIO.IMax, 0);
-			RobotMap.driveLeftVictor2.follow(RobotMap.driveLeftTalon);
+			RobotMap.driveLeftTalon.configContinuousCurrentLimit((int) (I/4), 0);
+			RobotMap.driveRightTalon.configContinuousCurrentLimit((int) (I/4), 0);
 			RobotMap.driveLeftVictor3.follow(RobotMap.driveLeftTalon);
 			RobotMap.driveLeftVictor4.follow(RobotMap.driveLeftTalon);
-			RobotMap.driveRightVictor2.follow(RobotMap.driveRightTalon);
 			RobotMap.driveRightVictor3.follow(RobotMap.driveRightTalon);
 			RobotMap.driveRightVictor4.follow(RobotMap.driveRightTalon);
-
 		}
 		
 		
+		leftPwm *= speed;
+		rightPwm *= speed;
 
 		RobotMap.driveLeftPWM.set(leftPwm);
 		RobotMap.driveRightPWM.set(rightPwm);

@@ -40,9 +40,12 @@ public class Robot extends IterativeRobot {
 		RobotMap.init();
 		ConstantsIO.init();
 		OI.init();
-		RobotMap.arm.reset();
+		RobotMap.arm.initElbowEnc();
+		RobotMap.arm.initWristEnc();
 //		RobotMap.deadReckoning.start();
-		
+		if (!RobotMap.arm.isEncodersWorking()) {
+			throw new RuntimeException("No Encoders");
+		}
 
 		RobotMap.updateConstants();
 		// chooser.addObject("My Auto", new MyAutoCommand());
@@ -146,7 +149,7 @@ public class Robot extends IterativeRobot {
 //		RobotMap.drivetrain.setCurrents(-1, -1);
 //		RobotMap.arm.setWristPos(.1);
 //		RobotMap.arm.setWristVelocity(.05);
-		System.out.println(RobotMap.arm.wristPIDisEnabled());
+//		System.out.println(RobotMap.arm.wristPIDisEnabled());
 	}
 
 	@Override
@@ -154,6 +157,7 @@ public class Robot extends IterativeRobot {
 		ConstantsIO.init();
 		RobotMap.updateConstants();
 		RobotMap.driveTrain.reset();
+		RobotMap.arm.reset();
 		if (!RobotMap.arm.isEncodersWorking()) {
 			throw new RuntimeException("No Encoders");
 		}
@@ -162,8 +166,7 @@ public class Robot extends IterativeRobot {
 		// teleop starts running. If you want the autonomous to
 		// continue until interrupted by another command, remove
 		// this line or comment it out.
-		RobotMap.arm.initWristEnc();
-		RobotMap.arm.initElbowEnc();
+		
 		
 		
 	}
@@ -179,7 +182,7 @@ public class Robot extends IterativeRobot {
 		if (!RobotMap.arm.isEncodersWorking()) {
 			i++;
 			if (i > 20) {
-				throw new RuntimeException("No Encoders");
+//				throw new RuntimeException("No Encoders");
 			}
 		} else {
 			i = 0;

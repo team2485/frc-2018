@@ -24,7 +24,7 @@ public class ConstantsIO {
 	public static HashMap<String, String> data;
 
 	public static double accelerationMax;
-	public static double accelerationMaxWrist;
+	public static double accelerationMaxElbow;
 	
 	public static double kP_DriveVelocity;
 	public static double kI_DriveVelocity;
@@ -116,7 +116,7 @@ public class ConstantsIO {
 		voltageMax = Double.parseDouble(data.get("voltageMax"));
 		
 		intakeIMax = Integer.parseInt(data.get("intakeIMax"));
-		accelerationMaxWrist = Double.parseDouble(data.get("accelerationMaxWrist"));
+		accelerationMaxElbow = Double.parseDouble(data.get("accelerationMaxElbow"));
 
 
 		

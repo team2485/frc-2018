@@ -31,6 +31,10 @@ public class Intake extends Subsystem {
 		right.set(ControlMode.PercentOutput, pwm);
 	}
 	
+	public double getRollers() {
+		return left.getMotorOutputPercent();
+	}
+	
 	public void stopRollers() {
 		left.set(ControlMode.PercentOutput, 0);
 		right.set(ControlMode.PercentOutput, 0);

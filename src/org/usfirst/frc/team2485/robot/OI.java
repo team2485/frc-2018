@@ -5,10 +5,12 @@ import org.usfirst.frc.team2485.robot.commands.ArmEmergencyControl;
 import org.usfirst.frc.team2485.robot.commands.ArmSetSetpoint;
 import org.usfirst.frc.team2485.robot.commands.HoldPosition;
 import org.usfirst.frc.team2485.robot.commands.SetIntakeManual;
+import org.usfirst.frc.team2485.robot.commands.StopIntaking;
 import org.usfirst.frc.team2485.robot.subsystems.Arm.ArmSetpoint;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import edu.wpi.first.wpilibj.command.Command;
 
 
 /**
@@ -114,20 +116,26 @@ public class OI {
 		DRIVER_B.whenPressed(new Eject());
 		DRIVER_Y.whenPressed(new SetIntakeManual(0));
 		DRIVER_A.whenPressed(new SetIntakeManual(1));
-		OPERATOR_A.whenPressed(new ArmSetSetpoint(ArmSetpoint.INTAKE));
-		OPERATOR_Y.whenPressed(new ArmSetSetpoint(ArmSetpoint.SCALE));
-		OPERATOR_Y.whenPressed(new SetIntakeManual(0));
+		OPERATOR_Y.whenPressed(new ArmSetSetpoint(ArmSetpoint.SCALE_HIGH_BACK));
+		OPERATOR_Y.whenPressed(new StopIntaking()); // only stops if intake rollers running forward
+		OPERATOR_X.whenPressed(new ArmSetSetpoint(ArmSetpoint.SCALE_MIDDLE_BACK));
+		OPERATOR_X.whenPressed(new StopIntaking());
 		OPERATOR_B.whenPressed(new ArmSetSetpoint(ArmSetpoint.SWITCH));
-		OPERATOR_B.whenPressed(new SetIntakeManual(0));
-		OPERATOR_X.whenPressed(new ArmSetSetpoint(ArmSetpoint.SCALE_BACKWARDS));
-		OPERATOR_X.whenPressed(new SetIntakeManual(0));
-		
+		OPERATOR_B.whenPressed(new StopIntaking());
+		OPERATOR_A.whenPressed(new ArmSetSetpoint(ArmSetpoint.SCALE_LOW_BACK));
+		OPERATOR_A.whenPressed(new StopIntaking());
+		OPERATOR_RBUMPER.whenPressed(new ArmSetSetpoint(ArmSetpoint.SECOND_STORY));
+		OPERATOR_LBUMPER.whenPressed(new ArmSetSetpoint(ArmSetpoint.INTAKE));
+
 		OPERATOR_A.whenReleased(new HoldPosition());
 		OPERATOR_B.whenReleased(new HoldPosition());
 		OPERATOR_X.whenReleased(new HoldPosition());
 		OPERATOR_Y.whenReleased(new HoldPosition());
-
-//		OPERATOR_LSTICK_BUTTON.whenPressed(new ArmEmergencyControl());
+		OPERATOR_RBUMPER.whenReleased(new HoldPosition());
+		OPERATOR_LBUMPER.whenReleased(new HoldPosition());
+		Command c = new ArmEmergencyControl();
+		OPERATOR_LSTICK_BUTTON.whenPressed(c);
+		OPERATOR_RSTICK_BUTTON.cancelWhenPressed(c);
 		
 		
 		

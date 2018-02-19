@@ -9,6 +9,7 @@ public class TalonSRXEncoderWrapper implements PIDSource{
 	private TalonSRX talonsrx;
 	private PIDSourceType pidSource;
 	private double distancePerRevolution = 1;
+	private int offset = 0;
 	
 	public TalonSRXEncoderWrapper(TalonSRX talonsrx, PIDSourceType pidSource) {
 		this.talonsrx = talonsrx;
@@ -28,7 +29,7 @@ public class TalonSRXEncoderWrapper implements PIDSource{
 	@Override
 	public double pidGet() {
 		if(pidSource == PIDSourceType.kDisplacement) {
-			return ((double)(talonsrx.getSelectedSensorPosition(0))/4096)*distancePerRevolution;
+			return ((double)(talonsrx.getSelectedSensorPosition(0) + offset)/4096)*distancePerRevolution;
 		} else {
 			return ((double)(talonsrx.getSelectedSensorVelocity(0))/4096)*10*distancePerRevolution;
 		}
@@ -39,7 +40,12 @@ public class TalonSRXEncoderWrapper implements PIDSource{
 	}
 	
 	public void reset() {
-		talonsrx.setSelectedSensorPosition(0, 0, 0);
+		setPosition(0);
+	}
+
+	public void setPosition(int currPos) {
+		this.offset = currPos - talonsrx.getSelectedSensorPosition(0);
+		
 	}
 	
 	
