@@ -21,6 +21,7 @@ public class Arm extends Subsystem {
 	public static final double ALPHA_MAX_ELBOW = 4;
 	public static final int ELBOW_OFFSET = -4053;
 	public static final int WRIST_OFFSET = -852;
+	public static final double MIN_WRIST_LIFTING_POSITION = 0.1;
 
 	private double thetaHigh;
 	private double thetaLow;
