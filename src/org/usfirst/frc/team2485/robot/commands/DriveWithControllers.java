@@ -27,6 +27,8 @@ public class DriveWithControllers extends Command {
     	
     	double steering = ThresholdHandler.deadbandAndScale(OI.driver.getRawAxis(OI.XBOX_LXJOSYSTICK_PORT), 
     			OI.XBOX_AXIS_DEADBAND, 0, 1);
+    	
+    	
        	boolean quickturn = OI.driver.getRawButton(OI.XBOX_X_PORT);
        	
        	

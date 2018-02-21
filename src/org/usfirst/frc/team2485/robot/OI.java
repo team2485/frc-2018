@@ -1,8 +1,10 @@
 package org.usfirst.frc.team2485.robot;
 
+import org.usfirst.frc.team2485.robot.commandGroups.ArmToScale;
 import org.usfirst.frc.team2485.robot.commandGroups.Eject;
 import org.usfirst.frc.team2485.robot.commands.ArmEmergencyControl;
 import org.usfirst.frc.team2485.robot.commands.ArmSetSetpoint;
+import org.usfirst.frc.team2485.robot.commands.CancelCommand;
 import org.usfirst.frc.team2485.robot.commands.HoldPosition;
 import org.usfirst.frc.team2485.robot.commands.SetIntakeManual;
 import org.usfirst.frc.team2485.robot.commands.StopIntaking;
@@ -113,17 +115,29 @@ public class OI {
 
 		
 
-		DRIVER_B.whenPressed(new Eject());
+		DRIVER_B.whenPressed(new Eject(false));
+		DRIVER_RBUMPER.whenPressed(new Eject(true));
 		DRIVER_Y.whenPressed(new SetIntakeManual(0));
 		DRIVER_A.whenPressed(new SetIntakeManual(1));
-		OPERATOR_Y.whenPressed(new ArmSetSetpoint(ArmSetpoint.SCALE_HIGH_BACK));
+		
+		Command scaleHighBack = new ArmToScale(ArmSetpoint.SCALE_HIGH_BACK);
+		OPERATOR_Y.whenPressed(scaleHighBack);
+		OPERATOR_Y.whenReleased(new CancelCommand(scaleHighBack));
 		OPERATOR_Y.whenPressed(new StopIntaking()); // only stops if intake rollers running forward
-		OPERATOR_X.whenPressed(new ArmSetSetpoint(ArmSetpoint.SCALE_MIDDLE_BACK));
+		
+		Command scaleMiddleBack = new ArmToScale(ArmSetpoint.SCALE_MIDDLE_BACK);
+		OPERATOR_X.whenPressed(scaleMiddleBack);
+		OPERATOR_X.whenReleased(new CancelCommand(scaleMiddleBack));
 		OPERATOR_X.whenPressed(new StopIntaking());
+		
 		OPERATOR_B.whenPressed(new ArmSetSetpoint(ArmSetpoint.SWITCH));
 		OPERATOR_B.whenPressed(new StopIntaking());
-		OPERATOR_A.whenPressed(new ArmSetSetpoint(ArmSetpoint.SCALE_LOW_BACK));
+		
+		Command scaleLowBack = new ArmToScale(ArmSetpoint.SCALE_LOW_BACK);
+		OPERATOR_A.whenPressed(scaleLowBack);
+		OPERATOR_A.whenReleased(new CancelCommand(scaleLowBack));
 		OPERATOR_A.whenPressed(new StopIntaking());
+		
 		OPERATOR_RBUMPER.whenPressed(new ArmSetSetpoint(ArmSetpoint.SECOND_STORY));
 		OPERATOR_LBUMPER.whenPressed(new ArmSetSetpoint(ArmSetpoint.INTAKE));
 

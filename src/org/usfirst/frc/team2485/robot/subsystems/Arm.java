@@ -1,5 +1,8 @@
 package org.usfirst.frc.team2485.robot.subsystems;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import org.usfirst.frc.team2485.robot.RobotMap;
 import org.usfirst.frc.team2485.robot.commands.WristWithControllers;
 import org.usfirst.frc.team2485.util.ConstantsIO;
@@ -17,9 +20,9 @@ public class Arm extends Subsystem {
 
 	public static final double CRITICAL_DISTANCE = toMeters(35); // temp //distance from mast to 16 inches past frame
 																	// perimeter
-	public static final double ALPHA_MAX_WRIST = 4;
+	public static final double ALPHA_MAX_WRIST = 8;
 	public static final double ALPHA_MAX_ELBOW = 4;
-	public static final int ELBOW_OFFSET = -4053;
+	public static final int ELBOW_OFFSET = -4038;
 	public static final int WRIST_OFFSET = -852;
 	public static final double MIN_WRIST_LIFTING_POSITION = 0.1;
 
@@ -90,7 +93,7 @@ public class Arm extends Subsystem {
 	public static final double gearRatioElbow = 945;
 
 	public static final double CRITICAL_ANGLE = 0.15; // SET DIRECTLY
-	private static final double WRIST_TOLERANCE = 0.005;
+	private static final double WRIST_TOLERANCE = 0.0025;
 	private static final double MAX_WRIST_ANGLE = .3;
 
 	private WarlordsPIDController elbowAngPID = new WarlordsPIDController();
@@ -117,6 +120,7 @@ public class Arm extends Subsystem {
 
 	public Arm() {
 
+		new Timer().schedule(new InitEncoderTask(), 0, 1000);
 		// Elbow
 
 		elbowAngPID.setSources(RobotMap.elbowEncoderWrapperDistance);
@@ -135,9 +139,9 @@ public class Arm extends Subsystem {
 		});
 		
 		wristMaxCurrentSource.setPidSource(() -> {
-//			if (RobotMap.wristEncoderWrapperRate.pidGet() == 0) {
-//				return 2;
-//			}
+			if (RobotMap.wristEncoderWrapperRate.pidGet() == 0) {
+				return 2;
+			}
 			return RobotMap.wristEncoderWrapperDistance.pidGet() > MAX_WRIST_ANGLE ? 1 : MAX_CURRENT_WRIST;
 		});
 
@@ -300,7 +304,7 @@ public class Arm extends Subsystem {
 				currPos += 4096;
 			}
 		}
-		RobotMap.elbowTalon.setSelectedSensorPosition(currPos, 0, 0);
+		RobotMap.elbowEncoderWrapperDistance.setPosition(currPos);;
 	}
 
 	public void initWristEnc() {
@@ -454,4 +458,15 @@ public class Arm extends Subsystem {
 		return elbowAngPID.getSetpoint();
 	}
 
+	public class InitEncoderTask extends TimerTask {
+
+		@Override
+		public void run() {
+			if(isEncodersWorking()) {
+				initElbowEnc();
+				initWristEnc();
+			}
+		}
+		
+	}
 }

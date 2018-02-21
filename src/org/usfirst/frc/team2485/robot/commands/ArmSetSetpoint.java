@@ -13,7 +13,7 @@ public class ArmSetSetpoint extends InstantCommand {
 	double theta1;
 	double theta2;
     public ArmSetSetpoint(ArmSetpoint setpoint) {
-        requires(RobotMap.arm);
+//        requires(RobotMap.arm);
         theta1 = setpoint.getElbowPos();
         theta2 = setpoint.getWristPos();
         

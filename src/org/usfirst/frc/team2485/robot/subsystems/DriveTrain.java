@@ -107,7 +107,7 @@ public class DriveTrain extends Subsystem {
 
 		kp_distancePIDSource.setPidSource(() -> {
 			return Math.min(ConstantsIO.kPMax_Distance,
-					2 * ConstantsIO.accelerationMax / Math.abs(encoderAvgVelocityPIDSource.pidGet()));
+					Math.sqrt(2 * ConstantsIO.accelerationMax / Math.abs(distancePID.getAvgError())));
 		});
 		kp_anglePIDSource.setPidSource(() -> {
 			return Math.min(ConstantsIO.kP_DriveAngleMax,
@@ -115,7 +115,7 @@ public class DriveTrain extends Subsystem {
 		});
 
 		anglePIDSetpointSource.setPidSource(() -> {
-			return angleSetpointTN.pidGet() + RobotMap.pathTracker.getDrift() * ConstantsIO.kP_Drift;
+			return angleSetpointTN.pidGet() /*+ RobotMap.pathTracker.getDrift() * ConstantsIO.kP_Drift**/;
 		});
 
 		encoderDistancePIDSource.setPidSource(() -> {
@@ -195,6 +195,10 @@ public class DriveTrain extends Subsystem {
 	public void initDefaultCommand() {
 		setDefaultCommand(new DriveWithControllers());
 	}
+	
+	public double getAverageSpeed() {
+		return (RobotMap.driveLeftEncoderWrapperRate.pidGet() + RobotMap.driveRightEncoderWrapperRate.pidGet()) / 2;
+	}
 
 	public void simpleDrive(double throttle, double steering, boolean quickturn) {
 		enablePID(false);
@@ -208,6 +212,7 @@ public class DriveTrain extends Subsystem {
 		if (quickturn) {
 			angularPwm = steering;
 		} else {
+			//angularPwm = Math.abs(getAverageSpeed()) * steering;
 			angularPwm = Math.abs(throttle) * steering;
 		}
 
@@ -227,8 +232,8 @@ public class DriveTrain extends Subsystem {
 
 		double percentUp = (Math.sin(RobotMap.elbowEncoderWrapperDistance.pidGet()* 2 * Math.PI) - Math.sin(ArmSetpoint.SWITCH.getElbowPos() * 2 * Math.PI)) / 
 				(1 - Math.sin(ArmSetpoint.SWITCH.getElbowPos()* 2 * Math.PI));
-		double I = percentUp * (16 - 40) + 40;
-		double speed = percentUp * (.5-1) + 1;
+		double I = percentUp * (20 - 40) + 40;
+		double speed = percentUp * (.75-1) + 1;
 		
 		if(I < 24) {
 			RobotMap.driveLeftTalon.configContinuousCurrentLimit((int) (I/2), 0);
@@ -237,7 +242,6 @@ public class DriveTrain extends Subsystem {
 			RobotMap.driveLeftVictor4.set(ControlMode.PercentOutput, 0);
 			RobotMap.driveRightVictor3.set(ControlMode.PercentOutput, 0);
 			RobotMap.driveRightVictor4.set(ControlMode.PercentOutput, 0);
-			System.out.println("I < 24");
 		} else {
 			RobotMap.driveLeftTalon.configContinuousCurrentLimit((int) (I/4), 0);
 			RobotMap.driveRightTalon.configContinuousCurrentLimit((int) (I/4), 0);
@@ -264,13 +268,19 @@ public class DriveTrain extends Subsystem {
 
 		if (quickturn) {
 			curvaturePID.disable();
+			leftMotorSetter.disable();
+			rightMotorSetter.disable();
 
 			RobotMap.driveLeftPWM.set(steering);
 			RobotMap.driveRightPWM.set(-steering);
 		} else {
+			leftMotorSetter.enable();
+			rightMotorSetter.enable();
 			curvaturePID.enable();
+			
+			angleTN.setOutput((2/RobotMap.ROBOT_WIDTH) * steering);
 
-			velocityTN.setOutput(throttle);
+			velocityTN.setOutput(throttle * (getMaxCurrent() - Math.abs(curvatureTN.pidGet())));
 
 		}
 
@@ -335,7 +345,6 @@ public class DriveTrain extends Subsystem {
 	}
 
 	public void setVelocities(double linearVel, double curvature) {
-		System.out.println(velocityPID.isEnabled());
 
 		anglePID.disable();
 		distancePID.disable();
@@ -416,6 +425,7 @@ public class DriveTrain extends Subsystem {
 			t.enableCurrentLimit(true);
 			t.configContinuousCurrentLimit(ConstantsIO.IMax, 0);
 			t.configPeakCurrentLimit(ConstantsIO.IMax, 0);
+//			t.enableCurrentLimit(false);
 
 		}
 		velocityPID.setPID(ConstantsIO.kP_DriveVelocity, ConstantsIO.kI_DriveVelocity, ConstantsIO.kD_DriveVelocity,
@@ -440,6 +450,9 @@ public class DriveTrain extends Subsystem {
 			velocityRampRate.disable();
 			distanceTN.setOutput(0);
 			velocityTN.setOutput(0);
+			curvatureTN.setOutput(0);
+			curvatureSetpointTN.setOutput(0);
+			angleTN.setOutput(0);
 			velocitySetpointTN.setOutput(0);
 		}
 	}

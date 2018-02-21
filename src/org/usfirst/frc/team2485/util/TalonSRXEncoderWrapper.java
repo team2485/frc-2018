@@ -9,7 +9,7 @@ public class TalonSRXEncoderWrapper implements PIDSource{
 	private TalonSRX talonsrx;
 	private PIDSourceType pidSource;
 	private double distancePerRevolution = 1;
-	private int offset = 0;
+	private double offset = 0;
 	
 	public TalonSRXEncoderWrapper(TalonSRX talonsrx, PIDSourceType pidSource) {
 		this.talonsrx = talonsrx;
@@ -43,8 +43,8 @@ public class TalonSRXEncoderWrapper implements PIDSource{
 		setPosition(0);
 	}
 
-	public void setPosition(int currPos) {
-		this.offset = currPos - talonsrx.getSelectedSensorPosition(0);
+	public void setPosition(double d) {
+		this.offset = d - talonsrx.getSelectedSensorPosition(0);
 		
 	}
 	

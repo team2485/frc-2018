@@ -192,7 +192,7 @@ public class RobotMap {
 		driveLeftPWM.setInverted(true);
 		
 		// SENSORS
-		pigeon = new PigeonIMU(intakeLeftTalon);
+		pigeon = new PigeonIMU(intakeRightTalon);
 		irSensor = new DigitalInput(irSensorPort);
 		pigeonRateWrapper = new PigeonWrapperRateAndAngle(pigeon, PIDSourceType.kRate, Units.RADS);
 		pigeonDisplacementWrapper = new PigeonWrapperRateAndAngle(pigeon, PIDSourceType.kDisplacement, Units.RADS);

@@ -1,7 +1,10 @@
 
 package org.usfirst.frc.team2485.robot;
 
+import org.usfirst.frc.team2485.robot.commandGroups.SwitchAuto;
+import org.usfirst.frc.team2485.robot.commands.DriveStraight;
 import org.usfirst.frc.team2485.robot.commands.DriveTo;
+import org.usfirst.frc.team2485.robot.commands.SetVelocities;
 import org.usfirst.frc.team2485.robot.subsystems.Arm;
 import org.usfirst.frc.team2485.util.AutoPath;
 import org.usfirst.frc.team2485.util.AutoPath.Pair;
@@ -30,6 +33,7 @@ public class Robot extends IterativeRobot {
 	SendableChooser<Command> chooser = new SendableChooser<>();
 	double[] ypr = new double[3];
 	private int i = 0;
+	private boolean isHomed = true;
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -46,6 +50,7 @@ public class Robot extends IterativeRobot {
 		if (!RobotMap.arm.isEncodersWorking()) {
 			throw new RuntimeException("No Encoders");
 		}
+		isHomed = false;
 
 		RobotMap.updateConstants();
 		// chooser.addObject("My Auto", new MyAutoCommand());
@@ -69,6 +74,8 @@ public class Robot extends IterativeRobot {
 		Scheduler.getInstance().run();
 		updateSmartDashboard();
 	}
+	
+
 
 	/**
 	 * This autonomous (along with the chooser code above) shows how to select
@@ -99,25 +106,38 @@ public class Robot extends IterativeRobot {
 		// schedule the autonomous command (example)
 		
 		//UNCOMMENT CONSTANTSIO
-//		RobotMap.driveRightEncoderWrapperDistance.reset();
-//		RobotMap.driveLeftEncoderWrapperDistance.reset();
-//		RobotMap.pigeon.setFusedHeading(0, 0);
-//		RobotMap.pigeon.setYaw(0, 0);
-//		
-//		Pair[] controlPoints = {
-//				new Pair(0,	0), new Pair(0, 120), new Pair(120, 120)
-//			};
-//			double[] dists = {
-//					70
-//			};
-//		AutoPath path = AutoPath.getAutoPathForClothoidSpline(controlPoints, dists);
-//		Scheduler.getInstance().add(new DriveTo(path, 40, false, 100000));
+		RobotMap.driveRightEncoderWrapperDistance.reset();
+		RobotMap.driveLeftEncoderWrapperDistance.reset();
+		RobotMap.pigeon.setFusedHeading(0, 0);
+		RobotMap.pigeon.setYaw(0, 0);
+		RobotMap.driveLeftTalon.enableCurrentLimit(false);
+		RobotMap.driveRightTalon.enableCurrentLimit(false);
+		
+		if (!isHomed) {
+			throw new RuntimeException("Not homed");
+		}
+	
+		
+//		Scheduler.getInstance().add(new DriveStraight(170, 100, 10000));
+		
+		RobotMap.deadReckoning.start();
+//		Scheduler.getInstance().add(new SwitchAuto(true));
+
+		
+		Pair[] controlPoints = {
+				new Pair(0,	0), new Pair(0, 80), new Pair(120, 80)
+			};
+			double[] dists = {
+					70
+			};
+		AutoPath path = AutoPath.getAutoPathForClothoidSpline(controlPoints, dists);
+		Scheduler.getInstance().add(new DriveTo(path, 80, false, 100000));
 //			
 //		RobotMap.pathTracker = new PathTracker(RobotMap.deadReckoning, path);
 //		RobotMap.pathTracker.start();
 //		
 //		Scheduler.getInstance().add(new HighLowCurrentTest(-1, -1, -1, -1, 2000));
-//		Scheduler.getInstance().add(new SetVelocities(30, 0.01));
+//		Scheduler.getInstance().add(new SetVelocities(30, 0.02));
 //		CommandGroup cg = new CommandGroup();
 //		cg.addSequential(new DriveTo(new AutoPath(AutoPath.getPointsForBezier(10000, new Pair(0, 0), 
 //				new Pair(0, 100), new Pair(100, 100))), 100, false, 5000));
@@ -133,6 +153,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousPeriodic() {
 		Scheduler.getInstance().run();
+
 	
 //		SmartDashboard.putNumber("Drift", RobotMap.pathTracker.getDrift());
 //		SmartDashboard.putNumber("Path Distance", RobotMap.pathTracker.getPathDist());
@@ -158,9 +179,12 @@ public class Robot extends IterativeRobot {
 		RobotMap.updateConstants();
 		RobotMap.driveTrain.reset();
 		RobotMap.arm.reset();
-		if (!RobotMap.arm.isEncodersWorking()) {
-			throw new RuntimeException("No Encoders");
+		if (!isHomed) {
+			throw new RuntimeException("Not homed");
 		}
+//		if (!RobotMap.arm.isEncodersWorking()) {
+//			throw new RuntimeException("No Encoders");
+//		}
 //		RobotMap.deadReckoning.start();
 		// This makes sure that the autonomous stops running when
 		// teleop starts running. If you want the autonomous to
@@ -218,7 +242,11 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Left Current Output", RobotMap.driveLeftTalon.getMotorOutputPercent());
 		SmartDashboard.putNumber("Left Current", RobotMap.driveLeftTalon.getOutputCurrent());
 		SmartDashboard.putNumber("Right Current", RobotMap.driveRightTalon.getOutputCurrent());
-
+		SmartDashboard.putNumber("PWM Wrist", RobotMap.wristTalon.getSensorCollection().getPulseWidthPosition());
+		SmartDashboard.putNumber("Relative Wrist", RobotMap.wristTalon.getSensorCollection().getQuadraturePosition());
+		SmartDashboard.putNumber("PWM Elbow", RobotMap.elbowTalon.getSensorCollection().getPulseWidthPosition());
+		SmartDashboard.putNumber("Relative Elbow", RobotMap.elbowTalon.getSensorCollection().getQuadraturePosition());
+		SmartDashboard.putBoolean("Encoders Working", RobotMap.arm.isEncodersWorking());
 		
 		SmartDashboard.putNumber("Left Current Error", RobotMap.driveLeftTalon.getClosedLoopError(0));
 		SmartDashboard.putNumber("Right Current Error", -RobotMap.driveRightTalon.getClosedLoopError(0));
@@ -232,8 +260,8 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Elbow Encoder", RobotMap.elbowEncoderWrapperDistance.pidGet());
 		SmartDashboard.putNumber("Wrist Encoder", RobotMap.wristEncoderWrapperDistance.pidGet());
 		SmartDashboard.putNumber("Intake Current", RobotMap.intakeLeftTalon.getOutputCurrent());
-//		SmartDashboard.putNumber("X", RobotMap.deadReckoning.getX());
-//		SmartDashboard.putNumber("Y", RobotMap.deadReckoning.getY());
+		SmartDashboard.putNumber("X", RobotMap.deadReckoning.getX());
+		SmartDashboard.putNumber("Y", RobotMap.deadReckoning.getY());
 		SmartDashboard.putNumber("Elbow Current error", RobotMap.elbowTalon.getClosedLoopError(0));
 		SmartDashboard.putNumber("Wrist Current Error", RobotMap.wristTalon.getClosedLoopError(0));
 		SmartDashboard.putNumber("Wrist Ang Vel error", RobotMap.arm.getWristAngVelError());
@@ -242,6 +270,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Wrist Ang Error", RobotMap.arm.getWristAngError());
 		SmartDashboard.putNumber("Elbow Ang Vel Error", RobotMap.arm.getElbowAngVelError());
 		SmartDashboard.putNumber("Elbow Ang Error", RobotMap.arm.getElbowAngError());
+		SmartDashboard.putNumber("Elbow Enc Raw", RobotMap.elbowTalon.getSelectedSensorPosition(0));
 		
 
 		
@@ -256,6 +285,23 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void testPeriodic() {
+		if (OI.driver.getRawButton(OI.XBOX_A_PORT)) {
+			RobotMap.arm.setElbowCurrent(-2);
+			RobotMap.arm.setWristCurrent(0);
+		} else if (OI.driver.getRawButton(OI.XBOX_B_PORT)) {
+			RobotMap.arm.setWristCurrent(2);
+			RobotMap.arm.setElbowCurrent(0);
+		} else if (OI.driver.getRawButton(OI.XBOX_Y_PORT)) {
+			RobotMap.arm.setWristCurrent(-2);
+			RobotMap.arm.setElbowCurrent(0);
+		} else {
+			RobotMap.arm.setWristCurrent(0);
+			RobotMap.arm.setElbowCurrent(0);
+		}
+		RobotMap.elbowEncoderWrapperDistance.setPosition(-.192);
+		RobotMap.wristEncoderWrapperDistance.setPosition(0.413);
+		isHomed = true;
 	}
+	
 
 }
