@@ -120,7 +120,7 @@ public class Arm extends Subsystem {
 
 	public Arm() {
 
-		new Timer().schedule(new InitEncoderTask(), 0, 1000);
+//		new Timer().schedule(new InitEncoderTask(), 0, 1000);
 		// Elbow
 
 		elbowAngPID.setSources(RobotMap.elbowEncoderWrapperDistance);
@@ -462,10 +462,10 @@ public class Arm extends Subsystem {
 
 		@Override
 		public void run() {
-			if(isEncodersWorking()) {
-				initElbowEnc();
-				initWristEnc();
-			}
+//			if(isEncodersWorking()) {
+//				initElbowEnc();
+//				initWristEnc();
+//			}
 		}
 		
 	}

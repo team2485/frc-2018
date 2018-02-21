@@ -44,8 +44,8 @@ public class Robot extends IterativeRobot {
 		RobotMap.init();
 		ConstantsIO.init();
 		OI.init();
-		RobotMap.arm.initElbowEnc();
-		RobotMap.arm.initWristEnc();
+//		RobotMap.arm.initElbowEnc();
+//		RobotMap.arm.initWristEnc();
 //		RobotMap.deadReckoning.start();
 		if (!RobotMap.arm.isEncodersWorking()) {
 			throw new RuntimeException("No Encoders");
@@ -224,6 +224,10 @@ public class Robot extends IterativeRobot {
 	}
 
 	public void updateSmartDashboard() {
+		
+		SmartDashboard.putNumber("Left driver joystick", OI.driver.getRawAxis(OI.XBOX_LYJOYSTICK_PORT));
+		SmartDashboard.putNumber("Right driver joystick", OI.driver.getRawAxis(OI.XBOX_RXJOYSTICK_PORT));
+		
 //		SmartDashboard.putNumber("Yaw", RobotMap.pigeonDisplacementWrapper.pidGet());
 //		SmartDashboard.putNumber("Yaw Rate", RobotMap.pigeonRateWrapper.pidGet());
 		SmartDashboard.putNumber("velocity setpoint", RobotMap.driveTrain.velocitySetpointTN.getOutput());
@@ -289,7 +293,7 @@ public class Robot extends IterativeRobot {
 			RobotMap.arm.setElbowCurrent(-2);
 			RobotMap.arm.setWristCurrent(0);
 		} else if (OI.driver.getRawButton(OI.XBOX_B_PORT)) {
-			RobotMap.arm.setWristCurrent(2);
+			RobotMap.arm.setWristCurrent(3);
 			RobotMap.arm.setElbowCurrent(0);
 		} else if (OI.driver.getRawButton(OI.XBOX_Y_PORT)) {
 			RobotMap.arm.setWristCurrent(-2);
@@ -298,8 +302,8 @@ public class Robot extends IterativeRobot {
 			RobotMap.arm.setWristCurrent(0);
 			RobotMap.arm.setElbowCurrent(0);
 		}
-		RobotMap.elbowEncoderWrapperDistance.setPosition(-.192);
-		RobotMap.wristEncoderWrapperDistance.setPosition(0.413);
+		RobotMap.elbowEncoderWrapperDistance.setPosition(-.190);
+		RobotMap.wristEncoderWrapperDistance.setPosition(0.416);
 		isHomed = true;
 	}
 	
