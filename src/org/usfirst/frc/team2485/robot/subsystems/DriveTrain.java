@@ -210,7 +210,7 @@ public class DriveTrain extends Subsystem {
 		double angularPwm = 0;
 
 		if (quickturn) {
-			angularPwm = steering;
+			angularPwm = Math.abs(steering) * steering;
 		} else {
 			//angularPwm = Math.abs(getAverageSpeed()) * steering;
 			angularPwm = Math.abs(throttle) * steering;

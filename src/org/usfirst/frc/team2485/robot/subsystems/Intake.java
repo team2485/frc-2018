@@ -29,6 +29,7 @@ public class Intake extends Subsystem {
 	public void setRollers(double pwm) {
 		left.set(ControlMode.PercentOutput, pwm);
 		right.set(ControlMode.PercentOutput, pwm);
+		System.out.println("Roller PWM:" + pwm);
 	}
 	
 	public double getRollers() {

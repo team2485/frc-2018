@@ -9,10 +9,14 @@ import java.util.Arrays;
  */
 
 public class AutoPath {
+	private static final double MAX_VELOCITY = 100;
+	private static final double MAX_ACCELERATION_CURVE = 1;
+	private static final double MAX_ACCELERATION_LINEAR = 1;
 	public class Point {
 		public double x, y; 
 		public double heading, curvature;
 		public double arcLength;
+		public double maxSpeed;
 		private Point(Pair p) {
 			this.x = p.getX();
 			this.y = p.getY();
@@ -148,6 +152,18 @@ public class AutoPath {
 			points[i].curvature = diffHeading / (points[i + 1].arcLength - points[i].arcLength);
 		}
 		points[len - 1].curvature = points[len - 2].curvature = points[len - 3].curvature;
+		
+		for (int i = 0; i < points.length; i++) {
+			points[i].maxSpeed = MAX_VELOCITY;
+			for (int j = i; j < points.length; j++) {
+				if (Math.abs(points[j].curvature) > 0) {
+					double maxSpeed = MAX_ACCELERATION_CURVE / Math.abs(points[j].curvature);
+					maxSpeed = Math.sqrt(maxSpeed * maxSpeed + 2 * MAX_ACCELERATION_LINEAR * (points[j].arcLength - points[i].arcLength));
+					points[i].maxSpeed = Math.min(points[i].maxSpeed, maxSpeed);
+				}
+			}
+		}
+		
 	}
 	
 	public Pair[] getPairs() {

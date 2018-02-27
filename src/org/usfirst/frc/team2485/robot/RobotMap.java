@@ -20,6 +20,7 @@ import com.ctre.phoenix.sensors.PigeonIMU;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PIDSourceType;
+import edu.wpi.first.wpilibj.PowerDistributionPanel;
 
 /**
  * The RobotMap is a mapping from the ports sensors and actuators are wired into
@@ -52,6 +53,9 @@ public class RobotMap {
 	
 
 	public static final int irSensorPort = 0;
+	public static final int elbowPdpPortTalon = 5;
+	public static final int elbowPdpPortVictor = 4;
+	public static final int wristPdpPort = 8;
 
 //TALONS
 	public static TalonSRX intakeLeftTalon;
@@ -126,7 +130,7 @@ public class RobotMap {
 	public static DigitalInput irSensor;
 	
 	public static DeadReckoning deadReckoning;
-	
+	public static PowerDistributionPanel pdp;
 
 //SUBSYSTEMS
 	public static DriveTrain driveTrain;
@@ -245,7 +249,7 @@ public class RobotMap {
 		driveRightEncoderWrapperRate.setDistancePerRevolution(WHEEL_RADIUS * 2 * Math.PI);
 		
 		deadReckoning = new DeadReckoning(pigeonDisplacementWrapper, driveLeftEncoderWrapperDistance, driveRightEncoderWrapperDistance);
-		
+		pdp = new PowerDistributionPanel();
 //SUBSYSTEMS
 		driveTrain = new DriveTrain();
 		intake = new Intake();

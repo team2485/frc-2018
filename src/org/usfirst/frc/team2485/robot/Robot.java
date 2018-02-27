@@ -14,6 +14,9 @@ import org.usfirst.frc.team2485.util.ThresholdHandler;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.cscore.VideoMode.PixelFormat;
+import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
@@ -34,11 +37,17 @@ public class Robot extends IterativeRobot {
 	double[] ypr = new double[3];
 	private int i = 0;
 	private boolean isHomed = true;
+	private static boolean shouldCrash = false;
 
 	/**
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
 	 */
+	
+	public static void forceDisable() {
+		shouldCrash = true;
+	}
+	
 	@Override
 	public void robotInit() {
 		RobotMap.init();
@@ -47,14 +56,25 @@ public class Robot extends IterativeRobot {
 //		RobotMap.arm.initElbowEnc();
 //		RobotMap.arm.initWristEnc();
 //		RobotMap.deadReckoning.start();
-		if (!RobotMap.arm.isEncodersWorking()) {
-			throw new RuntimeException("No Encoders");
-		}
+//		if (!RobotMap.arm.isEncodersWorking()) {
+//			throw new RuntimeException("No Encoders");
+//		}
 		isHomed = false;
 
 		RobotMap.updateConstants();
 		// chooser.addObject("My Auto", new MyAutoCommand());
 		SmartDashboard.putData("Auto mode", chooser);
+		Pair[] controlPoints = {
+				new Pair(0,	0), new Pair(0, 80), new Pair(120, 80)
+			};
+			double[] dists = {
+					70
+			};
+		AutoPath path = AutoPath.getAutoPathForClothoidSpline(controlPoints, dists);
+		
+		for (int i = 0; i < 200; i++) {
+			System.out.println(path.getPointAtDist(i * path.getPathLength() / 200).maxSpeed);
+		}
 	}
 
 	/**
@@ -67,6 +87,7 @@ public class Robot extends IterativeRobot {
 		Scheduler.getInstance().removeAll();
 		RobotMap.driveTrain.reset();
 //		RobotMap.deadReckoning.stop();
+		shouldCrash = false;
 	}
 
 	@Override
@@ -93,7 +114,7 @@ public class Robot extends IterativeRobot {
 		ConstantsIO.init();
 		RobotMap.updateConstants();
 		RobotMap.driveTrain.reset();
-		if (!RobotMap.arm.isEncodersWorking()) {
+		if (!RobotMap.arm.isElbowCurrentSensorWorking()) {
 			throw new RuntimeException("No Encoders");
 		}
 		/*
@@ -118,20 +139,31 @@ public class Robot extends IterativeRobot {
 		}
 	
 		
+		if( (System.currentTimeMillis() / 1000)% 2 == 0) {
+			RobotMap.arm.setWristCurrent(1.5);
+		} else {
+			RobotMap.arm.setWristCurrent(3);
+		}
+		UsbCamera jevoisCam = CameraServer.getInstance().startAutomaticCapture();
+		jevoisCam.setVideoMode(PixelFormat.kYUYV, 320, 254, 60);
 //		Scheduler.getInstance().add(new DriveStraight(170, 100, 10000));
 		
-		RobotMap.deadReckoning.start();
+//		RobotMap.deadReckoning.start();
 //		Scheduler.getInstance().add(new SwitchAuto(true));
 
 		
-		Pair[] controlPoints = {
-				new Pair(0,	0), new Pair(0, 80), new Pair(120, 80)
-			};
-			double[] dists = {
-					70
-			};
-		AutoPath path = AutoPath.getAutoPathForClothoidSpline(controlPoints, dists);
-		Scheduler.getInstance().add(new DriveTo(path, 80, false, 100000));
+//		Pair[] controlPoints = {
+//				new Pair(0,	0), new Pair(0, 80), new Pair(120, 80)
+//			};
+//			double[] dists = {
+//					70
+//			};
+//		AutoPath path = AutoPath.getAutoPathForClothoidSpline(controlPoints, dists);
+//		
+//		for (int i = 0; i < 200; i++) {
+//			System.out.println(path.getPointAtDist(i * path.getPathLength() / 200));
+//		}
+//		Scheduler.getInstance().add(new DriveTo(path, 80, false, 100000));
 //			
 //		RobotMap.pathTracker = new PathTracker(RobotMap.deadReckoning, path);
 //		RobotMap.pathTracker.start();
@@ -171,6 +203,9 @@ public class Robot extends IterativeRobot {
 //		RobotMap.arm.setWristPos(.1);
 //		RobotMap.arm.setWristVelocity(.05);
 //		System.out.println(RobotMap.arm.wristPIDisEnabled());
+		if (shouldCrash) {
+			throw new RuntimeException("Current Sensor failed");
+		}
 	}
 
 	@Override
@@ -182,6 +217,8 @@ public class Robot extends IterativeRobot {
 		if (!isHomed) {
 			throw new RuntimeException("Not homed");
 		}
+		UsbCamera jevoisCam = CameraServer.getInstance().startAutomaticCapture();
+		jevoisCam.setVideoMode(PixelFormat.kYUYV, 320, 254, 60);
 //		if (!RobotMap.arm.isEncodersWorking()) {
 //			throw new RuntimeException("No Encoders");
 //		}
@@ -203,13 +240,17 @@ public class Robot extends IterativeRobot {
 		Scheduler.getInstance().run();
 		updateSmartDashboard();
 		
-		if (!RobotMap.arm.isEncodersWorking()) {
+		if (!RobotMap.arm.isElbowCurrentSensorWorking()) {
 			i++;
 			if (i > 20) {
 //				throw new RuntimeException("No Encoders");
 			}
 		} else {
 			i = 0;
+		}
+		
+		if (shouldCrash) {
+			throw new RuntimeException("Current Sensor failed");
 		}
 //		RobotMap.intakeLeftTalon.set(ControlMode.PercentOutput, ThresholdHandler.deadbandAndScale(OI.operator.getRawAxis(OI.XBOX_LYJOYSTICK_PORT), .2, 0, 1));
 //		RobotMap.intakeRightTalon.set(ControlMode.PercentOutput, ThresholdHandler.deadbandAndScale(OI.operator.getRawAxis(OI.XBOX_RYJOYSTICK_PORT), .2, 0, 1));
@@ -218,10 +259,11 @@ public class Robot extends IterativeRobot {
 	
 //		RobotMap.arm.setWristManual(ThresholdHandler.deadbandAndScale(OI.driver.getRawAxis(1), OI.XBOX_AXIS_DEADBAND, 0, 1));
 //		RobotMap.arm.setElbowManual(ThresholdHandler.deadbandAndScale(OI.driver.getRawAxis(5), OI.XBOX_AXIS_DEADBAND, 0, 1));
-//		
-
+//		RobotMap.elbowTalon.set(ControlMode.PercentOutput, -ThresholdHandler.deadbandAndScale(OI.driver.getRawAxis(5), OI.XBOX_AXIS_DEADBAND, 0, 1));
+//		RobotMap.wristTalon.set(ControlMode.PercentOutput, -ThresholdHandler.deadbandAndScale(OI.driver.getRawAxis(1), OI.XBOX_AXIS_DEADBAND, 0, 1));
 
 	}
+	
 
 	public void updateSmartDashboard() {
 		
@@ -250,7 +292,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Relative Wrist", RobotMap.wristTalon.getSensorCollection().getQuadraturePosition());
 		SmartDashboard.putNumber("PWM Elbow", RobotMap.elbowTalon.getSensorCollection().getPulseWidthPosition());
 		SmartDashboard.putNumber("Relative Elbow", RobotMap.elbowTalon.getSensorCollection().getQuadraturePosition());
-		SmartDashboard.putBoolean("Encoders Working", RobotMap.arm.isEncodersWorking());
+		SmartDashboard.putBoolean("Encoders Working", RobotMap.arm.isElbowCurrentSensorWorking());
 		
 		SmartDashboard.putNumber("Left Current Error", RobotMap.driveLeftTalon.getClosedLoopError(0));
 		SmartDashboard.putNumber("Right Current Error", -RobotMap.driveRightTalon.getClosedLoopError(0));
@@ -275,6 +317,16 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Elbow Ang Vel Error", RobotMap.arm.getElbowAngVelError());
 		SmartDashboard.putNumber("Elbow Ang Error", RobotMap.arm.getElbowAngError());
 		SmartDashboard.putNumber("Elbow Enc Raw", RobotMap.elbowTalon.getSelectedSensorPosition(0));
+		SmartDashboard.putNumber("PDP Current Elbow Talon", RobotMap.pdp.getCurrent(RobotMap.elbowPdpPortTalon));
+		SmartDashboard.putNumber("PDP Current Elbow Victor", RobotMap.pdp.getCurrent(RobotMap.elbowPdpPortVictor));
+		SmartDashboard.putNumber("PDP Current Wrist Talon", RobotMap.pdp.getCurrent(RobotMap.wristPdpPort));
+		SmartDashboard.putNumber("Wrist Current", RobotMap.wristTalon.getOutputCurrent());
+		SmartDashboard.putNumber("Elbow Current", RobotMap.elbowTalon.getOutputCurrent());
+
+
+		
+		SmartDashboard.putNumber("Wrist PercentOut", RobotMap.wristTalon.getMotorOutputPercent());
+		SmartDashboard.putNumber("Elbow PercentOutput", RobotMap.elbowTalon.getMotorOutputPercent());
 		
 
 		
@@ -302,8 +354,8 @@ public class Robot extends IterativeRobot {
 			RobotMap.arm.setWristCurrent(0);
 			RobotMap.arm.setElbowCurrent(0);
 		}
-		RobotMap.elbowEncoderWrapperDistance.setPosition(-.190);
-		RobotMap.wristEncoderWrapperDistance.setPosition(0.416);
+		RobotMap.elbowEncoderWrapperDistance.setPosition(-.198);
+		RobotMap.wristEncoderWrapperDistance.setPosition(0.421);
 		isHomed = true;
 	}
 	
