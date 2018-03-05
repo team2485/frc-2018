@@ -40,6 +40,7 @@ public class DriveTo extends Command{
 	}
 	@Override
 	protected void execute() {
+		System.out.println("Drive Train");
 
 		double arcLength = RobotMap.driveTrain.getAverageEncoderDistance(), 
 				pathLength = path.getPathLength();

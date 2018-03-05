@@ -52,10 +52,7 @@ public class DeadReckoning {
 		double deltaDist = curDist - lastDist;
 		short [] xyz = new short [3];
 		gyro.getPigeon().getBiasedAccelerometer(xyz);
-//		System.out.println("X"+xyz[0]);
-//		System.out.println(xyz[1]);
-//		System.out.println(xyz[2]);
-		
+
 		double[] ypr = new double[3];
 		gyro.getPigeon().getYawPitchRoll(ypr);
 //

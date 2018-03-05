@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.command.TimedCommand;
 
 public class SwitchAuto extends CommandGroup {
 	public SwitchAuto(boolean left) {
+		System.out.println("Switch Auto");
 		addSequential(new ArmSetSetpoint(ArmSetpoint.SWITCH));
 		int sign = left ? -1 : 1;
 		AutoPath path = new AutoPath(AutoPath.getPointsForBezier(10000, new Pair(0.0, 0.0),
@@ -21,7 +22,7 @@ public class SwitchAuto extends CommandGroup {
 				new Pair(sign * 47.5, 99.5)));
 		addSequential(new DriveTo(path, 90, false, 100000));
 		addSequential(new ResetDriveTrain());
-		addSequential(new Eject(true));
+//		addSequential(new Eject(true));
 		
 	}
 }

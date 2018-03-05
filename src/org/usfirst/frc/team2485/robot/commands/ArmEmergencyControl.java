@@ -13,8 +13,8 @@ public class ArmEmergencyControl extends Command{
 	
 	protected void execute() {
 		WristWithControllers.isManual = true;
-		RobotMap.arm.setElbowManual(ThresholdHandler.deadbandAndScale(OI.operator.getRawAxis(OI.XBOX_RYJOYSTICK_PORT), OI.XBOX_AXIS_DEADBAND, 0, 1));
-		RobotMap.arm.setWristManual(ThresholdHandler.deadbandAndScale(OI.operator.getRawAxis(OI.XBOX_LYJOYSTICK_PORT), OI.XBOX_AXIS_DEADBAND, 0, 1));
+		RobotMap.arm.setElbowManual(-ThresholdHandler.deadbandAndScale(OI.operator.getRawAxis(OI.XBOX_RYJOYSTICK_PORT), OI.XBOX_AXIS_DEADBAND, 0, 1));
+		RobotMap.arm.setWristManual(-ThresholdHandler.deadbandAndScale(OI.operator.getRawAxis(OI.XBOX_LYJOYSTICK_PORT), OI.XBOX_AXIS_DEADBAND, 0, 1));
 
 	}
 	

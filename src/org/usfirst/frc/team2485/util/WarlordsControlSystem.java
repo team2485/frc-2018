@@ -69,14 +69,14 @@ public abstract class WarlordsControlSystem implements PIDOutput {
 	/**
 	 * makes calculate start running periodically
 	 */
-	public void enable() {
+	public synchronized void enable() {
 		this.enabled = true;
 	}
 
 	/**
 	 * Disables and clears integral and derivative terms
 	 */
-	public void disable() {
+	public synchronized void disable() {
 		this.enabled = false;
 	}
 	

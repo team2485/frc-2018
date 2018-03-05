@@ -119,10 +119,10 @@ public class OI {
 
 		
 
-		DRIVER_B.whenPressed(new Eject(true));
-		DRIVER_RBUMPER.whenPressed(new Eject(false));
+		DRIVER_B.whenPressed(new Eject(true, false));
+		DRIVER_RBUMPER.whenPressed(new Eject(false, false));
 		DRIVER_Y.whenPressed(new SetIntakeManual(0));
-		DRIVER_X.whenPressed(new SetIntakeManual(1)); //change to a
+		DRIVER_A.whenPressed(new SetIntakeManual(.5)); 
 		
 		Command scaleHighBack = new ArmToScale(ArmSetpoint.SCALE_HIGH_BACK);
 		OPERATOR_Y.whenPressed(scaleHighBack);

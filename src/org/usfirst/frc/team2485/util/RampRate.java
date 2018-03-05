@@ -67,7 +67,7 @@ public class RampRate extends WarlordsControlSystem {
 
 
 	@Override
-	protected void calculate() {
+	protected synchronized void calculate() {
 		double val = getNextValue(setpoint);
 		for (PIDOutput out : outputs) {
 			out.pidWrite(val);
@@ -75,7 +75,7 @@ public class RampRate extends WarlordsControlSystem {
 	}
 	
 	@Override
-	public void disable() {
+	public synchronized void disable() {
 		setLastValue(0);
 		setpoint = 0;
 		super.disable();

@@ -44,14 +44,16 @@ public class DriveTrain extends Subsystem {
 
 	private static final double SPEED_LIMIT = .5;
 
-	private WarlordsPIDController distancePID = new WarlordsPIDController();
+	private static final double MAX_VELOCITY = 180;
+
+	public WarlordsPIDController distancePID = new WarlordsPIDController();
 	private WarlordsPIDController anglePID = new WarlordsPIDController();
 	private WarlordsPIDController velocityPID = new WarlordsPIDController();
 	private WarlordsPIDController curvaturePID = new WarlordsPIDController();
 
 	private RampRate velocityRampRate = new RampRate();
 
-	private TransferNode angleSetpointTN = new TransferNode(0);
+	public TransferNode angleSetpointTN = new TransferNode(0);
 	private TransferNode distanceTN = new TransferNode(0);
 	private TransferNode angleTN = new TransferNode(0);
 	public TransferNode velocityTN = new TransferNode(0);
@@ -74,8 +76,8 @@ public class DriveTrain extends Subsystem {
 
 	private PIDSourceWrapper curvatureSetpointSource = new PIDSourceWrapper();
 
-	private PIDSourceWrapper minVelocityORSource = new PIDSourceWrapper();
-	private PIDSourceWrapper maxVelocityORSource = new PIDSourceWrapper();
+	public PIDSourceWrapper minVelocityORSource = new PIDSourceWrapper();
+	public PIDSourceWrapper maxVelocityORSource = new PIDSourceWrapper();
 
 	private PIDSourceWrapper minAngVelocityORSource = new PIDSourceWrapper();
 	private PIDSourceWrapper maxAngVelocityORSource = new PIDSourceWrapper();
@@ -155,7 +157,7 @@ public class DriveTrain extends Subsystem {
 		anglePID.setConstantsSources(kp_anglePIDSource, null, null, null);
 
 		minAngVelocityORSource.setPidSource(() -> {
-			return -getMaxCurrent();
+			return  -getMaxCurrent();
 		});
 		maxAngVelocityORSource.setPidSource(() -> {
 			return getMaxCurrent();
@@ -175,7 +177,7 @@ public class DriveTrain extends Subsystem {
 		curvaturePID.setOutputSources(maxAngVelocityORSource, minAngVelocityORSource);
 
 		curvatureSetpointSource.setPidSource(() -> {
-			return angleTN.getOutput() + curvatureSetpointTN.getOutput();
+			return angleTN.getOutput() + curvatureSetpointTN.getOutput() * Math.signum(encoderAvgVelocityPIDSource.pidGet());
 		});
 
 		leftCurrentPIDSource.setPidSource(() -> {
@@ -210,29 +212,39 @@ public class DriveTrain extends Subsystem {
 		double angularPwm = 0;
 
 		if (quickturn) {
-			angularPwm = Math.abs(steering) * steering;
+			angularPwm = steering * Math.abs(steering);
 		} else {
+			double tempThrottle = Math.max(Math.abs(throttle), Math.abs(encoderAvgVelocityPIDSource.pidGet() / MAX_VELOCITY));
 			//angularPwm = Math.abs(getAverageSpeed()) * steering;
-			angularPwm = Math.abs(throttle) * steering;
-		}
-
-		if (vmax > 0) {
-			vmax -= Math.abs(angularPwm);
-		} else if (vmax < 0) {
-			vmax += Math.abs(angularPwm);
-		}
+			angularPwm = (tempThrottle * steering);
+		} 
+//
+//		if (vmax > 0) {
+//			vmax -= Math.abs(angularPwm);
+//		} else if (vmax < 0) {
+//			vmax += Math.abs(angularPwm);
+//		}
 
 		leftPwm = vmax + angularPwm;
 		rightPwm = vmax - angularPwm;
+		
+		if(Math.abs(leftPwm) > 1) {
+			//squared to the fifth exponent
+			rightPwm /= Math.abs(leftPwm);
+			leftPwm /= Math.abs(leftPwm);
+		} else if (Math.abs(rightPwm) > 1) {
+			leftPwm /= Math.abs(rightPwm);
+			rightPwm /= Math.abs(rightPwm);
+		}
 
 		RobotMap.driveLeftTalon.enableVoltageCompensation(false);
 		RobotMap.driveRightTalon.enableVoltageCompensation(false);
 		RobotMap.driveLeftTalon.enableCurrentLimit(true);
 		RobotMap.driveRightTalon.enableCurrentLimit(true);
 
-		double percentUp = (Math.sin(RobotMap.elbowEncoderWrapperDistance.pidGet()* 2 * Math.PI) - Math.sin(ArmSetpoint.SWITCH.getElbowPos() * 2 * Math.PI)) / 
-				(1 - Math.sin(ArmSetpoint.SWITCH.getElbowPos()* 2 * Math.PI));
-		double I = percentUp * (20 - 40) + 40;
+		double percentUp = (RobotMap.elbowEncoderWrapperDistance.pidGet() - ArmSetpoint.SWITCH.getElbowPos()) / 
+				(0.25 - ArmSetpoint.SWITCH.getElbowPos());
+		double I = percentUp * (20 - 80) + 80;
 		double speed = percentUp * (.75-1) + 1;
 		
 		if(I < 24) {
@@ -259,32 +271,32 @@ public class DriveTrain extends Subsystem {
 		RobotMap.driveRightPWM.set(rightPwm);
 	}
 
-	public void WARlordsDrive(double throttle, double steering, boolean quickturn) {
-		anglePID.disable();
-		distancePID.disable();
-		velocityPID.disable();
-
-		// simpleDrive(throttle, steering);
-
-		if (quickturn) {
-			curvaturePID.disable();
-			leftMotorSetter.disable();
-			rightMotorSetter.disable();
-
-			RobotMap.driveLeftPWM.set(steering);
-			RobotMap.driveRightPWM.set(-steering);
-		} else {
-			leftMotorSetter.enable();
-			rightMotorSetter.enable();
-			curvaturePID.enable();
-			
-			angleTN.setOutput((2/RobotMap.ROBOT_WIDTH) * steering);
-
-			velocityTN.setOutput(throttle * (getMaxCurrent() - Math.abs(curvatureTN.pidGet())));
-
-		}
-
-	}
+//	public void WARlordsDrive(double throttle, double steering, boolean quickturn) {
+//		anglePID.disable();
+//		distancePID.disable();
+//		velocityPID.disable();
+//
+//		// simpleDrive(throttle, steering);
+//
+//		if (quickturn) {
+//			curvaturePID.disable();
+//			leftMotorSetter.disable();
+//			rightMotorSetter.disable();
+//
+//			RobotMap.driveLeftPWM.set(steering);
+//			RobotMap.driveRightPWM.set(-steering);
+//		} else {
+//			leftMotorSetter.enable();
+//			rightMotorSetter.enable();
+//			curvaturePID.enable();
+//			
+//			angleTN.setOutput((2/RobotMap.ROBOT_WIDTH) * steering);
+//
+//			velocityTN.setOutput(throttle * (getMaxCurrent() - Math.abs(curvatureTN.pidGet())));
+//
+//		}
+//
+//	}
 
 	public double getDistancePIDOutput() {
 		return distanceTN.getOutput();
@@ -406,7 +418,7 @@ public class DriveTrain extends Subsystem {
 		distancePID.setSetpoint(distance);
 		curvatureSetpointTN.setOutput(curvature);
 		distancePID.setAbsoluteTolerance(tolerance);
-		if (Math.abs(encoderAvgVelocityPIDSource.pidGet()) > LOW_ENC_RATE) {
+		if (Math.abs(encoderAvgVelocityPIDSource.pidGet()) > 5) {
 			curvaturePID.enable();
 		} else {
 			curvaturePID.disable();
@@ -453,6 +465,7 @@ public class DriveTrain extends Subsystem {
 			curvatureTN.setOutput(0);
 			curvatureSetpointTN.setOutput(0);
 			angleTN.setOutput(0);
+			angleSetpointTN.setOutput(0);
 			velocitySetpointTN.setOutput(0);
 		}
 	}
