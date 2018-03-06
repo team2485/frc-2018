@@ -41,7 +41,7 @@ public class Intake extends Subsystem {
 	}
 
 	public boolean hasCube() {
-		return false;	
+		return !RobotMap.irSensor.get();	
 	}
 	
 	public void updateConstants() {

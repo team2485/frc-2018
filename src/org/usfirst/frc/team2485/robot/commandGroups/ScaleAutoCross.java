@@ -10,30 +10,33 @@ import org.usfirst.frc.team2485.util.AutoPath.Pair;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
 
-public class ScaleAuto extends CommandGroup {
-	public ScaleAuto(boolean left) {
+public class ScaleAutoCross extends CommandGroup {
+	public ScaleAutoCross(boolean left) {
 		CommandGroup drive = new CommandGroup();
 		CommandGroup everythingElse = new CommandGroup();
 		CommandGroup everythingBeforeEject = new CommandGroup();
 		everythingElse.addSequential(new ArmSetSetpoint(ArmSetpoint.SWITCH));
 		everythingElse.addSequential(new WaitUntilClose(120));
-		everythingElse.addSequential(new ArmSetSetpoint(ArmSetpoint.SCALE_HIGH_BACK));
+//		everythingElse.addSequential(new ArmSetSetpoint(ArmSetpoint.SCALE_HIGH_BACK));
 		
 		int sign = left ? -1 : 1;
-		Pair[] controlPoints = {new Pair(sign*65, -280), new Pair(0, -147), new Pair(0, 0)};
-		double[] dists = {120};
+		Pair[] controlPoints = {
+//				new Pair(204.5, -289),
+				new Pair(228.0, -212),
+				new Pair(0.0, -212),
+				new Pair(0.0, 0.0),
+				};
+				double[] dists = {100};
+				AutoPath path = AutoPath.getAutoPathForClothoidSpline(controlPoints, dists);
 		
 		
-		
-		
-		AutoPath path = AutoPath.getAutoPathForClothoidSpline(controlPoints, dists);
-		drive.addSequential(new DriveTo(path, 75, true, 10000));
+		drive.addSequential(new DriveTo(path, 30, true, 190000));
 		drive.addSequential(new ResetDriveTrain());
 		everythingBeforeEject.addParallel(drive);
 		everythingBeforeEject.addParallel(everythingElse);
 		addSequential(everythingBeforeEject);
-		addSequential(new Eject(false, true));
-		addSequential(new ArmSetSetpoint(ArmSetpoint.SWITCH));
+//		addSequential(new Eject(false, true));
+//		addSequential(new ArmSetSetpoint(ArmSetpoint.SWITCH));
 
 	}
 }

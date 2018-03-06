@@ -111,6 +111,8 @@ public class Arm extends Subsystem {
 	public static final double MAX_UP_CURRENT_ELBOW = 12;
 	public static final double MAX_DOWN_CURRENT_ELBOW = 8.5;
 	
+	public static final double QUASI_LOW_ELBOW_RATE = .01;
+	
 //	// current sensor failsafes
 //	private static final double TALON_CURRENT_TOLERANCE = 10; //Should be 5
 //	private static final double VICTOR_CURRENT_TOLERANCE = 1;
@@ -131,16 +133,39 @@ public class Arm extends Subsystem {
 	private PIDSourceWrapper elbowMaxCurrentSource = new PIDSourceWrapper();
 	public PIDSourceWrapper wristMinCurrentSource = new PIDSourceWrapper();
 	public PIDSourceWrapper wristMaxCurrentSource = new PIDSourceWrapper();
+	public PIDSourceWrapper elbowMinAngVelSource = new PIDSourceWrapper();
+	public PIDSourceWrapper elbowMaxAngVelSource = new PIDSourceWrapper();
+	
+	public double getVMaxElbow() {
+		double thetaCritical = Math.acos((CRITICAL_DISTANCE - L2*Math.cos(getWristAngle() * 2 * Math.PI)) / L1) / Math.PI / 2;
+		double vMax = ConstantsIO.kP_ElbowAng * (Math.abs(getElbowAngle()) - thetaCritical);
+		vMax = Math.max(vMax, 0);
+		return vMax;
+	}
 	
 
 	public Arm() {
 
 		new Timer().schedule(new CheckCurrentSensorTask(), 0, 20);
 		// Elbow
+		
+		elbowMinAngVelSource.setPidSource(() -> {
+			if (getElbowAngle() < 0) {
+				return -0.2;
+			}
+			return -Math.min(getVMaxElbow(), 0.2);
+		});
+		
+		elbowMaxAngVelSource.setPidSource(() -> {
+			if (getElbowAngle() > 0) {
+				return 0.3;
+			}
+			return Math.min(getVMaxElbow(), 0.3);
+		});
 
 		elbowAngPID.setSources(RobotMap.elbowEncoderWrapperDistance);
 		elbowAngPID.setOutputs(elbowAngTN);
-		elbowAngPID.setOutputRange(-.2, .3);
+		elbowAngPID.setOutputSources(elbowMaxAngVelSource, elbowMinAngVelSource);
 		
 		
 		elbowAngVelPID.setSources(RobotMap.elbowEncoderWrapperRate);
@@ -164,13 +189,13 @@ public class Arm extends Subsystem {
 			return RobotMap.elbowEncoderWrapperDistance.pidGet() > MAX_ELBOW_ANGLE ? 2 : MAX_UP_CURRENT_ELBOW;
 		});
 		wristMinCurrentSource.setPidSource(() -> {
-			if (Math.abs(RobotMap.wristEncoderWrapperRate.pidGet()) < LOW_ENC_RATE) {
-				return -3;
+			if (Math.abs(RobotMap.wristEncoderWrapperRate.pidGet()) < LOW_ENC_RATE && Math.abs(RobotMap.elbowEncoderWrapperRate.pidGet()) < QUASI_LOW_ELBOW_RATE) {
+				return -4;
 			}
 			return RobotMap.wristEncoderWrapperDistance.pidGet() < MIN_WRIST_ANGLE ? -2 : -MAX_DOWN_CURRENT_WRIST;
 		});
 		wristMaxCurrentSource.setPidSource(() -> {
-			if (Math.abs(RobotMap.wristEncoderWrapperRate.pidGet()) < LOW_ENC_RATE) {
+			if (Math.abs(RobotMap.wristEncoderWrapperRate.pidGet()) < LOW_ENC_RATE && Math.abs(RobotMap.elbowEncoderWrapperRate.pidGet()) < QUASI_LOW_ELBOW_RATE) {
 				return 4;
 			}
 			return RobotMap.wristEncoderWrapperDistance.pidGet() > MAX_WRIST_ANGLE ? 2 : MAX_UP_CURRENT_WRIST;
