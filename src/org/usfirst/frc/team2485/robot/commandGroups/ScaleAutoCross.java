@@ -1,5 +1,6 @@
 package org.usfirst.frc.team2485.robot.commandGroups;
 
+import org.usfirst.frc.team2485.robot.RobotMap;
 import org.usfirst.frc.team2485.robot.commands.ArmSetSetpoint;
 import org.usfirst.frc.team2485.robot.commands.DriveTo;
 import org.usfirst.frc.team2485.robot.commands.ResetDriveTrain;
@@ -17,26 +18,28 @@ public class ScaleAutoCross extends CommandGroup {
 		CommandGroup everythingBeforeEject = new CommandGroup();
 		everythingElse.addSequential(new ArmSetSetpoint(ArmSetpoint.SWITCH));
 		everythingElse.addSequential(new WaitUntilClose(120));
-//		everythingElse.addSequential(new ArmSetSetpoint(ArmSetpoint.SCALE_HIGH_BACK));
+		everythingElse.addSequential(new ArmSetSetpoint(ArmSetpoint.SCALE_HIGH_BACK));
 		
 		int sign = left ? -1 : 1;
 		Pair[] controlPoints = {
-//				new Pair(204.5, -289),
-				new Pair(228.0, -212),
+				new Pair(sign*215, -289),
+				new Pair(sign*260.0, -212),
 				new Pair(0.0, -212),
 				new Pair(0.0, 0.0),
 				};
-				double[] dists = {100};
-				AutoPath path = AutoPath.getAutoPathForClothoidSpline(controlPoints, dists);
+		double[] dists = {50, 100};
+		AutoPath path = AutoPath.getAutoPathForClothoidSpline(controlPoints, dists);
 		
+		RobotMap.pathTracker.start(path);
+
 		
 		drive.addSequential(new DriveTo(path, 30, true, 190000));
 		drive.addSequential(new ResetDriveTrain());
 		everythingBeforeEject.addParallel(drive);
 		everythingBeforeEject.addParallel(everythingElse);
 		addSequential(everythingBeforeEject);
-//		addSequential(new Eject(false, true));
-//		addSequential(new ArmSetSetpoint(ArmSetpoint.SWITCH));
+		addSequential(new Eject(false, true));
+		addSequential(new ArmSetSetpoint(ArmSetpoint.SWITCH));
 
 	}
 }

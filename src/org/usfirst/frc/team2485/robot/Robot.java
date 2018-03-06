@@ -58,6 +58,7 @@ public class Robot extends IterativeRobot {
 		RobotMap.init();
 		ConstantsIO.init();
 		OI.init();
+		ScaleAuto.init();
 //		RobotMap.arm.initElbowEnc();
 //		RobotMap.arm.initWristEnc();
 //		RobotMap.deadReckoning.start();
@@ -65,7 +66,7 @@ public class Robot extends IterativeRobot {
 //			throw new RuntimeException("No Encoders");
 //		}
 		isHomed = false;
-
+		
 		RobotMap.updateConstants();
 		// chooser.addObject("My Auto", new MyAutoCommand());
 		SmartDashboard.putData("Auto mode", chooser);
@@ -145,8 +146,11 @@ public class Robot extends IterativeRobot {
 		
 //		Scheduler.getInstance().add(new DriveStraight(170, 100, 10000));
 		
+		
+				
 		RobotMap.deadReckoning.start();
-		Scheduler.getInstance().add(new SwitchAuto(true));
+		Scheduler.getInstance().add(new ScaleAuto(false, true));
+//		Scheduler.getInstance().add(new SetVelocities(30, .5));
 		
 
 		
@@ -331,6 +335,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Min Ang Vel Elbow OR Source", RobotMap.arm.elbowMinAngVelSource.pidGet());
 		
 		
+		
 
 
 		
@@ -338,6 +343,8 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Elbow PercentOutput", RobotMap.elbowTalon.getMotorOutputPercent());
 		
 		SmartDashboard.putNumber("Angle Setpoint TN", RobotMap.driveTrain.angleSetpointTN.getOutput());
+		
+		SmartDashboard.putNumber("Drift", RobotMap.pathTracker.getDrift());
 		
 
 		

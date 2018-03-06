@@ -1,5 +1,6 @@
 package org.usfirst.frc.team2485.robot.commandGroups;
 
+import org.usfirst.frc.team2485.robot.RobotMap;
 import org.usfirst.frc.team2485.robot.commands.ArmSetSetpoint;
 import org.usfirst.frc.team2485.robot.commands.DriveTo;
 import org.usfirst.frc.team2485.robot.commands.ResetDriveTrain;
@@ -20,6 +21,7 @@ public class SwitchAuto extends CommandGroup {
 				new Pair(0, 44.0),
 				new Pair(sign * 47.5, 30.0),
 				new Pair(sign * 47.5, 87.5)));
+		RobotMap.pathTracker.start(path);
 		addSequential(new DriveTo(path, 30, false, 100000));
 		addSequential(new ResetDriveTrain());
 		addSequential(new Eject(true, false));

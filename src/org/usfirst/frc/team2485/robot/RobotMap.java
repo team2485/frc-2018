@@ -253,7 +253,9 @@ public class RobotMap {
 		driveLeftEncoderWrapperRate.setDistancePerRevolution(-WHEEL_RADIUS * 2 * Math.PI);
 		driveRightEncoderWrapperRate.setDistancePerRevolution(WHEEL_RADIUS * 2 * Math.PI);
 		
+		
 		deadReckoning = new DeadReckoning(pigeonDisplacementWrapper, driveLeftEncoderWrapperDistance, driveRightEncoderWrapperDistance);
+		pathTracker = new PathTracker(deadReckoning);
 		pdp = new PowerDistributionPanel();
 //SUBSYSTEMS
 		driveTrain = new DriveTrain();

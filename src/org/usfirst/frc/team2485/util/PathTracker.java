@@ -11,20 +11,22 @@ public class PathTracker {
 	private AutoPath path;
 	private double pathDist = 0;
 	private double drift = 0;
-	private static final double PRECISION = 0.01; // inches
+	private static final double PRECISION = 0.25; // inches
 	private boolean enabled = false;
 	
-	public PathTracker(DeadReckoning positionTracker, AutoPath path) {
+	public PathTracker(DeadReckoning positionTracker) {
 		this.positionTracker = positionTracker;
-		this.path = path;
-		new Timer().schedule(new UpdateTask(), 0, 10);
+		new Timer().schedule(new UpdateTask(), 0, 50);
 	}
 	
-	public void start() {
+	public void start(AutoPath path) {
+		this.path = path;
 		drift = pathDist = 0;
 		enabled = true;
 		positionTracker.start();
 	}
+	
+
 	
 	public void stop() {
 		enabled = false;
