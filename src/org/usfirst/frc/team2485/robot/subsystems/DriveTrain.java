@@ -1,6 +1,5 @@
 package org.usfirst.frc.team2485.robot.subsystems;
 
-import org.usfirst.frc.team2485.robot.OI;
 import org.usfirst.frc.team2485.robot.RobotMap;
 import org.usfirst.frc.team2485.robot.commands.DriveWithControllers;
 import org.usfirst.frc.team2485.robot.subsystems.Arm.ArmSetpoint;
@@ -21,24 +20,6 @@ import edu.wpi.first.wpilibj.command.Subsystem;
  *
  */
 public class DriveTrain extends Subsystem {
-
-	public enum DriveSpeed {
-		SLOW_SPEED_RATING, NORMAL_SPEED_RATING;
-
-		public double getSpeedFactor() {
-
-			switch (this) {
-			case SLOW_SPEED_RATING:
-				return 0.5;
-			case NORMAL_SPEED_RATING:
-				return 1.0;
-			default:
-				return 1.0;
-			}
-		}
-	}
-
-	private double driveSpeed = DriveSpeed.NORMAL_SPEED_RATING.getSpeedFactor();
 
 	public static final double LOW_ENC_RATE = 2;
 
@@ -279,16 +260,16 @@ public class DriveTrain extends Subsystem {
 	public void WARlordsDrive(double throttle, double steering, boolean quickturn) {
 		enablePID(false);
 
-		if (steering != 0) {
-			leftMotorSetter.disable();
-			rightMotorSetter.disable();
-			driveStraightPID.disable();
-		} else {
+		if (steering == 0 && throttle != 0) {
 			leftMotorSetter.enable();
 			rightMotorSetter.enable();
 			driveStraightPID.enable();
 			driveStraightPID.setSetpoint(0);
 			steering = driveStraightTN.pidGet() / getAverageSpeed();
+		} else {
+			leftMotorSetter.disable();
+			rightMotorSetter.disable();
+			driveStraightPID.disable();
 		}
 
 		simpleDrive(throttle, steering, quickturn);
@@ -313,10 +294,6 @@ public class DriveTrain extends Subsystem {
 
 	public double getAngleError() {
 		return anglePID.getAvgError();
-	}
-
-	public void setDriveSpeed(DriveSpeed speed) {
-		driveSpeed = speed.getSpeedFactor();
 	}
 
 	public void zeroEncoders() {
