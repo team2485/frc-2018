@@ -51,6 +51,9 @@ public class DriveTrain extends Subsystem {
 	private WarlordsPIDController velocityPID = new WarlordsPIDController();
 	private WarlordsPIDController angleVelocityPID = new WarlordsPIDController();
 
+	private WarlordsPIDController driveStraightPID = new WarlordsPIDController();
+	public TransferNode driveStraightTN = new TransferNode(0);
+	
 	private RampRate velocityRampRate = new RampRate();
 
 	public TransferNode angleSetpointTN = new TransferNode(0);
@@ -186,6 +189,9 @@ public class DriveTrain extends Subsystem {
 			return velocityTN.pidGet() - curvatureTN.pidGet();
 		});
 
+		driveStraightPID.setOutputs(driveStraightTN);
+		driveStraightPID.setSources(RobotMap.pigeonRateWrapper);
+		
 		leftMotorSetter.setSetpointSource(leftCurrentPIDSource);
 		leftMotorSetter.setOutputs(RobotMap.driveLeftCurrent);
 		rightMotorSetter.setSetpointSource(rightCurrentPIDSource);
@@ -270,32 +276,24 @@ public class DriveTrain extends Subsystem {
 		RobotMap.driveRightPWM.set(rightPwm);
 	}
 
-//	public void WARlordsDrive(double throttle, double steering, boolean quickturn) {
-//		anglePID.disable();
-//		distancePID.disable();
-//		velocityPID.disable();
-//
-//		// simpleDrive(throttle, steering);
-//
-//		if (quickturn) {
-//			curvaturePID.disable();
-//			leftMotorSetter.disable();
-//			rightMotorSetter.disable();
-//
-//			RobotMap.driveLeftPWM.set(steering);
-//			RobotMap.driveRightPWM.set(-steering);
-//		} else {
-//			leftMotorSetter.enable();
-//			rightMotorSetter.enable();
-//			curvaturePID.enable();
-//			
-//			angleTN.setOutput((2/RobotMap.ROBOT_WIDTH) * steering);
-//
-//			velocityTN.setOutput(throttle * (getMaxCurrent() - Math.abs(curvatureTN.pidGet())));
-//
-//		}
-//
-//	}
+	public void WARlordsDrive(double throttle, double steering, boolean quickturn) {
+		enablePID(false);
+
+		if (steering != 0) {
+			leftMotorSetter.disable();
+			rightMotorSetter.disable();
+			driveStraightPID.disable();
+		} else {
+			leftMotorSetter.enable();
+			rightMotorSetter.enable();
+			driveStraightPID.enable();
+			driveStraightPID.setSetpoint(0);
+			steering = driveStraightTN.pidGet() / getAverageSpeed();
+		}
+
+		simpleDrive(throttle, steering, quickturn);
+
+	}
 
 	public double getDistancePIDOutput() {
 		return distanceTN.getOutput();
@@ -449,6 +447,7 @@ public class DriveTrain extends Subsystem {
 		angleVelocityPID.setPID(ConstantsIO.kP_DriveAngVel, ConstantsIO.kI_DriveAngVel, ConstantsIO.kD_DriveAngVel,
 				ConstantsIO.kF_DriveAngVel);
 		velocityRampRate.setRampRates(ConstantsIO.kUpRamp_Velocity, ConstantsIO.kDownRamp_Velocity);
+		driveStraightPID.setPID(ConstantsIO.kP_DriveStraight, 0 ,0);
 	}
 
 	public void enablePID(boolean enable) {
