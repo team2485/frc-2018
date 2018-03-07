@@ -1,6 +1,5 @@
 package org.usfirst.frc.team2485.robot.subsystems;
 
-import org.usfirst.frc.team2485.robot.OI;
 import org.usfirst.frc.team2485.robot.RobotMap;
 import org.usfirst.frc.team2485.robot.commands.DriveWithControllers;
 import org.usfirst.frc.team2485.robot.subsystems.Arm.ArmSetpoint;
@@ -23,24 +22,6 @@ import edu.wpi.first.wpilibj.command.Subsystem;
  */
 public class DriveTrain extends Subsystem {
 
-	public enum DriveSpeed {
-		SLOW_SPEED_RATING, NORMAL_SPEED_RATING;
-
-		public double getSpeedFactor() {
-
-			switch (this) {
-			case SLOW_SPEED_RATING:
-				return 0.5;
-			case NORMAL_SPEED_RATING:
-				return 1.0;
-			default:
-				return 1.0;
-			}
-		}
-	}
-
-	private double driveSpeed = DriveSpeed.NORMAL_SPEED_RATING.getSpeedFactor();
-
 	public static final double LOW_ENC_RATE = 2;
 
 	private static final double SPEED_LIMIT = .5;
@@ -52,6 +33,9 @@ public class DriveTrain extends Subsystem {
 	private WarlordsPIDController velocityPID = new WarlordsPIDController();
 	private WarlordsPIDController angularVelocityPID = new WarlordsPIDController();
 
+	private WarlordsPIDController driveStraightPID = new WarlordsPIDController();
+	public TransferNode driveStraightTN = new TransferNode(0);
+	
 	private RampRate velocityRampRate = new RampRate();
 	public RampRate angularVelocityRampRate = new RampRate();
 
@@ -196,6 +180,9 @@ public class DriveTrain extends Subsystem {
 			return velocityTN.pidGet() - angularVelocityTN.pidGet();
 		});
 
+		driveStraightPID.setOutputs(driveStraightTN);
+		driveStraightPID.setSources(RobotMap.pigeonRateWrapper);
+		
 		leftMotorSetter.setSetpointSource(leftCurrentPIDSource);
 		leftMotorSetter.setOutputs(RobotMap.driveLeftCurrent);
 		rightMotorSetter.setSetpointSource(rightCurrentPIDSource);
@@ -280,32 +267,24 @@ public class DriveTrain extends Subsystem {
 		RobotMap.driveRightPWM.set(rightPwm);
 	}
 
-//	public void WARlordsDrive(double throttle, double steering, boolean quickturn) {
-//		anglePID.disable();
-//		distancePID.disable();
-//		velocityPID.disable();
-//
-//		// simpleDrive(throttle, steering);
-//
-//		if (quickturn) {
-//			curvaturePID.disable();
-//			leftMotorSetter.disable();
-//			rightMotorSetter.disable();
-//
-//			RobotMap.driveLeftPWM.set(steering);
-//			RobotMap.driveRightPWM.set(-steering);
-//		} else {
-//			leftMotorSetter.enable();
-//			rightMotorSetter.enable();
-//			curvaturePID.enable();
-//			
-//			angleTN.setOutput((2/RobotMap.ROBOT_WIDTH) * steering);
-//
-//			velocityTN.setOutput(throttle * (getMaxCurrent() - Math.abs(curvatureTN.pidGet())));
-//
-//		}
-//
-//	}
+	public void WARlordsDrive(double throttle, double steering, boolean quickturn) {
+		enablePID(false);
+
+		if (steering == 0 && throttle != 0) {
+			leftMotorSetter.enable();
+			rightMotorSetter.enable();
+			driveStraightPID.enable();
+			driveStraightPID.setSetpoint(0);
+			steering = driveStraightTN.pidGet() / getAverageSpeed();
+		} else {
+			leftMotorSetter.disable();
+			rightMotorSetter.disable();
+			driveStraightPID.disable();
+		}
+
+		simpleDrive(throttle, steering, quickturn);
+
+	}
 
 	public double getDistancePIDOutput() {
 		return distanceTN.getOutput();
@@ -325,10 +304,6 @@ public class DriveTrain extends Subsystem {
 
 	public double getAngleError() {
 		return anglePID.getAvgError();
-	}
-
-	public void setDriveSpeed(DriveSpeed speed) {
-		driveSpeed = speed.getSpeedFactor();
 	}
 
 	public void zeroEncoders() {
@@ -463,6 +438,7 @@ public class DriveTrain extends Subsystem {
 				ConstantsIO.kF_DriveAngVel);
 		velocityRampRate.setRampRates(ConstantsIO.kUpRamp_Velocity, ConstantsIO.kDownRamp_Velocity);
 		angularVelocityRampRate.setRampRates(100, 100);
+		driveStraightPID.setPID(ConstantsIO.kP_DriveStraight, 0 ,0);
 	}
 
 	public void enablePID(boolean enable) {
