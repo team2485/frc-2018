@@ -117,7 +117,7 @@ public class ScaleAuto extends CommandGroup {
 	
 	public static AutoPath getIntakePath(boolean left) {
 		int sign = left ? -1 : 1;
-		AutoPath intakePath = new AutoPath(AutoPath.getPointsForBezier(10000, new Pair(sign*-17.5, -71.5), new Pair(sign*-28.5, -39.0), new Pair(sign * -29.62, -45.82), new Pair(sign * -7.0, 1.0)));
+		AutoPath intakePath = new AutoPath(AutoPath.getPointsForBezier(10000, new Pair(sign*-17.5, -71.5), new Pair(sign*-28.5, -39.0), new Pair(sign * -27.2, -46.69), new Pair(sign * -5.2, 0.13)));
 		return intakePath;
 		
 	}
