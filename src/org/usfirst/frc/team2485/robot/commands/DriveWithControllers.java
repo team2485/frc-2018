@@ -32,7 +32,7 @@ public class DriveWithControllers extends Command {
        	boolean quickturn = OI.driver.getRawButton(OI.XBOX_X_PORT);
        	
        	
-    	RobotMap.driveTrain.simpleDrive(throttle, steering, quickturn);
+    	RobotMap.driveTrain.WARlordsDrive(throttle, steering, quickturn);
 
     }
 

@@ -8,6 +8,7 @@ import org.usfirst.frc.team2485.robot.commands.RotateTo;
 import org.usfirst.frc.team2485.robot.commands.SetIntakeManual;
 import org.usfirst.frc.team2485.robot.commands.StopIntaking;
 import org.usfirst.frc.team2485.robot.commands.Wait;
+import org.usfirst.frc.team2485.robot.commands.WaitUntilArmUp;
 import org.usfirst.frc.team2485.robot.commands.WaitUntilClose;
 import org.usfirst.frc.team2485.robot.subsystems.Arm.ArmSetpoint;
 import org.usfirst.frc.team2485.util.AutoPath;
@@ -50,11 +51,14 @@ public class ScaleAuto extends CommandGroup {
 		if (!isStraight) {
 			addSequential(new ArmSetSetpoint(ArmSetpoint.SWITCH));
 		} else {
+			addSequential(new ArmSetSetpoint(ArmSetpoint.INTAKE));
+
+			addSequential(new WaitUntilArmUp());
+
 			CommandGroup getCube = new CommandGroup();
 			CommandGroup driveToIntake = new CommandGroup();
 			CommandGroup intaking = new CommandGroup();
-			driveToIntake.addSequential(new ArmSetSetpoint(ArmSetpoint.INTAKE));
-			driveToIntake.addSequential(new DriveTo(scaleLeft ? intakePathLeft : intakePathRight, 30, false, 6000, false));
+			driveToIntake.addSequential(new DriveTo(scaleLeft ? intakePathLeft : intakePathRight, 20, false, 6000, false));
 			driveToIntake.addSequential(new ResetDriveTrain());
 			intaking.addSequential(new SetIntakeManual(.6));
 			intaking.addSequential(new Wait(() -> {
@@ -113,7 +117,7 @@ public class ScaleAuto extends CommandGroup {
 	
 	public static AutoPath getIntakePath(boolean left) {
 		int sign = left ? -1 : 1;
-		AutoPath intakePath = new AutoPath(AutoPath.getPointsForBezier(10000, new Pair(sign*-17.5, -71.5), new Pair(sign*-28.5, -39.0), new Pair(-11.0, -36.0), new Pair(3.0, -7.0)));
+		AutoPath intakePath = new AutoPath(AutoPath.getPointsForBezier(10000, new Pair(sign*-17.5, -71.5), new Pair(sign*-28.5, -39.0), new Pair(sign * -29.62, -45.82), new Pair(sign * -7.0, 1.0)));
 		return intakePath;
 		
 	}

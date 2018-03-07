@@ -87,6 +87,7 @@ public class ConstantsIO {
 	public static int intakeIMax;
 
 	public static double kP_DriveStraight;
+	public static double kI_DriveStraight;
 
 
 	public static void init() {
@@ -168,7 +169,7 @@ public class ConstantsIO {
 		levitateElbowCurrent = Double.parseDouble(data.get("levitateElbowCurrent"));
 
 		kP_DriveStraight = Double.parseDouble(data.get("kP_DriveStraight"));
-		
+		kI_DriveStraight = Double.parseDouble(data.get("kI_DriveStraight"));
 	
 
 		

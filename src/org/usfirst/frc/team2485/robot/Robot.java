@@ -57,6 +57,7 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void robotInit() {
 		RobotMap.init();
+		
 		ConstantsIO.init();
 		OI.init();
 		ScaleAuto.init();
@@ -344,9 +345,9 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Min Ang Vel Elbow OR Source", RobotMap.arm.elbowMinAngVelSource.pidGet());
 		
 		
-		
+		SmartDashboard.putNumber("Drive Straight Error", RobotMap.driveTrain.driveStraightPID.getAvgError());
 
-
+		SmartDashboard.putNumber("Average Speed", RobotMap.driveTrain.getAverageSpeed());
 		
 		SmartDashboard.putNumber("Wrist PercentOutput", RobotMap.wristTalon.getMotorOutputPercent());
 		SmartDashboard.putNumber("Elbow PercentOutput", RobotMap.elbowTalon.getMotorOutputPercent());

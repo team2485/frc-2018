@@ -33,7 +33,7 @@ public class DriveTrain extends Subsystem {
 	private WarlordsPIDController velocityPID = new WarlordsPIDController();
 	private WarlordsPIDController angularVelocityPID = new WarlordsPIDController();
 
-	private WarlordsPIDController driveStraightPID = new WarlordsPIDController();
+	public WarlordsPIDController driveStraightPID = new WarlordsPIDController();
 	public TransferNode driveStraightTN = new TransferNode(0);
 	
 	private RampRate velocityRampRate = new RampRate();
@@ -182,6 +182,7 @@ public class DriveTrain extends Subsystem {
 
 		driveStraightPID.setOutputs(driveStraightTN);
 		driveStraightPID.setSources(RobotMap.pigeonRateWrapper);
+		driveStraightPID.setOutputRange(-.1, .1);
 		
 		leftMotorSetter.setSetpointSource(leftCurrentPIDSource);
 		leftMotorSetter.setOutputs(RobotMap.driveLeftCurrent);
@@ -214,16 +215,16 @@ public class DriveTrain extends Subsystem {
 			//angularPwm = Math.abs(getAverageSpeed()) * steering;
 			angularPwm = (tempThrottle * steering);
 		} 
-//
-//		if (vmax > 0) {
-//			vmax -= Math.abs(angularPwm);
-//		} else if (vmax < 0) {
-//			vmax += Math.abs(angularPwm);
-//		}
+		//
+		//		if (vmax > 0) {
+		//			vmax -= Math.abs(angularPwm);
+		//		} else if (vmax < 0) {
+		//			vmax += Math.abs(angularPwm);
+		//		}
 
 		leftPwm = vmax + angularPwm;
 		rightPwm = vmax - angularPwm;
-		
+
 		if(Math.abs(leftPwm) > 1) {
 			//squared to the fifth exponent
 			rightPwm /= Math.abs(leftPwm);
@@ -242,7 +243,7 @@ public class DriveTrain extends Subsystem {
 				(0.25 - ArmSetpoint.SWITCH.getElbowPos());
 		double I = percentUp * (20 - 80) + 80;
 		double speed = percentUp * (.75-1) + 1;
-		
+
 		if(I < 24) {
 			RobotMap.driveLeftTalon.configContinuousCurrentLimit((int) (I/2), 0);
 			RobotMap.driveRightTalon.configContinuousCurrentLimit((int) (I/2), 0);
@@ -258,8 +259,8 @@ public class DriveTrain extends Subsystem {
 			RobotMap.driveRightVictor3.follow(RobotMap.driveRightTalon);
 			RobotMap.driveRightVictor4.follow(RobotMap.driveRightTalon);
 		}
-		
-		
+
+
 		leftPwm *= speed;
 		rightPwm *= speed;
 
@@ -270,19 +271,80 @@ public class DriveTrain extends Subsystem {
 	public void WARlordsDrive(double throttle, double steering, boolean quickturn) {
 		enablePID(false);
 
-		if (steering == 0 && throttle != 0) {
-			leftMotorSetter.enable();
-			rightMotorSetter.enable();
+		
+		double leftPwm, rightPwm;
+
+		double vmax = throttle;
+
+		double angularPwm = 0;
+
+		if (quickturn) {
+			angularPwm = steering* Math.abs(steering);
+			driveStraightPID.disable();
+		} else if (steering != 0){
+			double tempThrottle = Math.max(Math.abs(throttle), Math.abs(encoderAvgVelocityPIDSource.pidGet() / MAX_VELOCITY));
+			//angularPwm = Math.abs(getAverageSpeed()) * steering;
+			angularPwm = (tempThrottle * steering);
+			driveStraightPID.disable();
+		} else if (Math.abs(getAverageSpeed()) > LOW_ENC_RATE){
 			driveStraightPID.enable();
 			driveStraightPID.setSetpoint(0);
-			steering = driveStraightTN.pidGet() / getAverageSpeed();
+			angularPwm = driveStraightTN.pidGet();
+			
 		} else {
-			leftMotorSetter.disable();
-			rightMotorSetter.disable();
 			driveStraightPID.disable();
 		}
+		//
+		//		if (vmax > 0) {
+		//			vmax -= Math.abs(angularPwm);
+		//		} else if (vmax < 0) {
+		//			vmax += Math.abs(angularPwm);
+		//		}
 
-		simpleDrive(throttle, steering, quickturn);
+		leftPwm = vmax + angularPwm;
+		rightPwm = vmax - angularPwm;
+
+		if(Math.abs(leftPwm) > 1) {
+			//squared to the fifth exponent
+			rightPwm /= Math.abs(leftPwm);
+			leftPwm /= Math.abs(leftPwm);
+		} else if (Math.abs(rightPwm) > 1) {
+			leftPwm /= Math.abs(rightPwm);
+			rightPwm /= Math.abs(rightPwm);
+		}
+
+		RobotMap.driveLeftTalon.enableVoltageCompensation(false);
+		RobotMap.driveRightTalon.enableVoltageCompensation(false);
+		RobotMap.driveLeftTalon.enableCurrentLimit(true);
+		RobotMap.driveRightTalon.enableCurrentLimit(true);
+
+		double percentUp = (RobotMap.elbowEncoderWrapperDistance.pidGet() - ArmSetpoint.SWITCH.getElbowPos()) / 
+				(0.25 - ArmSetpoint.SWITCH.getElbowPos());
+		double I = percentUp * (20 - 80) + 80;
+		double speed = percentUp * (.75-1) + 1;
+
+		if(I < 24) {
+			RobotMap.driveLeftTalon.configContinuousCurrentLimit((int) (I/2), 0);
+			RobotMap.driveRightTalon.configContinuousCurrentLimit((int) (I/2), 0);
+			RobotMap.driveLeftVictor3.set(ControlMode.PercentOutput, 0);
+			RobotMap.driveLeftVictor4.set(ControlMode.PercentOutput, 0);
+			RobotMap.driveRightVictor3.set(ControlMode.PercentOutput, 0);
+			RobotMap.driveRightVictor4.set(ControlMode.PercentOutput, 0);
+		} else {
+			RobotMap.driveLeftTalon.configContinuousCurrentLimit((int) (I/4), 0);
+			RobotMap.driveRightTalon.configContinuousCurrentLimit((int) (I/4), 0);
+			RobotMap.driveLeftVictor3.follow(RobotMap.driveLeftTalon);
+			RobotMap.driveLeftVictor4.follow(RobotMap.driveLeftTalon);
+			RobotMap.driveRightVictor3.follow(RobotMap.driveRightTalon);
+			RobotMap.driveRightVictor4.follow(RobotMap.driveRightTalon);
+		}
+
+
+		leftPwm *= speed;
+		rightPwm *= speed;
+
+		RobotMap.driveLeftPWM.set(leftPwm);
+		RobotMap.driveRightPWM.set(rightPwm);
 
 	}
 
@@ -438,7 +500,7 @@ public class DriveTrain extends Subsystem {
 				ConstantsIO.kF_DriveAngVel);
 		velocityRampRate.setRampRates(ConstantsIO.kUpRamp_Velocity, ConstantsIO.kDownRamp_Velocity);
 		angularVelocityRampRate.setRampRates(100, 100);
-		driveStraightPID.setPID(ConstantsIO.kP_DriveStraight, 0 ,0);
+		driveStraightPID.setPID(ConstantsIO.kP_DriveStraight, ConstantsIO.kI_DriveStraight, 0);
 	}
 
 	public void enablePID(boolean enable) {
