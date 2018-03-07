@@ -50,7 +50,7 @@ public class DriveStraight extends Command{
 	@Override
 	protected void execute() {
 		super.execute();
-		finished = RobotMap.driveTrain.driveTo(dist, maxVelocity, angle, 0, tolerance) ||
+		finished = RobotMap.driveTrain.driveTo(dist, maxVelocity, angle, 0, tolerance, Math.PI) ||
 				finishedCondition.isFinished();
 	}
 

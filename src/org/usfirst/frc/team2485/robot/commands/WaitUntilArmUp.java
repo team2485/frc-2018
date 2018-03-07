@@ -15,7 +15,7 @@ public class WaitUntilArmUp extends Command{
 		// TODO Auto-generated method stub
 		System.out.println("Wrist Error " + (RobotMap.arm.wristAngPID.getSetpoint() - RobotMap.arm.getWristAngle()));
 		System.out.println("Elbow Error " + (RobotMap.arm.elbowAngPID.getSetpoint() - RobotMap.arm.getElbowAngle()));
-		return Math.abs(RobotMap.arm.wristAngPID.getSetpoint() - RobotMap.arm.getWristAngle()) < .01 && Math.abs(RobotMap.arm.elbowAngPID.getSetpoint() - RobotMap.arm.getElbowAngle()) < .03;
+		return Math.abs(RobotMap.arm.wristAngPID.getSetpoint() - RobotMap.arm.getWristAngle()) < .02 && Math.abs(RobotMap.arm.elbowAngPID.getSetpoint() - RobotMap.arm.getElbowAngle()) < .03;
 	}
 	
 	

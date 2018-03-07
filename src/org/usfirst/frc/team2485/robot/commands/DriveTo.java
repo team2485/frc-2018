@@ -12,14 +12,18 @@ public class DriveTo extends Command{
 	private boolean finished, reverse;
 	private long startTime;
 	private int timeout;
-	private double tolerance;
+	private double distTolerance;
+	private double angleTolerance;
+	private boolean variableVMax;
 	private FinishedCondition finishedCondition = FinishedCondition.FALSE_CONDITION;
-	public DriveTo(AutoPath path, double maxVelocity, boolean reverse, int timeout) {
+	public DriveTo(AutoPath path, double maxVelocity, boolean reverse, int timeout, boolean variableVMax) {
 		this.path = path;
 		this.maxVelocity =  maxVelocity;
 		this.reverse = reverse;
 		this.timeout = timeout;
-		this.tolerance = 5;
+		this.distTolerance = 5;
+		this.angleTolerance = 0.08;
+		this.variableVMax = variableVMax;
 		setInterruptible(true);
 		requires(RobotMap.driveTrain);
 	}
@@ -28,8 +32,12 @@ public class DriveTo extends Command{
 		this.finishedCondition = finishedCondition;
 	}
 	
-	public void setTolerance (double tolerance) {
-		this.tolerance = tolerance;
+	public void setDistTolerance (double tolerance) {
+		this.distTolerance = tolerance;
+	}
+	
+	public void setAngleTolerance (double tolerance) {
+		this.angleTolerance = tolerance;
 	}
 	
 	@Override
@@ -37,10 +45,11 @@ public class DriveTo extends Command{
 		super.initialize();
 		startTime = System.currentTimeMillis();
 		RobotMap.driveTrain.zeroEncoders();
+		RobotMap.driveTrain.angularVelocityRampRate.setRampRates(100, 100);
+
 	}
 	@Override
 	protected void execute() {
-		System.out.println("Drive Train");
 
 		double arcLength = RobotMap.driveTrain.getAverageEncoderDistance(), 
 				pathLength = path.getPathLength();
@@ -49,9 +58,14 @@ public class DriveTo extends Command{
 			arcLength = pathLength + arcLength;
 			pathLength *= -1;
 		}
+		double currentMaxSpeed = maxVelocity;
 		
-		finished = RobotMap.driveTrain.driveTo(pathLength, maxVelocity, 
-				path.getHeadingAtDist(arcLength), path.getCurvatureAtDist(arcLength), tolerance) ||
+		if (variableVMax) {
+			currentMaxSpeed = Math.min(maxVelocity, path.getPointAtDist(RobotMap.driveTrain.getAverageEncoderDistance()).maxSpeed);
+		}
+		
+		finished = RobotMap.driveTrain.driveTo(pathLength, currentMaxSpeed, 
+				path.getHeadingAtDist(arcLength), path.getCurvatureAtDist(arcLength), distTolerance, angleTolerance) ||
 				finishedCondition.isFinished();
 		
 	}

@@ -16,7 +16,7 @@ public class PathTracker {
 	
 	public PathTracker(DeadReckoning positionTracker) {
 		this.positionTracker = positionTracker;
-		new Timer().schedule(new UpdateTask(), 0, 50);
+		new Timer().schedule(new UpdateTask(), 0, 100);
 	}
 	
 	public void start(AutoPath path) {

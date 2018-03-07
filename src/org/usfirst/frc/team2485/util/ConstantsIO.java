@@ -60,11 +60,14 @@ public class ConstantsIO {
 	
 	public static double kUpRamp_Velocity;
 	public static double kDownRamp_Velocity;
+	public static double kUpRamp_AngVelocity;
+	public static double kDownRamp_AngVelocity;
 	
 	public static int kSoftLimitReverse_Wrist;
 	public static int kSoftLimitForward_Wrist;
 	public static int kSoftLimitReverse_Elbow;
 	public static int kSoftLimitForward_Elbow;
+	
 	
 	public static double levitateWristCurrent;
 	public static double levitateElbowCurrent;
@@ -137,6 +140,8 @@ public class ConstantsIO {
 		
 		kUpRamp_Velocity = Double.parseDouble(data.get("kUpRamp_Velocity"));
 		kDownRamp_Velocity = Double.parseDouble(data.get("kDownRamp_Velocity"));
+		kUpRamp_AngVelocity = Double.parseDouble(data.get("kUpRamp_AngVelocity"));
+		kDownRamp_AngVelocity = Double.parseDouble(data.get("kDownRamp_AngVelocity"));
 		
 		kP_ElbowAng = Double.parseDouble(data.get("kP_ElbowAng"));
 		

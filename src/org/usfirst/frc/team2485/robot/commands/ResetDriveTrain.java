@@ -11,6 +11,7 @@ public class ResetDriveTrain extends InstantCommand{
 	
 	@Override
 	protected void initialize() {
+		RobotMap.pathTracker.stop();
 		RobotMap.driveTrain.reset();
 	}
 

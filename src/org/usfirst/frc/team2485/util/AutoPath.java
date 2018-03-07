@@ -11,7 +11,7 @@ import java.util.Arrays;
 public class AutoPath {
 	private static final double MAX_VELOCITY = 100;
 	private static final double MAX_ACCELERATION_CURVE = 1;
-	private static final double MAX_ACCELERATION_LINEAR = 1;
+	private static final double MAX_ACCELERATION_LINEAR = 20;
 	public class Point {
 		public double x, y; 
 		public double heading, curvature;
@@ -153,16 +153,17 @@ public class AutoPath {
 		}
 		points[len - 1].curvature = points[len - 2].curvature = points[len - 3].curvature;
 		
-//		for (int i = 0; i < points.length; i++) {
-//			points[i].maxSpeed = MAX_VELOCITY;
-//			for (int j = i; j < points.length; j++) {
-//				if (Math.abs(points[j].curvature) > 0) {
-//					double maxSpeed = MAX_ACCELERATION_CURVE / Math.abs(points[j].curvature);
-//					maxSpeed = Math.sqrt(maxSpeed * maxSpeed + 2 * MAX_ACCELERATION_LINEAR * (points[j].arcLength - points[i].arcLength));
-//					points[i].maxSpeed = Math.min(points[i].maxSpeed, maxSpeed);
-//				}
-//			}
-//		}
+		for (int i = 0; i < points.length; i++) {
+			points[i].maxSpeed = MAX_VELOCITY;
+			for (int j = i; j < points.length; j++) {
+				if (Math.abs(points[j].curvature) > 0 && 
+						2 * MAX_ACCELERATION_LINEAR * (points[j].arcLength - points[i].arcLength) < points[i].maxSpeed * points[i].maxSpeed) {
+					double maxSpeedSquared = MAX_ACCELERATION_CURVE / Math.abs(points[j].curvature);
+					double maxSpeed = Math.sqrt(maxSpeedSquared + 2 * MAX_ACCELERATION_LINEAR * (points[j].arcLength - points[i].arcLength));
+					points[i].maxSpeed = Math.min(points[i].maxSpeed, maxSpeed);
+				}
+			}
+		}
 		
 	}
 	

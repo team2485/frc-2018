@@ -4,15 +4,21 @@ import org.usfirst.frc.team2485.robot.RobotMap;
 import org.usfirst.frc.team2485.robot.commands.ArmSetSetpoint;
 import org.usfirst.frc.team2485.robot.commands.DriveTo;
 import org.usfirst.frc.team2485.robot.commands.ResetDriveTrain;
+import org.usfirst.frc.team2485.robot.commands.RotateTo;
+import org.usfirst.frc.team2485.robot.commands.SetIntakeManual;
+import org.usfirst.frc.team2485.robot.commands.StopIntaking;
+import org.usfirst.frc.team2485.robot.commands.Wait;
 import org.usfirst.frc.team2485.robot.commands.WaitUntilClose;
 import org.usfirst.frc.team2485.robot.subsystems.Arm.ArmSetpoint;
 import org.usfirst.frc.team2485.util.AutoPath;
+import org.usfirst.frc.team2485.util.FinishedCondition;
 import org.usfirst.frc.team2485.util.AutoPath.Pair;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
 
 public class ScaleAuto extends CommandGroup {
-	public static AutoPath pathLeftCross, pathRightCross, pathLeftStraight, pathRightStraight;
+	public static AutoPath pathLeftCross, pathRightCross, pathLeftStraight, pathRightStraight, intakePathLeft, intakePathRight;
+	boolean isStraight = false;
 
 	public ScaleAuto(boolean startLeft, boolean scaleLeft) {
 		CommandGroup drive = new CommandGroup();
@@ -22,22 +28,43 @@ public class ScaleAuto extends CommandGroup {
 		everythingElse.addSequential(new WaitUntilClose(120));
 		everythingElse.addSequential(new ArmSetSetpoint(ArmSetpoint.SCALE_HIGH_BACK));
 		
-		if(startLeft == scaleLeft && scaleLeft) {
-			drive.addSequential(new DriveTo(pathLeftStraight, 75, true, 100000));
-		} else if (startLeft == scaleLeft && !scaleLeft) {
-			drive.addSequential(new DriveTo(pathRightStraight, 75, true, 100000));
-		} else if(startLeft != scaleLeft && scaleLeft) {
-			drive.addSequential(new DriveTo(pathLeftCross, 30, true, 100000));
+		if(startLeft == scaleLeft) {
+			AutoPath path = scaleLeft ? pathLeftStraight : pathRightStraight;
+			drive.addSequential(new DriveTo(path, 100, true, 100000, true));
+			isStraight = true;
 		} else {
-			drive.addSequential(new DriveTo(pathRightCross, 30, true, 100000));
-		}
+			AutoPath path = scaleLeft ? pathLeftCross : pathRightCross;
+//			RobotMap.pathTracker.start(path);
+			DriveTo crossPath = new DriveTo(path, 100, true, 100000, true);
+			crossPath.setAngleTolerance(.2);
+			drive.addSequential(crossPath);
+			drive.addSequential(new ResetDriveTrain());
+			drive.addSequential(new RotateTo(scaleLeft ? 0.866 : -0.866, 10000));
+		} 
 		
 		drive.addSequential(new ResetDriveTrain());
 		everythingBeforeEject.addParallel(drive);
 		everythingBeforeEject.addParallel(everythingElse);
 		addSequential(everythingBeforeEject);
 		addSequential(new Eject(false, true));
-		addSequential(new ArmSetSetpoint(ArmSetpoint.SWITCH));
+		if (!isStraight) {
+			addSequential(new ArmSetSetpoint(ArmSetpoint.SWITCH));
+		} else {
+			CommandGroup getCube = new CommandGroup();
+			CommandGroup driveToIntake = new CommandGroup();
+			CommandGroup intaking = new CommandGroup();
+			driveToIntake.addSequential(new ArmSetSetpoint(ArmSetpoint.INTAKE));
+			driveToIntake.addSequential(new DriveTo(scaleLeft ? intakePathLeft : intakePathRight, 30, false, 6000, false));
+			driveToIntake.addSequential(new ResetDriveTrain());
+			intaking.addSequential(new SetIntakeManual(.6));
+			intaking.addSequential(new Wait(() -> {
+				return RobotMap.intake.hasCube();
+			}));
+			intaking.addSequential(new StopIntaking());
+			getCube.addParallel(driveToIntake);
+			getCube.addParallel(intaking);
+			addSequential(getCube);
+		}
 
 	}
 
@@ -50,23 +77,45 @@ public class ScaleAuto extends CommandGroup {
 		pathLeftStraight = getStraight(true);
 		
 		pathRightStraight = getStraight(false);
+		
+		intakePathLeft = getIntakePath(true);
+		
+		intakePathRight = getIntakePath(false);
+		
+		
 	}
 	
 	public static AutoPath getCross(boolean left) {
 		int sign = left ? -1 : 1;
-		Pair[] controlPoints = {new Pair(sign*-209, -299), new Pair(sign*-260.0, -212), new Pair(0.0, -212), new Pair(0.0, 0.0),};
-		double[] dists = { 50, 100 };
 		
-		
+		Pair[] controlPoints = {
+				new Pair(-218 * sign, -302),
+				new Pair(-190 * sign, -212),
+				new Pair(0, -212),
+				new Pair(0.0, 0.0),
+		};
+		double[] dists = {62, 100};
 		return AutoPath.getAutoPathForClothoidSpline(controlPoints, dists);
+//		Pair[] controlPoints = {new Pair(sign*-209, -299), new Pair(sign*-260.0, -212), new Pair(0.0, -212), new Pair(0.0, 0.0),};
+//		double[] dists = { 50, 100 };
+//		
+//		
+//		return AutoPath.getAutoPathForClothoidSpline(controlPoints, dists);
 	}
 	
 	public static AutoPath getStraight(boolean left) {
 		int sign = left ? -1 : 1;
-		Pair[] controlPoints = { new Pair(sign*65, -280), new Pair(0, -147), new Pair(0, 0) };
+		Pair[] controlPoints = { new Pair(sign*45, -280), new Pair(0, -147), new Pair(0, 0) };
 		double[] dists = { 120 };
 		return AutoPath.getAutoPathForClothoidSpline(controlPoints, dists);
 
+	}
+	
+	public static AutoPath getIntakePath(boolean left) {
+		int sign = left ? -1 : 1;
+		AutoPath intakePath = new AutoPath(AutoPath.getPointsForBezier(10000, new Pair(sign*-17.5, -71.5), new Pair(sign*-28.5, -39.0), new Pair(-11.0, -36.0), new Pair(3.0, -7.0)));
+		return intakePath;
+		
 	}
 
 }

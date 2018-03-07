@@ -13,18 +13,26 @@ import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.TimedCommand;
 
 public class SwitchAuto extends CommandGroup {
+	private static AutoPath leftPath, rightPath;
 	public SwitchAuto(boolean left) {
-		System.out.println("Switch Auto");
 		addSequential(new ArmSetSetpoint(ArmSetpoint.SWITCH));
-		int sign = left ? -1 : 1;
-		AutoPath path = new AutoPath(AutoPath.getPointsForBezier(10000, new Pair(0.0, 0.0),
-				new Pair(0, 44.0),
-				new Pair(sign * 47.5, 30.0),
-				new Pair(sign * 47.5, 87.5)));
-		RobotMap.pathTracker.start(path);
-		addSequential(new DriveTo(path, 30, false, 100000));
+		AutoPath path = left ? leftPath : rightPath;
+//		RobotMap.pathTracker.start(path);
+		addSequential(new DriveTo(path, 60, false, 9000, false));
 		addSequential(new ResetDriveTrain());
 		addSequential(new Eject(true, false));
 		
+	}
+	public static void init() {
+		leftPath = getAutoPath(true);
+		rightPath = getAutoPath(false);
+	}
+	
+	private static AutoPath getAutoPath(boolean left) { 
+		int sign = left ? -1 : 1;
+		return new AutoPath(AutoPath.getPointsForBezier(10000, new Pair(0.0, 0.0),
+				new Pair(0, 44.0),
+				new Pair(sign * 55.5, 30.0),
+				new Pair(sign * 55.5, 106)));
 	}
 }

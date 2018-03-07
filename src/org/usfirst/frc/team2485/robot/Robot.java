@@ -2,10 +2,10 @@
 package org.usfirst.frc.team2485.robot;
 
 import org.usfirst.frc.team2485.robot.commandGroups.ScaleAuto;
-import org.usfirst.frc.team2485.robot.commandGroups.ScaleAutoCross;
 import org.usfirst.frc.team2485.robot.commandGroups.SwitchAuto;
 import org.usfirst.frc.team2485.robot.commands.DriveStraight;
 import org.usfirst.frc.team2485.robot.commands.DriveTo;
+import org.usfirst.frc.team2485.robot.commands.RotateTo;
 import org.usfirst.frc.team2485.robot.commands.SetVelocities;
 import org.usfirst.frc.team2485.robot.subsystems.Arm;
 import org.usfirst.frc.team2485.util.AutoPath;
@@ -20,6 +20,7 @@ import com.sun.javafx.collections.MappingChange.Map;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoMode.PixelFormat;
 import edu.wpi.first.wpilibj.CameraServer;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
@@ -59,6 +60,7 @@ public class Robot extends IterativeRobot {
 		ConstantsIO.init();
 		OI.init();
 		ScaleAuto.init();
+		SwitchAuto.init();
 //		RobotMap.arm.initElbowEnc();
 //		RobotMap.arm.initWristEnc();
 //		RobotMap.deadReckoning.start();
@@ -112,9 +114,15 @@ public class Robot extends IterativeRobot {
 	public void autonomousInit() {
 		ConstantsIO.init();
 		RobotMap.updateConstants();
-		if (!RobotMap.arm.isElbowCurrentSensorWorking()) {
-			throw new RuntimeException("No Encoders");
-		}
+		
+		
+		boolean startLeft = false;
+		
+		
+		
+		String positions = DriverStation.getInstance().getGameSpecificMessage().toUpperCase();
+		boolean switchLeft = positions.charAt(0) == 'L';
+		boolean scaleLeft = positions.charAt(1) == 'L';
 		/*
 		 * String autoSelected = SmartDashboard.getString("Auto Selector",
 		 * "Default"); switch(autoSelected) { case "My Auto": autonomousCommand
@@ -149,7 +157,8 @@ public class Robot extends IterativeRobot {
 		
 				
 		RobotMap.deadReckoning.start();
-		Scheduler.getInstance().add(new ScaleAuto(false, true));
+//		Scheduler.getInstance().add(new SwitchAuto(switchLeft));
+		Scheduler.getInstance().add(new ScaleAuto(startLeft, scaleLeft));
 //		Scheduler.getInstance().add(new SetVelocities(30, .5));
 		
 
@@ -302,7 +311,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Right Current Error", -RobotMap.driveRightTalon.getClosedLoopError(0));
 		
 		SmartDashboard.putNumber("Velocity TN", RobotMap.driveTrain.velocityTN.pidGet());
-		SmartDashboard.putNumber("Ang Vel TN", RobotMap.driveTrain.curvatureTN.pidGet());
+		SmartDashboard.putNumber("Ang Vel TN", RobotMap.driveTrain.angularVelocityTN.pidGet());
 		SmartDashboard.putNumber("Current", (Math.abs(RobotMap.driveLeftTalon.getOutputCurrent()) + Math.abs(RobotMap.driveLeftTalon.getOutputCurrent()))/2);
 
 
