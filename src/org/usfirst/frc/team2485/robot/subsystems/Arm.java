@@ -7,7 +7,6 @@ import org.usfirst.frc.team2485.robot.Robot;
 import org.usfirst.frc.team2485.robot.RobotMap;
 import org.usfirst.frc.team2485.robot.commands.WristWithControllers;
 import org.usfirst.frc.team2485.util.ConstantsIO;
-import org.usfirst.frc.team2485.util.MotorSetter;
 import org.usfirst.frc.team2485.util.PIDSourceWrapper;
 import org.usfirst.frc.team2485.util.TransferNode;
 import org.usfirst.frc.team2485.util.WarlordsPIDController;
@@ -49,7 +48,7 @@ public class Arm extends Subsystem {
 	}
 
 	public static enum ArmSetpoint {
-		INTAKE(-.205, -0.015), SWITCH(-.205, 0.15), SECOND_STORY(-.205, 0.04), SCALE_HIGH_BACK(0.16, 0.39), SCALE_MIDDLE_BACK(0.16, 0.46), SCALE2(0.22, 0), SCALE_HIGH(0.25, 0.125), SCALE_LOW_BACK(0.16, 0.5), SEVEN_FOOT_SCALE(.26, .124);
+		INTAKE(-.205, -0.015), SWITCH(-.205, 0.15), SECOND_STORY(-.205, 0.04), SCALE_HIGH_BACK(0.16, 0.39), SCALE_MIDDLE_BACK(0.16, 0.46), SCALE_LOW_BACK(0.16, 0.5), SEVEN_FOOT_SCALE(.26, .124);
 
 		private final double elbowPos;
 		private final double wristPos;
@@ -113,9 +112,6 @@ public class Arm extends Subsystem {
 	
 	public static final double QUASI_LOW_ELBOW_RATE = .01;
 	
-//	// current sensor failsafes
-//	private static final double TALON_CURRENT_TOLERANCE = 10; //Should be 5
-//	private static final double VICTOR_CURRENT_TOLERANCE = 1;
 	
 
 	public WarlordsPIDController elbowAngPID = new WarlordsPIDController();

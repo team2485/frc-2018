@@ -12,7 +12,6 @@ import org.usfirst.frc.team2485.robot.commands.WaitUntilArmUp;
 import org.usfirst.frc.team2485.robot.commands.WaitUntilClose;
 import org.usfirst.frc.team2485.robot.subsystems.Arm.ArmSetpoint;
 import org.usfirst.frc.team2485.util.AutoPath;
-import org.usfirst.frc.team2485.util.FinishedCondition;
 import org.usfirst.frc.team2485.util.AutoPath.Pair;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
@@ -35,7 +34,6 @@ public class ScaleAuto extends CommandGroup {
 			isStraight = true;
 		} else {
 			AutoPath path = scaleLeft ? pathLeftCross : pathRightCross;
-//			RobotMap.pathTracker.start(path);
 			DriveTo crossPath = new DriveTo(path, 100, true, 100000, true);
 			crossPath.setAngleTolerance(.2);
 			drive.addSequential(crossPath);
@@ -117,7 +115,7 @@ public class ScaleAuto extends CommandGroup {
 	
 	public static AutoPath getIntakePath(boolean left) {
 		int sign = left ? -1 : 1;
-		AutoPath intakePath = new AutoPath(AutoPath.getPointsForBezier(10000, new Pair(sign*-17.5, -71.5), new Pair(sign*-28.5, -39.0), new Pair(sign * -27.2, -46.69), new Pair(sign * -5.2, 0.13)));
+		AutoPath intakePath = new AutoPath(AutoPath.getPointsForBezier(2000, new Pair(sign*-17.5, -71.5), new Pair(sign*-28.5, -39.0), new Pair(sign * -27.2, -46.69), new Pair(sign * -5.2, 0.13)));
 		return intakePath;
 		
 	}

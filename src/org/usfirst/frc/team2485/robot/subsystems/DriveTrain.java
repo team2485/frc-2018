@@ -7,13 +7,11 @@ import org.usfirst.frc.team2485.util.ConstantsIO;
 import org.usfirst.frc.team2485.util.MotorSetter;
 import org.usfirst.frc.team2485.util.PIDSourceWrapper;
 import org.usfirst.frc.team2485.util.RampRate;
-import org.usfirst.frc.team2485.util.ThresholdHandler;
 import org.usfirst.frc.team2485.util.TransferNode;
 import org.usfirst.frc.team2485.util.WarlordsPIDController;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.sun.glass.ui.Robot;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
 
@@ -22,23 +20,23 @@ import edu.wpi.first.wpilibj.command.Subsystem;
  */
 public class DriveTrain extends Subsystem {
 
+	// constants
 	public static final double LOW_ENC_RATE = 2;
-
-	private static final double SPEED_LIMIT = .5;
-
+	private static final double SPEED_LIMIT = .75;
+	private static final double CURRENT_LIMIT_ARM_UP = 20, CURRENT_LIMIT_ARM_DOWN = 80;
 	private static final double MAX_VELOCITY = 180;
 
 	public WarlordsPIDController distancePID = new WarlordsPIDController();
 	private WarlordsPIDController anglePID = new WarlordsPIDController();
 	private WarlordsPIDController velocityPID = new WarlordsPIDController();
 	private WarlordsPIDController angularVelocityPID = new WarlordsPIDController();
-
 	public WarlordsPIDController driveStraightPID = new WarlordsPIDController();
-	public TransferNode driveStraightTN = new TransferNode(0);
+	
 	
 	private RampRate velocityRampRate = new RampRate();
 	public RampRate angularVelocityRampRate = new RampRate();
 
+	public TransferNode driveStraightTN = new TransferNode(0);
 	public TransferNode angleSetpointTN = new TransferNode(0);
 	private TransferNode distanceTN = new TransferNode(0);
 	private TransferNode angleTN = new TransferNode(0);
@@ -46,26 +44,19 @@ public class DriveTrain extends Subsystem {
 	public TransferNode velocitySetpointTN = new TransferNode(0);
 	public TransferNode angularVelocityTN = new TransferNode(0);
 	public TransferNode angularVelocitySetpointTN = new TransferNode(0);
-
 	public TransferNode curvatureSetpointTN = new TransferNode(0);
 
 	private PIDSourceWrapper kp_distancePIDSource = new PIDSourceWrapper();
 	private PIDSourceWrapper kp_anglePIDSource = new PIDSourceWrapper();
-
 	private PIDSourceWrapper anglePIDSetpointSource = new PIDSourceWrapper();
-
 	private PIDSourceWrapper encoderDistancePIDSource = new PIDSourceWrapper();
 	private PIDSourceWrapper encoderAvgVelocityPIDSource = new PIDSourceWrapper();
 	private PIDSourceWrapper curvaturePIDSource = new PIDSourceWrapper();
-
 	private PIDSourceWrapper leftCurrentPIDSource = new PIDSourceWrapper();
 	private PIDSourceWrapper rightCurrentPIDSource = new PIDSourceWrapper();
-
 	private PIDSourceWrapper curvatureSetpointSource = new PIDSourceWrapper();
-
 	public PIDSourceWrapper minVelocityORSource = new PIDSourceWrapper();
 	public PIDSourceWrapper maxVelocityORSource = new PIDSourceWrapper();
-
 	private PIDSourceWrapper minAngVelocityORSource = new PIDSourceWrapper();
 	private PIDSourceWrapper maxAngVelocityORSource = new PIDSourceWrapper();
 
@@ -199,74 +190,74 @@ public class DriveTrain extends Subsystem {
 		return (RobotMap.driveLeftEncoderWrapperRate.pidGet() + RobotMap.driveRightEncoderWrapperRate.pidGet()) / 2;
 	}
 
-	public void simpleDrive(double throttle, double steering, boolean quickturn) {
-		enablePID(false);
-
-		double leftPwm, rightPwm;
-
-		double vmax = throttle;
-
-		double angularPwm = 0;
-
-		if (quickturn) {
-			angularPwm = steering * Math.abs(steering);
-		} else {
-			double tempThrottle = Math.max(Math.abs(throttle), Math.abs(encoderAvgVelocityPIDSource.pidGet() / MAX_VELOCITY));
-			//angularPwm = Math.abs(getAverageSpeed()) * steering;
-			angularPwm = (tempThrottle * steering);
-		} 
-		//
-		//		if (vmax > 0) {
-		//			vmax -= Math.abs(angularPwm);
-		//		} else if (vmax < 0) {
-		//			vmax += Math.abs(angularPwm);
-		//		}
-
-		leftPwm = vmax + angularPwm;
-		rightPwm = vmax - angularPwm;
-
-		if(Math.abs(leftPwm) > 1) {
-			//squared to the fifth exponent
-			rightPwm /= Math.abs(leftPwm);
-			leftPwm /= Math.abs(leftPwm);
-		} else if (Math.abs(rightPwm) > 1) {
-			leftPwm /= Math.abs(rightPwm);
-			rightPwm /= Math.abs(rightPwm);
-		}
-
-		RobotMap.driveLeftTalon.enableVoltageCompensation(false);
-		RobotMap.driveRightTalon.enableVoltageCompensation(false);
-		RobotMap.driveLeftTalon.enableCurrentLimit(true);
-		RobotMap.driveRightTalon.enableCurrentLimit(true);
-
-		double percentUp = (RobotMap.elbowEncoderWrapperDistance.pidGet() - ArmSetpoint.SWITCH.getElbowPos()) / 
-				(0.25 - ArmSetpoint.SWITCH.getElbowPos());
-		double I = percentUp * (20 - 80) + 80;
-		double speed = percentUp * (.75-1) + 1;
-
-		if(I < 24) {
-			RobotMap.driveLeftTalon.configContinuousCurrentLimit((int) (I/2), 0);
-			RobotMap.driveRightTalon.configContinuousCurrentLimit((int) (I/2), 0);
-			RobotMap.driveLeftVictor3.set(ControlMode.PercentOutput, 0);
-			RobotMap.driveLeftVictor4.set(ControlMode.PercentOutput, 0);
-			RobotMap.driveRightVictor3.set(ControlMode.PercentOutput, 0);
-			RobotMap.driveRightVictor4.set(ControlMode.PercentOutput, 0);
-		} else {
-			RobotMap.driveLeftTalon.configContinuousCurrentLimit((int) (I/4), 0);
-			RobotMap.driveRightTalon.configContinuousCurrentLimit((int) (I/4), 0);
-			RobotMap.driveLeftVictor3.follow(RobotMap.driveLeftTalon);
-			RobotMap.driveLeftVictor4.follow(RobotMap.driveLeftTalon);
-			RobotMap.driveRightVictor3.follow(RobotMap.driveRightTalon);
-			RobotMap.driveRightVictor4.follow(RobotMap.driveRightTalon);
-		}
-
-
-		leftPwm *= speed;
-		rightPwm *= speed;
-
-		RobotMap.driveLeftPWM.set(leftPwm);
-		RobotMap.driveRightPWM.set(rightPwm);
-	}
+//	public void simpleDrive(double throttle, double steering, boolean quickturn) {
+//		enablePID(false);
+//
+//		double leftPwm, rightPwm;
+//
+//		double vmax = throttle;
+//
+//		double angularPwm = 0;
+//
+//		if (quickturn) {
+//			angularPwm = steering * Math.abs(steering);
+//		} else {
+//			double tempThrottle = Math.max(Math.abs(throttle), Math.abs(encoderAvgVelocityPIDSource.pidGet() / MAX_VELOCITY));
+//			//angularPwm = Math.abs(getAverageSpeed()) * steering;
+//			angularPwm = (tempThrottle * steering);
+//		} 
+//		//
+//		//		if (vmax > 0) {
+//		//			vmax -= Math.abs(angularPwm);
+//		//		} else if (vmax < 0) {
+//		//			vmax += Math.abs(angularPwm);
+//		//		}
+//
+//		leftPwm = vmax + angularPwm;
+//		rightPwm = vmax - angularPwm;
+//
+//		if(Math.abs(leftPwm) > 1) {
+//			//squared to the fifth exponent
+//			rightPwm /= Math.abs(leftPwm);
+//			leftPwm /= Math.abs(leftPwm);
+//		} else if (Math.abs(rightPwm) > 1) {
+//			leftPwm /= Math.abs(rightPwm);
+//			rightPwm /= Math.abs(rightPwm);
+//		}
+//
+//		RobotMap.driveLeftTalon.enableVoltageCompensation(false);
+//		RobotMap.driveRightTalon.enableVoltageCompensation(false);
+//		RobotMap.driveLeftTalon.enableCurrentLimit(true);
+//		RobotMap.driveRightTalon.enableCurrentLimit(true);
+//
+//		double percentUp = (RobotMap.elbowEncoderWrapperDistance.pidGet() - ArmSetpoint.SWITCH.getElbowPos()) / 
+//				(0.25 - ArmSetpoint.SWITCH.getElbowPos());
+//		double I = percentUp * (CURRENT_LIMIT_ARM_UP - CURRENT_LIMIT_ARM_DOWN) + CURRENT_LIMIT_ARM_DOWN;
+//		double speed = percentUp * (SPEED_LIMIT - 1) + 1;
+//
+//		if(I < 24) {
+//			RobotMap.driveLeftTalon.configContinuousCurrentLimit((int) (I/2), 0);
+//			RobotMap.driveRightTalon.configContinuousCurrentLimit((int) (I/2), 0);
+//			RobotMap.driveLeftVictor3.set(ControlMode.PercentOutput, 0);
+//			RobotMap.driveLeftVictor4.set(ControlMode.PercentOutput, 0);
+//			RobotMap.driveRightVictor3.set(ControlMode.PercentOutput, 0);
+//			RobotMap.driveRightVictor4.set(ControlMode.PercentOutput, 0);
+//		} else {
+//			RobotMap.driveLeftTalon.configContinuousCurrentLimit((int) (I/4), 0);
+//			RobotMap.driveRightTalon.configContinuousCurrentLimit((int) (I/4), 0);
+//			RobotMap.driveLeftVictor3.follow(RobotMap.driveLeftTalon);
+//			RobotMap.driveLeftVictor4.follow(RobotMap.driveLeftTalon);
+//			RobotMap.driveRightVictor3.follow(RobotMap.driveRightTalon);
+//			RobotMap.driveRightVictor4.follow(RobotMap.driveRightTalon);
+//		}
+//
+//
+//		leftPwm *= speed;
+//		rightPwm *= speed;
+//
+//		RobotMap.driveLeftPWM.set(leftPwm);
+//		RobotMap.driveRightPWM.set(rightPwm);
+//	}
 
 	public void WARlordsDrive(double throttle, double steering, boolean quickturn) {
 		enablePID(false);
@@ -294,12 +285,6 @@ public class DriveTrain extends Subsystem {
 		} else {
 			driveStraightPID.disable();
 		}
-		//
-		//		if (vmax > 0) {
-		//			vmax -= Math.abs(angularPwm);
-		//		} else if (vmax < 0) {
-		//			vmax += Math.abs(angularPwm);
-		//		}
 
 		leftPwm = vmax + angularPwm;
 		rightPwm = vmax - angularPwm;
@@ -320,8 +305,8 @@ public class DriveTrain extends Subsystem {
 
 		double percentUp = (RobotMap.elbowEncoderWrapperDistance.pidGet() - ArmSetpoint.SWITCH.getElbowPos()) / 
 				(0.25 - ArmSetpoint.SWITCH.getElbowPos());
-		double I = percentUp * (20 - 80) + 80;
-		double speed = percentUp * (.75-1) + 1;
+		double I = percentUp * (CURRENT_LIMIT_ARM_UP - CURRENT_LIMIT_ARM_DOWN) + CURRENT_LIMIT_ARM_DOWN;
+		double speed = percentUp * (SPEED_LIMIT - 1) + 1;
 
 		if(I < 24) {
 			RobotMap.driveLeftTalon.configContinuousCurrentLimit((int) (I/2), 0);
@@ -354,10 +339,6 @@ public class DriveTrain extends Subsystem {
 
 	public double getVelocityPIDOutput() {
 		return velocityTN.getOutput();
-	}
-
-	public double mapPWM(double pwm, double deadband) {
-		return ThresholdHandler.deadbandAndScale(pwm, deadband, 0, 1);
 	}
 
 	public double getAngleRateError() {
@@ -402,7 +383,7 @@ public class DriveTrain extends Subsystem {
 		return angularVelocityTN.getOutput();
 	}
 
-	public void setVelocities(double linearVel, double curvature) {
+	public void setVelocities(double linearVel, double angVel) {
 
 		anglePID.disable();
 		distancePID.disable();
@@ -413,44 +394,17 @@ public class DriveTrain extends Subsystem {
 		angularVelocityRampRate.enable();
 
 		// allows us to set setpoints directly
-		// velocityPID.setSetpointSource(null);
 		velocityRampRate.setSetpointSource(null);
 		angularVelocityRampRate.setSetpointSource(null);
 		angularVelocityPID.setSetpointSource(null);
 
 		velocityRampRate.setSetpoint(linearVel);
 
-//		if (Math.abs(encoderAvgVelocityPIDSource.pidGet()) > LOW_ENC_RATE) {
-//			curvaturePID.enable();
-//			curvaturePID.setSetpoint(curvature);
-//		} else {
-//			curvaturePID.disable();
-//			curvatureTN.setOutput(0);
-//		}
 		angularVelocityPID.enable();
-		angularVelocityPID.setSetpoint(curvature);
+		angularVelocityPID.setSetpoint(angVel);
 
 	}
 
-	public void WARlordsDrive(double throttle, double steering) {
-
-		enablePID(false);
-
-		double left = throttle + steering;
-		double right = throttle - steering;
-
-		if (Math.abs(left) > 1) {
-			right /= Math.abs(left);
-			left /= Math.abs(left);
-		}
-		if (Math.abs(right) > 1) {
-			left /= Math.abs(right);
-			right /= Math.abs(right);
-		}
-
-		RobotMap.driveLeftPWM.set(left);
-		RobotMap.driveRightPWM.set(right);
-	}
 
 	public void setCurrents(double l, double r) {
 		RobotMap.driveLeftCurrent.set(l);
@@ -470,12 +424,6 @@ public class DriveTrain extends Subsystem {
 		curvatureSetpointTN.setOutput(curvature);
 		distancePID.setAbsoluteTolerance(toleranceDist);
 		anglePID.setAbsoluteTolerance(toleranceAngle);
-//		if (Math.abs(encoderAvgVelocityPIDSource.pidGet()) > 5) {
-//			curvaturePID.enable();
-//		} else {
-//			curvaturePID.disable();
-//			curvatureTN.setOutput(0);
-//		}
 		angularVelocityPID.enable();
 
 		distancePID.setOutputRange(-maxSpeed, maxSpeed);
@@ -490,7 +438,6 @@ public class DriveTrain extends Subsystem {
 			t.enableCurrentLimit(true);
 			t.configContinuousCurrentLimit(ConstantsIO.IMax, 0);
 			t.configPeakCurrentLimit(ConstantsIO.IMax, 0);
-//			t.enableCurrentLimit(false);
 
 		}
 		anglePID.setPID(ConstantsIO.kP_DriveAngle, 0, 0);

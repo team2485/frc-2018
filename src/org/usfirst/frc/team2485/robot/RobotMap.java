@@ -3,7 +3,6 @@ package org.usfirst.frc.team2485.robot;
 import org.usfirst.frc.team2485.robot.subsystems.Arm;
 import org.usfirst.frc.team2485.robot.subsystems.DriveTrain;
 import org.usfirst.frc.team2485.robot.subsystems.Intake;
-import org.usfirst.frc.team2485.util.AutoPath;
 import org.usfirst.frc.team2485.util.DeadReckoning;
 import org.usfirst.frc.team2485.util.PathTracker;
 import org.usfirst.frc.team2485.util.PigeonWrapperRateAndAngle;
@@ -11,7 +10,6 @@ import org.usfirst.frc.team2485.util.PigeonWrapperRateAndAngle.Units;
 import org.usfirst.frc.team2485.util.SpeedControllerWrapper;
 import org.usfirst.frc.team2485.util.TalonSRXEncoderWrapper;
 import org.usfirst.frc.team2485.util.TalonSRXWrapper;
-import org.usfirst.frc.team2485.util.AutoPath.Pair;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
