@@ -273,16 +273,9 @@ public class DriveTrain extends Subsystem {
 			angularPwm = steering* Math.abs(steering);
 			driveStraightPID.disable();
 		} else if (steering != 0){
-			double tempThrottle = Math.max(Math.abs(throttle), Math.abs(encoderAvgVelocityPIDSource.pidGet() / MAX_VELOCITY));
+			double tempThrottle = Math.abs(throttle);//, Math.abs(encoderAvgVelocityPIDSource.pidGet() / MAX_VELOCITY));
 			//angularPwm = Math.abs(getAverageSpeed()) * steering;
 			angularPwm = (tempThrottle * steering);
-			driveStraightPID.disable();
-		} else if (Math.abs(getAverageSpeed()) > LOW_ENC_RATE){
-			driveStraightPID.enable();
-			driveStraightPID.setSetpoint(0);
-			angularPwm = driveStraightTN.pidGet();
-			
-		} else {
 			driveStraightPID.disable();
 		}
 
@@ -367,11 +360,13 @@ public class DriveTrain extends Subsystem {
 	public void reset() {
 
 		enablePID(false);
+		
+		rightMotorSetter.disable();
+		leftMotorSetter.disable();
+		
 		RobotMap.driveLeftPWM.set(0);
 		RobotMap.driveRightPWM.set(0);
 
-		rightMotorSetter.disable();
-		leftMotorSetter.disable();
 
 	}
 

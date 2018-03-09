@@ -125,17 +125,20 @@ public abstract class WarlordsControlSystem implements PIDOutput {
 
 		@Override
 		public void run() {
-			if (enabled) {
-				if (setpointSource != null) {
-					setpoint = setpointSource.pidGet();
-				}
-				try {
-					calculate();
-				} catch (Exception e) {
-					e.printStackTrace();
-					// so that we don't have any more failing silently
+			synchronized (this) {
+				if (enabled) {
+					if (setpointSource != null) {
+						setpoint = setpointSource.pidGet();
+					}
+					try {
+						calculate();
+					} catch (Exception e) {
+						e.printStackTrace();
+						// so that we don't have any more failing silently
+					}
 				}
 			}
+			
 		}
 	}
 	

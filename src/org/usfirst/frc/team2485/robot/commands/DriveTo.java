@@ -21,7 +21,7 @@ public class DriveTo extends Command{
 		this.maxVelocity =  maxVelocity;
 		this.reverse = reverse;
 		this.timeout = timeout;
-		this.distTolerance = 5;
+		this.distTolerance = 7;
 		this.angleTolerance = 0.08;
 		this.variableVMax = variableVMax;
 		setInterruptible(true);

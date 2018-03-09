@@ -84,6 +84,8 @@ public class Robot extends IterativeRobot {
 	public void autonomousInit() {
 		ConstantsIO.init();
 		RobotMap.updateConstants();
+		RobotMap.elbowEncoderWrapperDistance.setPosition(-.190);
+		RobotMap.wristEncoderWrapperDistance.setPosition(0.416);
 		
 		isHomed = true; // so we don't crash immediately in actual matches		
 
@@ -100,8 +102,8 @@ public class Robot extends IterativeRobot {
 		RobotMap.driveTrain.reset();
 				
 		// CHANGE AUTO HERE
-		boolean startLeft = false;
-		Scheduler.getInstance().add(new ScaleAuto(startLeft, scaleLeft));
+		boolean startLeft = true;
+		Scheduler.getInstance().add(new SwitchAuto(switchLeft));
 		
 
 
@@ -208,9 +210,9 @@ public class Robot extends IterativeRobot {
 //		SmartDashboard.putNumber("Elbow Current", RobotMap.elbowTalon.getOutputCurrent());
 //		SmartDashboard.putNumber("Wrist Ang TN", RobotMap.arm.wristAngTN.getOutput());
 //		SmartDashboard.putNumber("Wrist Max Current Source", RobotMap.arm.wristMaxCurrentSource.pidGet());
-		
-		SmartDashboard.putBoolean("IR Sensor", RobotMap.irSensor.get());
-		
+//		
+//		SmartDashboard.putBoolean("IR Sensor", RobotMap.irSensor.get());
+//		
 //		SmartDashboard.putNumber("Max Velocity OR Source", RobotMap.driveTrain.maxVelocityORSource.pidGet());
 //		
 //		SmartDashboard.putNumber("Max Ang Vel Elbow OR Source", RobotMap.arm.elbowMaxAngVelSource.pidGet());
@@ -227,12 +229,16 @@ public class Robot extends IterativeRobot {
 //		SmartDashboard.putNumber("Angle Setpoint TN", RobotMap.driveTrain.angleSetpointTN.getOutput());
 //		
 //		SmartDashboard.putNumber("Drift", RobotMap.pathTracker.getDrift());
-		
-
-		
+//		
+//		SmartDashboard.putNumber("Left Percent Output", RobotMap.driveLeftTalon.getMotorOutputPercent());
+//		SmartDashboard.putNumber("Right Percent Output", RobotMap.driveRightTalon.getMotorOutputPercent());
+//		SmartDashboard.putNumber("Left Drive Error", RobotMap.driveLeftTalon.getClosedLoopError(0));
+//		SmartDashboard.putNumber("Right Drive Error", RobotMap.driveRightTalon.getClosedLoopError(0));
+//		
+//
+//		
 //		SmartDashboard.putNumber("Wrist Encoder Distance", RobotMap.wristEncoderWrapperDistance.pidGet());
-//		RobotMap.pigeon.getYawPitchRoll(ypr);
-		
+//		
 //		SmartDashboard.putNumber("X", RobotMap.deadReckoning.getX());
 //		SmartDashboard.putNumber("Y", RobotMap.deadReckoning.getY());
 	}
@@ -254,8 +260,8 @@ public class Robot extends IterativeRobot {
 			RobotMap.arm.setWristCurrent(0);
 			RobotMap.arm.setElbowCurrent(0);
 		}
-		RobotMap.elbowEncoderWrapperDistance.setPosition(-.198);
-		RobotMap.wristEncoderWrapperDistance.setPosition(0.421);
+		RobotMap.elbowEncoderWrapperDistance.setPosition(-.190);
+		RobotMap.wristEncoderWrapperDistance.setPosition(0.416);
 		isHomed = true;
 	}
 	

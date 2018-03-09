@@ -48,7 +48,7 @@ public class Arm extends Subsystem {
 	}
 
 	public static enum ArmSetpoint {
-		INTAKE(-.205, -0.015), SWITCH(-.205, 0.15), SECOND_STORY(-.205, 0.04), SCALE_HIGH_BACK(0.16, 0.39), SCALE_MIDDLE_BACK(0.16, 0.46), SCALE_LOW_BACK(0.16, 0.5), SEVEN_FOOT_SCALE(.26, .124);
+		INTAKE(-.197, -0.015), SWITCH(-.197, 0.15), SECOND_STORY(-.197, 0.04), SCALE_HIGH_BACK(0.16, 0.39), SCALE_MIDDLE_BACK(0.16, 0.46), SCALE_LOW_BACK(0.16, 0.5), SEVEN_FOOT_SCALE(.26, .124);
 
 		private final double elbowPos;
 		private final double wristPos;
@@ -101,7 +101,7 @@ public class Arm extends Subsystem {
 	// encoder failsafes
 	private static final double MIN_WRIST_ANGLE = -0.35;
 	private static final double MAX_WRIST_ANGLE = .4;
-	private static final double MIN_ELBOW_ANGLE = -.15;
+	private static final double MIN_ELBOW_ANGLE = -.14;
 	private static final double MAX_ELBOW_ANGLE = 0.25;
 	private static final double LOW_ENC_RATE = 0.005;
 	private static final double MAX_PWM_THRESHOLD_NO_CURRENT = .1;
@@ -147,17 +147,18 @@ public class Arm extends Subsystem {
 		
 		elbowMinAngVelSource.setPidSource(() -> {
 			if (getElbowAngle() < 0) {
-				return -0.2;
+				return -0.15;
 			}
-			return -Math.min(getVMaxElbow(), 0.2);
+			return -Math.min(getVMaxElbow(), 0.15);
 		});
 		
 		elbowMaxAngVelSource.setPidSource(() -> {
 			if (getElbowAngle() > 0) {
-				return 0.3;
+				return 0.23;
 			}
-			return Math.min(getVMaxElbow(), 0.3);
+			return Math.min(getVMaxElbow(), 0.23);
 		});
+		
 
 		elbowAngPID.setSources(RobotMap.elbowEncoderWrapperDistance);
 		elbowAngPID.setOutputs(elbowAngTN);
@@ -214,7 +215,7 @@ public class Arm extends Subsystem {
 
 		wristAngPID.setSources(wristAngSource);
 		wristAngPID.setOutputs(wristAngTN);
-		wristAngPID.setOutputRange(-.4, .4);
+		wristAngPID.setOutputRange(-.3, .3);
 
 		wristAngVelPID.setSources(wristAngVelSource);
 		wristAngVelPID.setSetpointSource(wristAngTN);

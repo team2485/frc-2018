@@ -209,7 +209,7 @@ public class WarlordsPIDController extends WarlordsControlSystem {
 	/**
 	 * Calculates output based on sensorVal but does not read from source or write to output directly
 	 */
-	protected synchronized void calculate() {
+	protected void calculate() {
 		if (maxOutputSource != null) {
 			maxOutput = maxOutputSource.pidGet();
 		}

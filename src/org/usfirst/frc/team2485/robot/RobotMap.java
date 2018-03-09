@@ -130,7 +130,7 @@ public class RobotMap {
 	public static DigitalInput irSensor;
 	
 	public static DeadReckoning deadReckoning;
-	public static PowerDistributionPanel pdp;
+//	public static PowerDistributionPanel pdp;
 
 //SUBSYSTEMS
 	public static DriveTrain driveTrain;
@@ -145,6 +145,8 @@ public class RobotMap {
 //INTAKE
 		intakeLeftTalon = new TalonSRX(intakeLeftPort);
 		intakeRightTalon = new TalonSRX(intakeRightPort);
+		intakeLeftTalon.setInverted(false);
+		intakeRightTalon.setInverted(false);
 		
 		intakeLeftWrapper = new TalonSRXWrapper(ControlMode.PercentOutput, intakeLeftTalon);
 		intakeRightWrapper = new TalonSRXWrapper(ControlMode.PercentOutput, intakeRightTalon);
@@ -154,6 +156,7 @@ public class RobotMap {
 		elbowVictor = new VictorSPX(elbowPort2); 
 		wristTalon = new TalonSRX(wristPort);
 				
+		wristTalon.setInverted(true);
 		elbowVictor.follow(elbowTalon);
 		
 
@@ -234,7 +237,6 @@ public class RobotMap {
 		driveRightVictor4.follow(driveRightTalon);
 		driveRightTalon.setSensorPhase(false);
 		
-		intakeLeftTalon.setInverted(true); 
 		
 		elbowTalon.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, 0);
 		elbowTalon.configVelocityMeasurementWindow(8, 0);
@@ -254,7 +256,7 @@ public class RobotMap {
 		
 		deadReckoning = new DeadReckoning(pigeonDisplacementWrapper, driveLeftEncoderWrapperDistance, driveRightEncoderWrapperDistance);
 		pathTracker = new PathTracker(deadReckoning);
-		pdp = new PowerDistributionPanel();
+//		pdp = new PowerDistributionPanel();
 //SUBSYSTEMS
 		driveTrain = new DriveTrain();
 		intake = new Intake();

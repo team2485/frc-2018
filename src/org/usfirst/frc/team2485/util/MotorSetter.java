@@ -8,15 +8,14 @@ public class MotorSetter extends WarlordsControlSystem{
 	
 	
 	@Override
-	protected synchronized void calculate() {
-		// TODO Auto-generated method stub
+	protected void calculate() {
 		for (PIDOutput out : super.outputs) {
 			out.pidWrite(setpoint);
 		}
 	}
 	
 	@Override
-	public synchronized void disable() {
+	public void disable() {
 		super.disable();
 		for (PIDOutput out : super.outputs) {
 			out.pidWrite(0);
