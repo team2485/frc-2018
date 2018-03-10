@@ -238,10 +238,10 @@ public class RobotMap {
 		driveRightTalon.setSensorPhase(false);
 		
 		
-		elbowTalon.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, 0);
+		elbowTalon.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_50Ms, 0);
 		elbowTalon.configVelocityMeasurementWindow(8, 0);
 		elbowTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 0);
-		wristTalon.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_10Ms, 0);
+		wristTalon.configVelocityMeasurementPeriod(VelocityMeasPeriod.Period_50Ms, 0);
 		wristTalon.configVelocityMeasurementWindow(8, 0);
 		wristTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 20);
 		wristEncoderWrapperDistance.setDistancePerRevolution(-1);

@@ -93,7 +93,7 @@ public class ScaleAuto extends CommandGroup {
 		int sign = left ? -1 : 1;
 		
 		Pair[] controlPoints = {
-				new Pair(-218 * sign, -302),
+				new Pair(-218 * sign, -290),
 				new Pair(-190 * sign, -212),
 				new Pair(0, -212),
 				new Pair(0.0, 0.0),

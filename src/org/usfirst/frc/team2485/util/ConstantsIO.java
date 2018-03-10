@@ -58,6 +58,12 @@ public class ConstantsIO {
 	public static double kI_WristAngVel;
 	public static double kF_WristAngVel;
 	
+	public static double kUpSpeed_WristAngVel;
+	public static double kDownSpeed_WristAngVel;
+	public static double kUpSpeed_ElbowAngVel;
+	public static double kDownSpeed_ElbowAngVel;
+
+	
 	public static double kUpRamp_Velocity;
 	public static double kDownRamp_Velocity;
 	public static double kUpRamp_AngVelocity;
@@ -156,6 +162,11 @@ public class ConstantsIO {
 		kP_WristAngVel = Double.parseDouble(data.get("kP_WristAngVel"));
 		kI_WristAngVel = Double.parseDouble(data.get("kI_WristAngVel"));
 		kF_WristAngVel = Double.parseDouble(data.get("kF_WristAngVel"));
+		
+		kUpSpeed_WristAngVel = Double.parseDouble(data.get("kUpSpeed_WristAngVel"));
+		kDownSpeed_WristAngVel = Double.parseDouble(data.get("kDownSpeed_WristAngVel"));
+		kUpSpeed_ElbowAngVel = Double.parseDouble(data.get("kUpSpeed_ElbowAngVel"));
+		kDownSpeed_ElbowAngVel = Double.parseDouble(data.get("kDownSpeed_ElbowAngVel"));
 		
 		kSoftLimitForward_Wrist = Integer.parseInt(data.get("kSoftLimitForward_Wrist"));
 		kSoftLimitReverse_Wrist = Integer.parseInt(data.get("kSoftLimitReverse_Wrist"));

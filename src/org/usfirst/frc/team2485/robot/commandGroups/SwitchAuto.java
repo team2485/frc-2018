@@ -15,7 +15,9 @@ public class SwitchAuto extends CommandGroup {
 		addSequential(new ArmSetSetpoint(ArmSetpoint.SWITCH));
 		AutoPath path = left ? leftPath : rightPath;
 //		RobotMap.pathTracker.start(path);
-		addSequential(new DriveTo(path, 60, false, 8000, false));
+		DriveTo drive = new DriveTo(path, 60, false, 8000, false);
+		drive.setDistTolerance(5);
+		addSequential(drive);
 		addSequential(new ResetDriveTrain());
 		addSequential(new Eject(true, false));
 		
@@ -30,6 +32,9 @@ public class SwitchAuto extends CommandGroup {
 		return new AutoPath(AutoPath.getPointsForBezier(2000, new Pair(0.0, 0.0),
 				new Pair(0, 44.0),
 				new Pair(sign * 53.5 - 6, 30.0),
-				new Pair(sign * 53.5 - 6, 106)));
+				new Pair(sign * 53.5 - 6, 104)), 
+				AutoPath.getPointsForBezier(2000, 
+						new Pair(sign * 53.5 - 6, 104), 
+						new Pair(sign * 53.5 - 6, 120)));
 	}
 }

@@ -13,6 +13,8 @@ import edu.wpi.first.wpilibj.command.Command;
 public class WristWithControllers extends Command {
 	private static final double ELBOW_TOLERANCE = 0.0025;
 	public static boolean isManual = true;
+	private double minWristPos;
+	private int counter;
 	
     public WristWithControllers() {
     	requires(RobotMap.arm);
@@ -20,12 +22,17 @@ public class WristWithControllers extends Command {
 
     // Called just before this Command runs the first time
     protected void initialize() {
+    	minWristPos = RobotMap.arm.getMinWristPos();
+    	counter = 0;
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
+    	counter++;
     	double axis = -ThresholdHandler.deadbandAndScale(OI.operator.getRawAxis(OI.XBOX_LYJOYSTICK_PORT), OI.XBOX_AXIS_DEADBAND, 0, 1); // joystick command
-    	double minWristPos = RobotMap.arm.getMinWristPos();
+    	if (counter % 4 == 0) {
+    		minWristPos = RobotMap.arm.getMinWristPos();
+    	}
     	double theta2 = RobotMap.arm.getWristAngle();
     	if (DriverStation.getInstance().isAutonomous()) {
     		isManual = false;

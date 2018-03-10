@@ -30,7 +30,6 @@ public class DriveTrain extends Subsystem {
 	private WarlordsPIDController anglePID = new WarlordsPIDController();
 	private WarlordsPIDController velocityPID = new WarlordsPIDController();
 	private WarlordsPIDController angularVelocityPID = new WarlordsPIDController();
-	public WarlordsPIDController driveStraightPID = new WarlordsPIDController();
 	
 	
 	private RampRate velocityRampRate = new RampRate();
@@ -171,9 +170,6 @@ public class DriveTrain extends Subsystem {
 			return velocityTN.pidGet() - angularVelocityTN.pidGet();
 		});
 
-		driveStraightPID.setOutputs(driveStraightTN);
-		driveStraightPID.setSources(RobotMap.pigeonRateWrapper);
-		driveStraightPID.setOutputRange(-.1, .1);
 		
 		leftMotorSetter.setSetpointSource(leftCurrentPIDSource);
 		leftMotorSetter.setOutputs(RobotMap.driveLeftCurrent);
@@ -261,7 +257,7 @@ public class DriveTrain extends Subsystem {
 
 	public void WARlordsDrive(double throttle, double steering, boolean quickturn) {
 		enablePID(false);
-
+	
 		
 		double leftPwm, rightPwm;
 
@@ -271,12 +267,10 @@ public class DriveTrain extends Subsystem {
 
 		if (quickturn) {
 			angularPwm = steering* Math.abs(steering);
-			driveStraightPID.disable();
 		} else if (steering != 0){
 			double tempThrottle = Math.abs(throttle);//, Math.abs(encoderAvgVelocityPIDSource.pidGet() / MAX_VELOCITY));
 			//angularPwm = Math.abs(getAverageSpeed()) * steering;
 			angularPwm = (tempThrottle * steering);
-			driveStraightPID.disable();
 		}
 
 		leftPwm = vmax + angularPwm;
@@ -442,7 +436,6 @@ public class DriveTrain extends Subsystem {
 				ConstantsIO.kF_DriveAngVel);
 		velocityRampRate.setRampRates(ConstantsIO.kUpRamp_Velocity, ConstantsIO.kDownRamp_Velocity);
 		angularVelocityRampRate.setRampRates(100, 100);
-		driveStraightPID.setPID(ConstantsIO.kP_DriveStraight, ConstantsIO.kI_DriveStraight, 0);
 	}
 
 	public void enablePID(boolean enable) {

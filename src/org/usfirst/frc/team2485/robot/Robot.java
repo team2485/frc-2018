@@ -102,7 +102,7 @@ public class Robot extends IterativeRobot {
 		RobotMap.driveTrain.reset();
 				
 		// CHANGE AUTO HERE
-		boolean startLeft = true;
+		boolean startLeft = false;
 		Scheduler.getInstance().add(new SwitchAuto(switchLeft));
 		
 
@@ -165,8 +165,8 @@ public class Robot extends IterativeRobot {
 //		SmartDashboard.putNumber("Yaw Rate", RobotMap.pigeonRateWrapper.pidGet());
 //		SmartDashboard.putNumber("velocity setpoint", RobotMap.driveTrain.velocitySetpointTN.getOutput());
 //		SmartDashboard.putNumber("Yaw Rate Error", RobotMap.driveTrain.getAngleRateError());
-//		SmartDashboard.putNumber("Left Encoder Dist", RobotMap.driveLeftEncoderWrapperDistance.pidGet());
-//		SmartDashboard.putNumber("Right Encoder Dist", RobotMap.driveRightEncoderWrapperDistance.pidGet());
+		SmartDashboard.putNumber("Left Encoder Dist", RobotMap.driveLeftEncoderWrapperDistance.pidGet());
+		SmartDashboard.putNumber("Right Encoder Dist", RobotMap.driveRightEncoderWrapperDistance.pidGet());
 //		SmartDashboard.putNumber("Left Encoder Rate", RobotMap.driveLeftEncoderWrapperRate.pidGet());
 //		SmartDashboard.putNumber("Right Encoder Rate", RobotMap.driveRightEncoderWrapperRate.pidGet());
 //		SmartDashboard.putNumber("Velocity Error", RobotMap.driveTrain.getVelocityError());
@@ -191,20 +191,20 @@ public class Robot extends IterativeRobot {
 //
 //
 //		SmartDashboard.putNumber("Curvature Setpoint TN", RobotMap.driveTrain.curvatureSetpointTN.getOutput());
-//		SmartDashboard.putNumber("Elbow Encoder", RobotMap.elbowEncoderWrapperDistance.pidGet());
-//		SmartDashboard.putNumber("Wrist Encoder", RobotMap.wristEncoderWrapperDistance.pidGet());
+		SmartDashboard.putNumber("Elbow Encoder", RobotMap.elbowEncoderWrapperDistance.pidGet());
+		SmartDashboard.putNumber("Wrist Encoder", RobotMap.wristEncoderWrapperDistance.pidGet());
 //		SmartDashboard.putNumber("Intake Current", RobotMap.intakeLeftTalon.getOutputCurrent());
 //		SmartDashboard.putNumber("X", RobotMap.deadReckoning.getX());
 //		SmartDashboard.putNumber("Y", RobotMap.deadReckoning.getY());
 //		SmartDashboard.putNumber("Elbow Current error", RobotMap.elbowTalon.getClosedLoopError(0));
 //		SmartDashboard.putNumber("Wrist Current Error", RobotMap.wristTalon.getClosedLoopError(0));
 //		SmartDashboard.putNumber("Wrist Current", RobotMap.wristTalon.getOutputCurrent());
-//		SmartDashboard.putNumber("Wrist Ang Vel error", RobotMap.arm.getWristAngVelError());
+		SmartDashboard.putNumber("Wrist Ang Vel error", RobotMap.arm.getWristAngVelError());
 //		SmartDashboard.putNumber("Wrist Enc Rate", RobotMap.wristEncoderWrapperRate.pidGet());
 //		SmartDashboard.putNumber("Elbow Enc Rate", RobotMap.elbowEncoderWrapperRate.pidGet());
-//		SmartDashboard.putNumber("Wrist Ang Error", RobotMap.arm.getWristAngError());
-//		SmartDashboard.putNumber("Elbow Ang Vel Error", RobotMap.arm.getElbowAngVelError());
-//		SmartDashboard.putNumber("Elbow Ang Error", RobotMap.arm.getElbowAngError());
+		SmartDashboard.putNumber("Wrist Ang Error", RobotMap.arm.getWristAngError());
+		SmartDashboard.putNumber("Elbow Ang Vel Error", RobotMap.arm.getElbowAngVelError());
+		SmartDashboard.putNumber("Elbow Ang Error", RobotMap.arm.getElbowAngError());
 //		SmartDashboard.putNumber("Elbow Enc Raw", RobotMap.elbowTalon.getSelectedSensorPosition(0));
 //		SmartDashboard.putNumber("Wrist Current", RobotMap.wristTalon.getOutputCurrent());
 //		SmartDashboard.putNumber("Elbow Current", RobotMap.elbowTalon.getOutputCurrent());
