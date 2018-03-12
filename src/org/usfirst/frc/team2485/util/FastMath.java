@@ -14,9 +14,11 @@ public class FastMath {
 		}
 		
 	}
+	
 	public static double sin(double theta) {
 		return cos(Math.PI / 2  - theta); 
 	}
+	
 	public static double cos(double theta) {
 		theta %= Math.PI * 2;
 		if (theta < 0) {
@@ -25,6 +27,10 @@ public class FastMath {
 		int index = (int) (theta / 2 / Math.PI * numSamples);
 		double rem = theta / 2 / Math.PI * numSamples % 1;
 		return cos[index] * (1 - rem) + cos[index + 1] * rem;
+	}
+	
+	public static double tan(double theta) {
+		return sin(theta) / cos(theta);
 	}
 	
 	public static double asin(double a) {
@@ -44,5 +50,23 @@ public class FastMath {
 		}
 	}
 	
+	public static double atan(double a) {
+		return asin(a) / acos(a);
+	}
 	
+	public static double toRadians(double angle) {
+		return (angle/180) * Math.PI;
+	}
+	
+	public static double toDegrees(double rad) {
+		return (rad/Math.PI) * 180;
+	}
+	
+	public static double toMeters(double in) {
+		return in * 0.0254;
+	}
+
+	public static double toKilograms(double lb) {
+		return lb * 0.45359237;
+	}
 }
