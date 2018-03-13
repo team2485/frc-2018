@@ -17,15 +17,34 @@ public class DriveStraight extends Command{
 	//private boolean setAngle = false;
 	private FinishedCondition finishedCondition = FinishedCondition.FALSE_CONDITION;
 	
+	/**
+	 * 
+	 * @param dist
+	 * @param maxVelocity
+	 * @param timeout
+	 */
 	public DriveStraight(double dist, double maxVelocity, int timeout) {
 		this(dist, 0, maxVelocity, timeout);
 		//setAngle = true;
 	}
 	
+	/**
+	 * @param dist
+	 * @param angle
+	 * @param maxVelocity
+	 * @param timeout
+	 */
 	public DriveStraight(double dist, double angle, double maxVelocity, int timeout) {
 		this(dist, angle, maxVelocity, timeout, 0);
 	}	
 	
+	/**
+	 * @param dist
+	 * @param angle
+	 * @param maxVelocity
+	 * @param timeout
+	 * @param tolerance
+	 */
 	public DriveStraight(double dist, double angle, double maxVelocity, int timeout, double tolerance) {
 		this.dist = dist;
 		this.angle = angle;

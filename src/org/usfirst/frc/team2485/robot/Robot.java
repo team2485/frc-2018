@@ -3,7 +3,13 @@ package org.usfirst.frc.team2485.robot;
 
 import org.usfirst.frc.team2485.robot.commandGroups.ScaleAuto;
 import org.usfirst.frc.team2485.robot.commandGroups.SwitchAuto;
+import org.usfirst.frc.team2485.robot.commands.AngleVelocityTest;
+import org.usfirst.frc.team2485.robot.commands.DriveStraight;
+import org.usfirst.frc.team2485.robot.commands.DriveTo;
+import org.usfirst.frc.team2485.robot.commands.HighLowCurrentTest;
+import org.usfirst.frc.team2485.util.AutoPath;
 import org.usfirst.frc.team2485.util.ConstantsIO;
+import org.usfirst.frc.team2485.util.AutoPath.Pair;
 
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoMode.PixelFormat;
@@ -103,10 +109,25 @@ public class Robot extends IterativeRobot {
 				
 		// CHANGE AUTO HERE
 		boolean startLeft = false;
-		Scheduler.getInstance().add(new SwitchAuto(switchLeft));
+//		Scheduler.getInstance().add(new SwitchAuto(switchLeft)); //auto
 		
+		//Current PID testing
+//		Scheduler.getInstance().add(new HighLowCurrentTest(10, 5, 10, 5, 100)); 
+		
+		//Velocity PID testing
+//		Scheduler.getInstance().add(new DriveStraight(100, 100, //needs to be set!1000)); 
+		
+		//Distance PID testing
+//		Scheduler.getInstance().add(new DriveStraight(200, 30, 1000));
+//		Scheduler.getInstance().add(new DriveStraight(300, 100, 1000));
 
+		//Angle Velocity PID testing
+//		Scheduler.getInstance().add(new AngleVelocityTest(1, 1, 2)); //please check this
 
+		//Angle PID testing
+//		AutoPath path = new AutoPath(AutoPath.getPointsForBezier(
+//		));
+//		Scheduler.getInstance().add(new DriveTo(path, 60, false, 8000, false));
 	}
 
 	/**
