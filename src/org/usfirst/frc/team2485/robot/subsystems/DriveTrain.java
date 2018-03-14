@@ -420,6 +420,21 @@ public class DriveTrain extends Subsystem {
 
 		return distancePID.isOnTarget() && anglePID.isOnTarget() && Math.abs(encoderAvgVelocityPIDSource.pidGet()) < LOW_ENC_RATE;
 	}
+	
+	public void setAngVel(double angVel) {
+		//needs to be fixed
+		velocityPID.disable();
+		anglePID.disable();
+		distancePID.disable();
+		velocityRampRate.enable();
+		angularVelocityRampRate.enable();
+		leftMotorSetter.enable();
+		rightMotorSetter.enable();
+		angularVelocitySetpointTN.setOutput(angVel);
+		angularVelocityPID.enable();
+	}
+	
+	
 
 	public void updateConstants() {
 		for (TalonSRX t : RobotMap.driveTalons) {
