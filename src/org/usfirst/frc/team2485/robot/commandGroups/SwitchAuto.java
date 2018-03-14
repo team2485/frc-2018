@@ -1,8 +1,10 @@
 package org.usfirst.frc.team2485.robot.commandGroups;
 
 import org.usfirst.frc.team2485.robot.commands.ArmSetSetpoint;
+import org.usfirst.frc.team2485.robot.commands.DriveStraight;
 import org.usfirst.frc.team2485.robot.commands.DriveTo;
 import org.usfirst.frc.team2485.robot.commands.ResetDriveTrain;
+import org.usfirst.frc.team2485.robot.commands.Wait;
 import org.usfirst.frc.team2485.robot.subsystems.Arm.ArmSetpoint;
 import org.usfirst.frc.team2485.util.AutoPath;
 import org.usfirst.frc.team2485.util.AutoPath.Pair;
@@ -20,6 +22,7 @@ public class SwitchAuto extends CommandGroup {
 		addSequential(drive);
 		addSequential(new ResetDriveTrain());
 		addSequential(new Eject(true, false));
+		addSequential(new DriveStraight(-30, 50, 5000));
 		
 	}
 	public static void init() {

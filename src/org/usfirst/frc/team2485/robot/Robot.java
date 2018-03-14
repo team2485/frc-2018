@@ -103,7 +103,7 @@ public class Robot extends IterativeRobot {
 				
 		// CHANGE AUTO HERE
 		boolean startLeft = false;
-		Scheduler.getInstance().add(new SwitchAuto(switchLeft));
+		Scheduler.getInstance().add(new ScaleAuto(startLeft, scaleLeft));
 		
 
 
@@ -256,6 +256,9 @@ public class Robot extends IterativeRobot {
 		} else if (OI.driver.getRawButton(OI.XBOX_Y_PORT)) {
 			RobotMap.arm.setWristCurrent(-2);
 			RobotMap.arm.setElbowCurrent(0);
+		} else if (OI.driver.getRawButton(OI.XBOX_X_PORT)) {
+			RobotMap.arm.setElbowCurrent(2);
+			RobotMap.arm.setWristCurrent(0);
 		} else {
 			RobotMap.arm.setWristCurrent(0);
 			RobotMap.arm.setElbowCurrent(0);
