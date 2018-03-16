@@ -133,6 +133,7 @@ public class Arm extends Subsystem {
 	public TransferNode elbowAngVelMinTN = new TransferNode(0);
 
 	private PIDSourceWrapper wristAngSource = new PIDSourceWrapper();
+	private PIDSourceWrapper wristAngVelSource = new PIDSourceWrapper();
 	public PIDSourceWrapper wristMinCurrentSource = new PIDSourceWrapper();
 	public PIDSourceWrapper wristMaxCurrentSource = new PIDSourceWrapper();
 	public PIDSourceWrapper elbowMinCurrentSource = new PIDSourceWrapper();
@@ -245,11 +246,13 @@ public class Arm extends Subsystem {
 		});
 		
 		elbowAngVelMaxPID.setSources(RobotMap.elbowEncoderWrapperRate);
+		elbowAngVelMaxPID.setOutputRange(0, 1);
 		elbowAngVelMaxPID.setOutputSources(elbowMaxCurrentSource, null);
 		elbowAngVelMaxPID.setOutputs(elbowAngVelMaxTN);
 		elbowAngVelMaxPID.setSetpointSource(elbowMaxAngVelSource);
 		
 		elbowAngVelMinPID.setSources(RobotMap.elbowEncoderWrapperRate);
+		elbowAngVelMinPID.setOutputRange(-1, 0);
 		elbowAngVelMinPID.setOutputSources(null, elbowMinCurrentSource);
 		elbowAngVelMinPID.setOutputs(elbowAngVelMinTN);
 		elbowAngVelMinPID.setSetpointSource(elbowMinAngVelSource);
@@ -269,15 +272,25 @@ public class Arm extends Subsystem {
 			return getIMinWrist();
 		});
 		
-		wristAngVelMaxPID.setSources(RobotMap.wristEncoderWrapperRate);
+		wristAngVelSource.setPidSource(() -> {
+			return RobotMap.wristEncoderWrapperRate.pidGet() + RobotMap.elbowEncoderWrapperRate.pidGet();
+		});
+		
+		wristAngVelMaxPID.setSources(wristAngVelSource);
+		wristAngVelMaxPID.setOutputRange(0, 1);
 		wristAngVelMaxPID.setOutputSources(wristMaxCurrentSource, null);
 		wristAngVelMaxPID.setOutputs(wristAngVelMaxTN);
 		
-		wristAngVelMinPID.setSources(RobotMap.wristEncoderWrapperRate);
+		wristAngVelMinPID.setSources(wristAngVelSource);
+		wristAngVelMinPID.setOutputRange(-1, 0);
 		wristAngVelMinPID.setOutputSources(null, wristMinCurrentSource);
 		wristAngVelMinPID.setOutputs(elbowAngVelMinTN);
 		
-		wristAngPID.setSources(RobotMap.wristEncoderWrapperDistance);
+		wristAngSource.setPidSource(() -> {
+			return RobotMap.wristEncoderWrapperDistance.pidGet() + RobotMap.elbowEncoderWrapperDistance.pidGet();
+		});
+		
+		wristAngPID.setSources(wristAngSource);
 		wristAngPID.setOutputSources(wristAngVelMaxTN, wristAngVelMinTN);
 		wristAngPID.setOutputs(RobotMap.wristCurrentWrapper);
 
