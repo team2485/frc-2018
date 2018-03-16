@@ -199,11 +199,11 @@ public class Robot extends IterativeRobot {
 //		SmartDashboard.putNumber("Elbow Current error", RobotMap.elbowTalon.getClosedLoopError(0));
 //		SmartDashboard.putNumber("Wrist Current Error", RobotMap.wristTalon.getClosedLoopError(0));
 //		SmartDashboard.putNumber("Wrist Current", RobotMap.wristTalon.getOutputCurrent());
-		SmartDashboard.putNumber("Wrist Ang Vel error", RobotMap.arm.getWristAngVelError());
+		SmartDashboard.putNumber("Wrist Ang Vel error", RobotMap.arm.getWristAngVelMaxError());
 //		SmartDashboard.putNumber("Wrist Enc Rate", RobotMap.wristEncoderWrapperRate.pidGet());
 //		SmartDashboard.putNumber("Elbow Enc Rate", RobotMap.elbowEncoderWrapperRate.pidGet());
 		SmartDashboard.putNumber("Wrist Ang Error", RobotMap.arm.getWristAngError());
-		SmartDashboard.putNumber("Elbow Ang Vel Error", RobotMap.arm.getElbowAngVelError());
+		SmartDashboard.putNumber("Elbow Ang Vel Error", RobotMap.arm.getElbowAngVelMaxError());
 		SmartDashboard.putNumber("Elbow Ang Error", RobotMap.arm.getElbowAngError());
 //		SmartDashboard.putNumber("Elbow Enc Raw", RobotMap.elbowTalon.getSelectedSensorPosition(0));
 //		SmartDashboard.putNumber("Wrist Current", RobotMap.wristTalon.getOutputCurrent());

@@ -48,15 +48,23 @@ public class ConstantsIO {
 
 	public static double kP_ElbowAng;
 	
-	public static double kP_ElbowAngVel;
-	public static double kI_ElbowAngVel;
-	public static double kF_ElbowAngVel;
+	public static double kP_ElbowAngVelMax;
+	public static double kI_ElbowAngVelMax;
+	public static double kF_ElbowAngVelMax;
+	
+	public static double kP_ElbowAngVelMin;
+	public static double kI_ElbowAngVelMin;
+	public static double kF_ElbowAngVelMin;
 	
 	public static double kP_WristAng;
 	
-	public static double kP_WristAngVel;
-	public static double kI_WristAngVel;
-	public static double kF_WristAngVel;
+	public static double kP_WristAngVelMax;
+	public static double kI_WristAngVelMax;
+	public static double kF_WristAngVelMax;
+	
+	public static double kP_WristAngVelMin;
+	public static double kI_WristAngVelMin;
+	public static double kF_WristAngVelMin;
 	
 	public static double kUpSpeed_WristAngVel;
 	public static double kDownSpeed_WristAngVel;
@@ -152,16 +160,24 @@ public class ConstantsIO {
 		
 		kP_ElbowAng = Double.parseDouble(data.get("kP_ElbowAng"));
 		
-		kP_ElbowAngVel = Double.parseDouble(data.get("kP_ElbowAngVel"));
-		kI_ElbowAngVel = Double.parseDouble(data.get("kI_ElbowAngVel"));
-		kF_ElbowAngVel = Double.parseDouble(data.get("kF_ElbowAngVel"));
+		kP_ElbowAngVelMax = Double.parseDouble(data.get("kP_ElbowAngVelMax"));
+		kI_ElbowAngVelMax = Double.parseDouble(data.get("kI_ElbowAngVelMax"));
+		kF_ElbowAngVelMax = Double.parseDouble(data.get("kF_ElbowAngVelMax"));
+		
+		kP_ElbowAngVelMin = Double.parseDouble(data.get("kP_ElbowAngVelMin"));
+		kI_ElbowAngVelMin = Double.parseDouble(data.get("kI_ElbowAngVelMin"));
+		kF_ElbowAngVelMin = Double.parseDouble(data.get("kF_ElbowAngVelMin"));
 		
 		
 		kP_WristAng = Double.parseDouble(data.get("kP_WristAng"));
 		
-		kP_WristAngVel = Double.parseDouble(data.get("kP_WristAngVel"));
-		kI_WristAngVel = Double.parseDouble(data.get("kI_WristAngVel"));
-		kF_WristAngVel = Double.parseDouble(data.get("kF_WristAngVel"));
+		kP_WristAngVelMax = Double.parseDouble(data.get("kP_WristAngVelMax"));
+		kI_WristAngVelMax = Double.parseDouble(data.get("kI_WristAngVelMax"));
+		kF_WristAngVelMax = Double.parseDouble(data.get("kF_WristAngVelMax"));
+		
+		kP_WristAngVelMin = Double.parseDouble(data.get("kP_WristAngVelMin"));
+		kI_WristAngVelMin = Double.parseDouble(data.get("kI_WristAngVelMin"));
+		kF_WristAngVelMin = Double.parseDouble(data.get("kF_WristAngVelMin"));
 		
 		kUpSpeed_WristAngVel = Double.parseDouble(data.get("kUpSpeed_WristAngVel"));
 		kDownSpeed_WristAngVel = Double.parseDouble(data.get("kDownSpeed_WristAngVel"));
