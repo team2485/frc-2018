@@ -103,7 +103,7 @@ public class Arm extends Subsystem {
 	private static final double MAX_WRIST_ANGLE = .4;
 	private static final double MIN_ELBOW_ANGLE = -.1;
 	private static final double MAX_ELBOW_ANGLE = 0.25;
-	private static final double LOW_ENC_RATE = 0.005;
+	private static final double LOW_ENC_RATE = 0.0025;
 	private static final double MAX_PWM_THRESHOLD_NO_CURRENT = .1;
 	public static final double MAX_UP_CURRENT_WRIST = 20;
 	public static final double MAX_DOWN_CURRENT_WRIST = 20;

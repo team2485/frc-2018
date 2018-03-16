@@ -25,7 +25,7 @@ public class ScaleAuto extends CommandGroup {
 		CommandGroup everythingElse = new CommandGroup();
 		CommandGroup everythingBeforeEject = new CommandGroup();
 		everythingElse.addSequential(new ArmSetSetpoint(ArmSetpoint.SWITCH));
-		everythingElse.addSequential(new WaitUntilClose(120));
+		everythingElse.addSequential(new WaitUntilClose(140));
 		everythingElse.addSequential(new ArmSetSetpoint(ArmSetpoint.SCALE_HIGH_BACK));
 		
 		if(startLeft == scaleLeft) {
@@ -51,23 +51,23 @@ public class ScaleAuto extends CommandGroup {
 		if (!isStraight) {
 			addSequential(new ArmSetSetpoint(ArmSetpoint.SWITCH));
 		} else {
-			addSequential(new ArmSetSetpoint(ArmSetpoint.INTAKE));
+			addSequential(new ArmSetSetpoint(ArmSetpoint.SWITCH)); //intaking path: change setpoint to intake
 
-			addSequential(new WaitUntilArmUp());
-
-			CommandGroup getCube = new CommandGroup();
-			CommandGroup driveToIntake = new CommandGroup();
-			CommandGroup intaking = new CommandGroup();
-			driveToIntake.addSequential(new DriveTo(scaleLeft ? intakePathLeft : intakePathRight, 20, false, 6000, false));
-			driveToIntake.addSequential(new ResetDriveTrain());
-			intaking.addSequential(new SetIntakeManual(.6));
-			intaking.addSequential(new Wait(() -> {
-				return RobotMap.intake.hasCube();
-			}));
-			intaking.addSequential(new StopIntaking());
-			getCube.addParallel(driveToIntake);
-			getCube.addParallel(intaking);
-			addSequential(getCube);
+//			addSequential(new WaitUntilArmUp());
+//
+//			CommandGroup getCube = new CommandGroup();
+//			CommandGroup driveToIntake = new CommandGroup();
+//			CommandGroup intaking = new CommandGroup();
+//			driveToIntake.addSequential(new DriveTo(scaleLeft ? intakePathLeft : intakePathRight, 20, false, 6000, false));
+//			driveToIntake.addSequential(new ResetDriveTrain());
+//			intaking.addSequential(new SetIntakeManual(.6));
+//			intaking.addSequential(new Wait(() -> {
+//				return RobotMap.intake.hasCube();
+//			}));
+//			intaking.addSequential(new StopIntaking());
+//			getCube.addParallel(driveToIntake);
+//			getCube.addParallel(intaking);
+//			addSequential(getCube);
 		}
 
 	}
@@ -93,7 +93,7 @@ public class ScaleAuto extends CommandGroup {
 		int sign = left ? -1 : 1;
 		
 		Pair[] controlPoints = {
-				new Pair(-218 * sign, -290),
+				new Pair(-218 * sign, -285), //-222.57 * sign, -281.11
 				new Pair(-190 * sign, -212),
 				new Pair(0, -212),
 				new Pair(0.0, 0.0),
@@ -109,7 +109,7 @@ public class ScaleAuto extends CommandGroup {
 	
 	public static AutoPath getStraight(boolean left) {
 		int sign = left ? -1 : 1;
-		Pair[] controlPoints = { new Pair(sign*45, -280), new Pair(0, -147), new Pair(0, 0) };
+		Pair[] controlPoints = { new Pair(sign*45, -275), new Pair(0, -147), new Pair(0, 0) };
 		double[] dists = { 120 };
 		return AutoPath.getAutoPathForClothoidSpline(controlPoints, dists);
 
