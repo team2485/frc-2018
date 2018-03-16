@@ -103,7 +103,7 @@ public class Arm extends Subsystem {
 	private static final double MAX_WRIST_ANGLE = .4;
 	private static final double MIN_ELBOW_ANGLE = -.1;
 	private static final double MAX_ELBOW_ANGLE = 0.25;
-	private static final double LOW_ENC_RATE = 0.005;
+	private static final double LOW_ENC_RATE = 0.0025;
 	private static final double MAX_PWM_THRESHOLD_NO_CURRENT = .1;
 	public static final double MAX_UP_CURRENT_WRIST = 20;
 	public static final double MAX_DOWN_CURRENT_WRIST = 20;
@@ -147,16 +147,16 @@ public class Arm extends Subsystem {
 		
 		elbowMinAngVelSource.setPidSource(() -> {
 			if (getElbowAngle() < 0) {
-				return -0.15 /**ConstantsIO.kDownSpeed_ElbowAngVel*/;
+				return -.15;
 			}
-			return -Math.min(getVMaxElbow(), 0.15 /**ConstantsIO.kDownSpeed_ElbowAngVel*/);
+			return -Math.min(getVMaxElbow(), .15);
 		});
 		
 		elbowMaxAngVelSource.setPidSource(() -> {
 			if (getElbowAngle() > 0) {
-				return 0.2 /**ConstantsIO.kUpSpeed_ElbowAngVel*/;
+				return .2;
 			}
-			return Math.min(getVMaxElbow(), 0.2 /**ConstantsIO.kUpSpeed_ElbowAngVel*/);
+			return Math.min(getVMaxElbow(), .2);
 		});
 		
 
@@ -218,7 +218,7 @@ public class Arm extends Subsystem {
 		wristAngPID.setPeriod(50);
 		wristAngPID.setSources(wristAngSource);
 		wristAngPID.setOutputs(wristAngTN);
-		wristAngPID.setOutputRange(-.3 /**ConstantsIO.kDownSpeed_WristAngVel*/, .3 /**ConstantsIO.kUpSpeed_WristAngVel*/);
+		wristAngPID.setOutputRange(-0.3, .3);
 
 		wristAngVelPID.setPeriod(50);
 		wristAngVelPID.setSources(wristAngVelSource);
