@@ -7,8 +7,10 @@ import org.usfirst.frc.team2485.robot.commands.AngleVelocityTest;
 import org.usfirst.frc.team2485.robot.commands.DriveStraight;
 import org.usfirst.frc.team2485.robot.commands.DriveTo;
 import org.usfirst.frc.team2485.robot.commands.HighLowCurrentTest;
+import org.usfirst.frc.team2485.robot.commands.SetVelocities;
 import org.usfirst.frc.team2485.util.AutoPath;
 import org.usfirst.frc.team2485.util.ConstantsIO;
+import org.usfirst.frc.team2485.util.FastMath;
 import org.usfirst.frc.team2485.util.AutoPath.Pair;
 
 import edu.wpi.cscore.UsbCamera;
@@ -47,6 +49,8 @@ public class Robot extends IterativeRobot {
 		ConstantsIO.init();
 		OI.init();
 		RobotMap.updateConstants();
+		
+		FastMath.init();
 
 		ScaleAuto.init();
 		SwitchAuto.init();
@@ -70,7 +74,7 @@ public class Robot extends IterativeRobot {
 	public void disabledPeriodic() {
 		Scheduler.getInstance().run();
 		RobotMap.driveTrain.reset();
-		updateSmartDashboard();
+//		updateSmartDashboard();
 	}
 	
 
@@ -109,7 +113,9 @@ public class Robot extends IterativeRobot {
 				
 		// CHANGE AUTO HERE
 		boolean startLeft = false;
-		Scheduler.getInstance().add(new ScaleAuto(startLeft, scaleLeft));
+//		Scheduler.getInstance().add(new SetVelocities(30, 0));
+//		Scheduler.getInstance().add(new HighLowCurrentTest(5, 2, 5, 2, 4000));
+//		Scheduler.getInstance().add(new ScaleAuto(startLeft, scaleLeft));
 
 		
 		//Current PID testing
@@ -123,7 +129,7 @@ public class Robot extends IterativeRobot {
 //		Scheduler.getInstance().add(new DriveStraight(300, 100, 1000));
 
 		//Angle Velocity PID testing
-//		Scheduler.getInstance().add(new AngleVelocityTest(1, 1, 2)); //please check this
+		Scheduler.getInstance().add(new AngleVelocityTest(.3, -.3, 7270)); //please check this
 
 		//Angle PID testing
 //		AutoPath path = new AutoPath(AutoPath.getPointsForBezier(
@@ -137,7 +143,6 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousPeriodic() {
 		Scheduler.getInstance().run();
-		
 	
 		
 		updateSmartDashboard();
@@ -191,21 +196,21 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Right Encoder Dist", RobotMap.driveRightEncoderWrapperDistance.pidGet());
 //		SmartDashboard.putNumber("Left Encoder Rate", RobotMap.driveLeftEncoderWrapperRate.pidGet());
 //		SmartDashboard.putNumber("Right Encoder Rate", RobotMap.driveRightEncoderWrapperRate.pidGet());
-//		SmartDashboard.putNumber("Velocity Error", RobotMap.driveTrain.getVelocityError());
-//		SmartDashboard.putNumber("Distance Error", RobotMap.driveTrain.getDistError());
-//		SmartDashboard.putNumber("Angle Error", RobotMap.driveTrain.getAngleError());
-//		SmartDashboard.putNumber("Angular Velocity Error", RobotMap.driveTrain.getAngleRateError());
+		SmartDashboard.putNumber("Velocity Error", RobotMap.driveTrain.getVelocityError());
+		SmartDashboard.putNumber("Distance Error", RobotMap.driveTrain.getDistError());
+		SmartDashboard.putNumber("Angle Error", RobotMap.driveTrain.getAngleError());
+		SmartDashboard.putNumber("Angular Velocity Error", RobotMap.driveTrain.getAngleRateError());
 //	
 //		SmartDashboard.putNumber("Distance PID Output", RobotMap.driveTrain.getDistancePIDOutput());
 //		SmartDashboard.putNumber("Velocity PID Output", RobotMap.driveTrain.getVelocityPIDOutput());
 //		SmartDashboard.putNumber("Left Current Output", RobotMap.driveLeftTalon.getMotorOutputPercent());
-//		SmartDashboard.putNumber("Left Current", RobotMap.driveLeftTalon.getOutputCurrent());
-//		SmartDashboard.putNumber("Right Current", RobotMap.driveRightTalon.getOutputCurrent());
+		SmartDashboard.putNumber("Left Current", RobotMap.driveLeftTalon.getOutputCurrent());
+		SmartDashboard.putNumber("Right Current", RobotMap.driveRightTalon.getOutputCurrent());
 //		SmartDashboard.putNumber("Relative Wrist", RobotMap.wristTalon.getSensorCollection().getQuadraturePosition());
 //		SmartDashboard.putNumber("Relative Elbow", RobotMap.elbowTalon.getSensorCollection().getQuadraturePosition());
 //		
-//		SmartDashboard.putNumber("Left Current Error", RobotMap.driveLeftTalon.getClosedLoopError(0));
-//		SmartDashboard.putNumber("Right Current Error", -RobotMap.driveRightTalon.getClosedLoopError(0));
+		SmartDashboard.putNumber("Left Current Error", RobotMap.driveLeftTalon.getClosedLoopError(0));
+		SmartDashboard.putNumber("Right Current Error", -RobotMap.driveRightTalon.getClosedLoopError(0));
 //		
 //		SmartDashboard.putNumber("Velocity TN", RobotMap.driveTrain.velocityTN.pidGet());
 //		SmartDashboard.putNumber("Ang Vel TN", RobotMap.driveTrain.angularVelocityTN.pidGet());
@@ -229,7 +234,8 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Elbow Ang Error", RobotMap.arm.getElbowAngError());
 //		SmartDashboard.putNumber("Elbow Enc Raw", RobotMap.elbowTalon.getSelectedSensorPosition(0));
 //		SmartDashboard.putNumber("Wrist Current", RobotMap.wristTalon.getOutputCurrent());
-//		SmartDashboard.putNumber("Elbow Current", RobotMap.elbowTalon.getOutputCurrent());
+		SmartDashboard.putNumber("Elbow Current", RobotMap.elbowTalon.getOutputCurrent());
+		SmartDashboard.putNumber("Drive Ang Vel Setpoint", RobotMap.driveTrain.angularVelocityPID.getSetpoint());
 //		SmartDashboard.putNumber("Wrist Ang TN", RobotMap.arm.wristAngTN.getOutput());
 //		SmartDashboard.putNumber("Wrist Max Current Source", RobotMap.arm.wristMaxCurrentSource.pidGet());
 //		

@@ -7,6 +7,7 @@ import org.usfirst.frc.team2485.robot.Robot;
 import org.usfirst.frc.team2485.robot.RobotMap;
 import org.usfirst.frc.team2485.robot.commands.WristWithControllers;
 import org.usfirst.frc.team2485.util.ConstantsIO;
+import org.usfirst.frc.team2485.util.FastMath;
 import org.usfirst.frc.team2485.util.PIDSourceWrapper;
 import org.usfirst.frc.team2485.util.TransferNode;
 import org.usfirst.frc.team2485.util.WarlordsPIDController;
@@ -48,7 +49,7 @@ public class Arm extends Subsystem {
 	}
 
 	public static enum ArmSetpoint {
-		INTAKE(-.192, -0.015), SWITCH(-.192, 0.15), SECOND_STORY(-.192, 0.04), SCALE_HIGH_BACK(0.16, 0.39), SCALE_MIDDLE_BACK(0.16, 0.46), SCALE_LOW_BACK(0.16, 0.5), SEVEN_FOOT_SCALE(.26, .124);
+		INTAKE(-.192, -0.035), SWITCH(-.192, 0.15), SECOND_STORY(-.192, 0.025), SCALE_HIGH_BACK(0.16, 0.39), SCALE_MIDDLE_BACK(0.16, 0.46), SCALE_LOW_BACK(0.16, 0.5), SEVEN_FOOT_SCALE(.26, .124);
 
 		private final double elbowPos;
 		private final double wristPos;
@@ -94,8 +95,8 @@ public class Arm extends Subsystem {
 	public static final double gearRatioElbow = 945;
 
 	public static final double CRITICAL_ANGLE = 0.12; // SET DIRECTLY
-	public static final double WRIST_TOLERANCE = 0.005;
-	public static final double ELBOW_TOLERANCE = 0.01;
+	public static final double WRIST_TOLERANCE = 0;
+	public static final double ELBOW_TOLERANCE = 0;
 
 	
 	// encoder failsafes
@@ -133,10 +134,24 @@ public class Arm extends Subsystem {
 	public PIDSourceWrapper elbowMaxAngVelSource = new PIDSourceWrapper();
 	
 	public double getVMaxElbow() {
-		double thetaCritical = Math.acos((CRITICAL_DISTANCE - L2*Math.cos(getWristAngle() * 2 * Math.PI)) / L1) / Math.PI / 2;
+		double thetaCritical = FastMath.acos((CRITICAL_DISTANCE - L2*FastMath.cos(getWristAngle() * 2 * Math.PI)) / L1) / Math.PI / 2;
+		if (thetaCritical == 0) {
+			return 1000;
+		}
 		double vMax = ConstantsIO.kP_ElbowAng * (Math.abs(getElbowAngle()) - thetaCritical);
 		vMax = Math.max(vMax, 0);
 		return vMax;
+	}
+	
+	public double getIMaxWrist() {
+		double pwm = RobotMap.wristTalon.getMotorOutputPercent();
+		double i = RobotMap.wristTalon.getOutputCurrent();
+		double iMax = MAX_DOWN_CURRENT_WRIST;
+		if (Math.abs(RobotMap.wristTalon.getMotorOutputPercent()) > .5) {
+			return Math.min(iMax, Math.abs(i/pwm));
+		} else {
+			return iMax;
+		}
 	}
 	
 
@@ -147,16 +162,16 @@ public class Arm extends Subsystem {
 		
 		elbowMinAngVelSource.setPidSource(() -> {
 			if (getElbowAngle() < 0) {
-				return -.15;
+				return -.2;
 			}
-			return -Math.min(getVMaxElbow(), .15);
+			return -Math.min(getVMaxElbow(), .2);
 		});
 		
 		elbowMaxAngVelSource.setPidSource(() -> {
 			if (getElbowAngle() > 0) {
-				return .2;
+				return .3;
 			}
-			return Math.min(getVMaxElbow(), .2);
+			return Math.min(getVMaxElbow(), .3);
 		});
 		
 
@@ -190,6 +205,9 @@ public class Arm extends Subsystem {
 		wristMinCurrentSource.setPidSource(() -> {
 			if (Math.abs(RobotMap.wristEncoderWrapperRate.pidGet()) < LOW_ENC_RATE && Math.abs(RobotMap.elbowEncoderWrapperRate.pidGet()) < QUASI_LOW_ELBOW_RATE) {
 				return -4;
+			} 
+			if (RobotMap.arm.getElbowAngle() < RobotMap.arm.MIN_ELBOW_ANGLE && RobotMap.arm.getWristAngle() < 0.05) { // at hard stop
+				return -2;
 			}
 			return RobotMap.wristEncoderWrapperDistance.pidGet() < MIN_WRIST_ANGLE ? -2 : -MAX_DOWN_CURRENT_WRIST;
 		});
@@ -218,7 +236,7 @@ public class Arm extends Subsystem {
 		wristAngPID.setPeriod(50);
 		wristAngPID.setSources(wristAngSource);
 		wristAngPID.setOutputs(wristAngTN);
-		wristAngPID.setOutputRange(-0.3, .3);
+		wristAngPID.setOutputRange(-0.4, .4);
 
 		wristAngVelPID.setPeriod(50);
 		wristAngVelPID.setSources(wristAngVelSource);
@@ -295,9 +313,9 @@ public class Arm extends Subsystem {
 	}
 
 	public double getMinWristPos() {
-		double margin = (CRITICAL_DISTANCE - (L1 * Math.cos(getElbowAngle() * 2 * Math.PI))) / L2;
+		double margin = (CRITICAL_DISTANCE - (L1 * FastMath.cos(getElbowAngle() * 2 * Math.PI))) / L2;
 		return Math.abs(RobotMap.elbowEncoderWrapperDistance.pidGet()) < CRITICAL_ANGLE
-				? Math.acos(margin) / 2 / Math.PI
+				? FastMath.acos(margin) / 2 / Math.PI
 				: -0.25;
 	}
 

@@ -13,31 +13,40 @@ public class AngleVelocityTest extends Command {
 	private int executeTime = 20;
 	private double currAngVel = 0; //ms
 	private int direction = 1;
+	private long lastTime = 0;
 	
 	/**
 	 * 
 	 * @param maxAngVel
 	 * @param minAngVel
-	 * @param period in seconds
+	 * @param period in milliseconds
 	 */
     public AngleVelocityTest(double maxAngVel, double minAngVel, long period) {
+    	requires(RobotMap.driveTrain);
     	this.maxAngVel = maxAngVel;
     	this.minAngVel = minAngVel;
     	this.period = period;
-    	rate = ((maxAngVel - minAngVel) / (period/2)) * executeTime;
+    	currAngVel = (minAngVel + maxAngVel) / 2;
+    	rate = ((maxAngVel - minAngVel) / (period/2));
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
+    	lastTime = System.currentTimeMillis();
     }
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
-    	if (currAngVel >= maxAngVel || currAngVel <= minAngVel) {
-    		direction *= -1;
+    	double deltaTime = System.currentTimeMillis() - lastTime;
+    	if (currAngVel >= maxAngVel) {
+    		direction = -1;
+    	} else if (currAngVel <= minAngVel) {
+    		direction = 1;
     	}
-    	currAngVel += direction * rate;
-    	RobotMap.driveTrain.setAngVel(currAngVel);
+    	currAngVel += direction * rate * deltaTime;
+    	RobotMap.driveTrain.setVelocities(30, currAngVel);
+    	lastTime = System.currentTimeMillis();
+
     }
 
     // Make this return true when this Command no longer needs to run execute()

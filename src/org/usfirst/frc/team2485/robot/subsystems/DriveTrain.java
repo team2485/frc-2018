@@ -4,6 +4,7 @@ import org.usfirst.frc.team2485.robot.RobotMap;
 import org.usfirst.frc.team2485.robot.commands.DriveWithControllers;
 import org.usfirst.frc.team2485.robot.subsystems.Arm.ArmSetpoint;
 import org.usfirst.frc.team2485.util.ConstantsIO;
+import org.usfirst.frc.team2485.util.FastMath;
 import org.usfirst.frc.team2485.util.MotorSetter;
 import org.usfirst.frc.team2485.util.PIDSourceWrapper;
 import org.usfirst.frc.team2485.util.RampRate;
@@ -29,7 +30,7 @@ public class DriveTrain extends Subsystem {
 	public WarlordsPIDController distancePID = new WarlordsPIDController();
 	private WarlordsPIDController anglePID = new WarlordsPIDController();
 	private WarlordsPIDController velocityPID = new WarlordsPIDController();
-	private WarlordsPIDController angularVelocityPID = new WarlordsPIDController();
+	public WarlordsPIDController angularVelocityPID = new WarlordsPIDController();
 	
 	
 	private RampRate velocityRampRate = new RampRate();
@@ -86,7 +87,7 @@ public class DriveTrain extends Subsystem {
 
 		kp_distancePIDSource.setPidSource(() -> {
 			return Math.min(ConstantsIO.kPMax_Distance,
-					Math.sqrt(2 * ConstantsIO.accelerationMax / Math.abs(distancePID.getAvgError())));
+					FastMath.sqrt(2 * ConstantsIO.accelerationMax / Math.abs(distancePID.getError())));
 		});
 		kp_anglePIDSource.setPidSource(() -> {
 			return Math.min(ConstantsIO.kP_DriveAngleMax,
@@ -294,7 +295,10 @@ public class DriveTrain extends Subsystem {
 				(0.25 - ArmSetpoint.SWITCH.getElbowPos());
 		double I = percentUp * (CURRENT_LIMIT_ARM_UP - CURRENT_LIMIT_ARM_DOWN) + CURRENT_LIMIT_ARM_DOWN;
 		double speed = percentUp * (SPEED_LIMIT - 1) + 1;
+		if (quickturn) {
+			speed = percentUp * (0.25 - 1) + 1;
 
+		}
 		if(I < 24) {
 			RobotMap.driveLeftTalon.configContinuousCurrentLimit((int) (I/2), 0);
 			RobotMap.driveRightTalon.configContinuousCurrentLimit((int) (I/2), 0);
@@ -414,6 +418,8 @@ public class DriveTrain extends Subsystem {
 		distancePID.setAbsoluteTolerance(toleranceDist);
 		anglePID.setAbsoluteTolerance(toleranceAngle);
 		angularVelocityPID.enable();
+
+		System.out.println("Theoretically Driving");
 
 		distancePID.setOutputRange(-maxSpeed, maxSpeed);
 		anglePID.setOutputRange(-3, 3);

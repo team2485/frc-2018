@@ -77,6 +77,11 @@ public class FastMath {
 	}
 	
 	public static double sqrt(double a) {
+		if (a < 0) {
+			return Double.NaN;
+		} else if (a == 0){
+			return 0;
+		}
 		double ans = 1;
 		while (a >= 4) {
 			ans *= 2;

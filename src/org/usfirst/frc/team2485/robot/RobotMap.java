@@ -156,7 +156,7 @@ public class RobotMap {
 		elbowVictor = new VictorSPX(elbowPort2); 
 		wristTalon = new TalonSRX(wristPort);
 				
-		wristTalon.setInverted(true);
+		wristTalon.setInverted(false);
 		elbowVictor.follow(elbowTalon);
 		
 
@@ -265,7 +265,7 @@ public class RobotMap {
 	}
 
 	public static void updateConstants() {
-		driveTrain.updateConstants();
+//		driveTrain.updateConstants();
 		arm.updateConstants();
 	}
 	
