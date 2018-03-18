@@ -33,6 +33,7 @@ public class OI {
 	public static final int XBOX_Y_PORT = 4;
 	public static final int XBOX_LBUMPER_PORT = 5;
 	public static final int XBOX_RBUMPER_PORT = 6; 
+	public static final int XBOX_BACK_BUTTON = 7;
 	public static final int XBOX_START_BUTTON = 8;
 	public static final int XBOX_LSTICK_BUTTON_PORT = 9;  
 	public static final int XBOX_RSTICK_BUTTON_PORT = 10;  
@@ -76,6 +77,7 @@ public class OI {
 	public static JoystickButton OPERATOR_LSTICK_BUTTON;
 	public static JoystickButton OPERATOR_RSTICK_BUTTON;
 	public static JoystickButton OPERATOR_START_BUTTON;
+	public static JoystickButton OPERATOR_BACK_BUTTON;
 	
 	
 	public static void init() {
@@ -116,6 +118,7 @@ public class OI {
 		OPERATOR_RSTICK_BUTTON = new JoystickButton(operator, XBOX_RSTICK_BUTTON_PORT);
 		
 		OPERATOR_START_BUTTON = new JoystickButton(operator, XBOX_START_BUTTON);
+		OPERATOR_BACK_BUTTON = new JoystickButton(operator, XBOX_BACK_BUTTON);
 
 		
 
@@ -149,6 +152,11 @@ public class OI {
 		OPERATOR_START_BUTTON.whenPressed(scaleSeven);	
 		OPERATOR_START_BUTTON.whenReleased(new CancelCommand(scaleSeven));
 		OPERATOR_START_BUTTON.whenPressed(new StopIntaking());
+		
+		Command climber = new ArmToScale(ArmSetpoint.CLIMB);
+		OPERATOR_BACK_BUTTON.whenPressed(climber);
+		OPERATOR_BACK_BUTTON.whenReleased(new CancelCommand(climber));
+		OPERATOR_BACK_BUTTON.whenPressed(new StopIntaking());
 	
 
 		OPERATOR_A.whenReleased(new HoldPosition());

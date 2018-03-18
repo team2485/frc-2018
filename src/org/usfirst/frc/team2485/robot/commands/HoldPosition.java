@@ -10,12 +10,7 @@ public class HoldPosition extends InstantCommand {
 	}
 	
 	public void initialize() {
-    	double theta2 = RobotMap.arm.getWristAngle();
-    	if (RobotMap.arm.getElbowAngle() > 0) {
-			RobotMap.arm.setThetaHigh(theta2);
-		} else {
-			RobotMap.arm.setThetaLow(theta2);
-		}
-		RobotMap.arm.setElbowPos(RobotMap.elbowEncoderWrapperDistance.pidGet());
+    	RobotMap.arm.setThetaWrist(RobotMap.wristEncoderWrapperDistance.pidGet());
+		RobotMap.arm.setThetaElbow(RobotMap.elbowEncoderWrapperDistance.pidGet());
 	}
 }

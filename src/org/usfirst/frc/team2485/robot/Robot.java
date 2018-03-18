@@ -45,12 +45,13 @@ public class Robot extends IterativeRobot {
 	
 	@Override
 	public void robotInit() {
+		FastMath.init();
+
 		RobotMap.init();
 		ConstantsIO.init();
 		OI.init();
 		RobotMap.updateConstants();
 		
-		FastMath.init();
 
 		ScaleAuto.init();
 		SwitchAuto.init();
@@ -94,10 +95,10 @@ public class Robot extends IterativeRobot {
 	public void autonomousInit() {
 		ConstantsIO.init();
 		RobotMap.updateConstants();
-		RobotMap.elbowEncoderWrapperDistance.setPosition(-.190);
-		RobotMap.wristEncoderWrapperDistance.setPosition(0.416);
+//		RobotMap.elbowEncoderWrapperDistance.setPosition(-.190);
+//		RobotMap.wristEncoderWrapperDistance.setPosition(0.416);
 		
-		isHomed = true; // so we don't crash immediately in actual matches		
+//		isHomed = true; // so we don't crash immediately in actual matches		
 
 		String positions = DriverStation.getInstance().getGameSpecificMessage().toUpperCase();
 		boolean switchLeft = positions.charAt(0) == 'L';
@@ -129,7 +130,7 @@ public class Robot extends IterativeRobot {
 //		Scheduler.getInstance().add(new DriveStraight(300, 100, 1000));
 
 		//Angle Velocity PID testing
-		Scheduler.getInstance().add(new AngleVelocityTest(.3, -.3, 7270)); //please check this
+//		Scheduler.getInstance().add(new AngleVelocityTest(.3, -.3, 7270)); //please check this
 
 		//Angle PID testing
 //		AutoPath path = new AutoPath(AutoPath.getPointsForBezier(
@@ -143,7 +144,12 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void autonomousPeriodic() {
 		Scheduler.getInstance().run();
-	
+//		RobotMap.arm.wristAngPID.enable();
+//		RobotMap.arm.elbowAngVelMaxPID.enable();
+//		RobotMap.arm.elbowAngVelMinPID.enable();
+//		RobotMap.arm.elbowAngPID.enable();
+//		RobotMap.arm.elbowAngPID.setSetpoint(0);
+//		RobotMap.arm.wristAngPID.setSetpoint(.2);
 		
 		updateSmartDashboard();
 //		if (shouldCrash) {
@@ -226,16 +232,20 @@ public class Robot extends IterativeRobot {
 //		SmartDashboard.putNumber("Elbow Current error", RobotMap.elbowTalon.getClosedLoopError(0));
 //		SmartDashboard.putNumber("Wrist Current Error", RobotMap.wristTalon.getClosedLoopError(0));
 //		SmartDashboard.putNumber("Wrist Current", RobotMap.wristTalon.getOutputCurrent());
-		SmartDashboard.putNumber("Wrist Ang Vel error", RobotMap.arm.getWristAngVelMaxError());
 //		SmartDashboard.putNumber("Wrist Enc Rate", RobotMap.wristEncoderWrapperRate.pidGet());
 //		SmartDashboard.putNumber("Elbow Enc Rate", RobotMap.elbowEncoderWrapperRate.pidGet());
 		SmartDashboard.putNumber("Wrist Ang Error", RobotMap.arm.getWristAngError());
-		SmartDashboard.putNumber("Elbow Ang Vel Error", RobotMap.arm.getElbowAngVelMaxError());
+		SmartDashboard.putNumber("Elbow Ang Vel Max Error", RobotMap.arm.getElbowAngVelMaxError());
+		SmartDashboard.putNumber("Elbow Ang Vel Min Error", RobotMap.arm.getElbowAngVelMinError());
 		SmartDashboard.putNumber("Elbow Ang Error", RobotMap.arm.getElbowAngError());
 //		SmartDashboard.putNumber("Elbow Enc Raw", RobotMap.elbowTalon.getSelectedSensorPosition(0));
 //		SmartDashboard.putNumber("Wrist Current", RobotMap.wristTalon.getOutputCurrent());
 		SmartDashboard.putNumber("Elbow Current", RobotMap.elbowTalon.getOutputCurrent());
 		SmartDashboard.putNumber("Drive Ang Vel Setpoint", RobotMap.driveTrain.angularVelocityPID.getSetpoint());
+		
+		SmartDashboard.putNumber("Wrist Min Current", RobotMap.arm.wristMinCurrentSource.pidGet());
+		SmartDashboard.putNumber("Wrist Max Current", RobotMap.arm.wristMaxCurrentSource.pidGet());
+		SmartDashboard.putNumber("Wrist Current", RobotMap.wristTalon.getOutputCurrent());
 //		SmartDashboard.putNumber("Wrist Ang TN", RobotMap.arm.wristAngTN.getOutput());
 //		SmartDashboard.putNumber("Wrist Max Current Source", RobotMap.arm.wristMaxCurrentSource.pidGet());
 //		

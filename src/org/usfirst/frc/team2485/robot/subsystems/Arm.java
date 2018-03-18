@@ -8,6 +8,7 @@ import org.usfirst.frc.team2485.robot.RobotMap;
 import org.usfirst.frc.team2485.robot.commands.WristWithControllers;
 import org.usfirst.frc.team2485.util.ConstantsIO;
 import org.usfirst.frc.team2485.util.FastMath;
+import org.usfirst.frc.team2485.util.PIDOutputWrapper;
 import org.usfirst.frc.team2485.util.PIDSourceWrapper;
 import org.usfirst.frc.team2485.util.TransferNode;
 import org.usfirst.frc.team2485.util.WarlordsPIDController;
@@ -23,33 +24,29 @@ public class Arm extends Subsystem {
 	private int numBadCurrents = 0;
 	public static final double CRITICAL_DISTANCE = toMeters(40); // temp //distance from mast to 16 inches past frame
 																	// perimeter
+	public static final double CONSERVATIVE_CRITICAL_DISTANCE = toMeters(32);
 	public static final double ALPHA_MAX_WRIST = 8;
 	public static final double ALPHA_MAX_ELBOW = 4;
 	public static final int ELBOW_OFFSET = -4038;
 	public static final int WRIST_OFFSET = -852;
 	public static final double MIN_WRIST_LIFTING_POSITION = 0.1;
 
-	private double thetaHigh;
-	private double thetaLow;
+	private double thetaWrist;
+	private double thetaElbow;
 
-	public double getThetaLow() {
-		return thetaLow;
+
+	public void setThetaWrist(double thetaWrist) {
+		this.thetaWrist = thetaWrist;
+	}
+	
+	public double getThetaWrist() {
+		return thetaWrist;
 	}
 
-	public void setThetaLow(double thetaLow) {
-		this.thetaLow = thetaLow;
-	}
-
-	public double getThetaHigh() {
-		return thetaHigh;
-	}
-
-	public void setThetaHigh(double thetaHigh) {
-		this.thetaHigh = thetaHigh;
-	}
+	
 
 	public static enum ArmSetpoint {
-		INTAKE(-.192, -0.035), SWITCH(-.192, 0.15), SECOND_STORY(-.192, 0.025), SCALE_HIGH_BACK(0.16, 0.39), SCALE_MIDDLE_BACK(0.16, 0.46), SCALE_LOW_BACK(0.16, 0.5), SEVEN_FOOT_SCALE(.26, .124);
+		INTAKE(-.192, -0.035), SWITCH(-.192, 0.15), SECOND_STORY(-.192, 0.025), SCALE_HIGH_BACK(0.16, 0.39), SCALE_MIDDLE_BACK(0.16, 0.46), SCALE_LOW_BACK(0.16, 0.5), SEVEN_FOOT_SCALE(.26, .124), CLIMB(.3, .25);
 
 		private final double elbowPos;
 		private final double wristPos;
@@ -94,7 +91,7 @@ public class Arm extends Subsystem {
 	public static final double gearRatioWrist = 975; // temporary
 	public static final double gearRatioElbow = 945;
 
-	public static final double CRITICAL_ANGLE = 0.12; // SET DIRECTLY
+	public static final double CRITICAL_ANGLE = 0.15; // SET DIRECTLY
 	public static final double WRIST_TOLERANCE = 0;
 	public static final double ELBOW_TOLERANCE = 0;
 
@@ -111,21 +108,24 @@ public class Arm extends Subsystem {
 	public static final double MAX_UP_CURRENT_ELBOW = 25;
 	public static final double MAX_DOWN_CURRENT_ELBOW = 20;
 	
-	public static final double VMAX_WRIST = .4;
-	public static final double VMIN_WRIST = -.4;
-	public static final double VMAX_ELBOW = .2;
-	public static final double VMIN_ELBOW = -.15;
+	public static final double VMAX_WRIST = .2; //.4
+	public static final double VMIN_WRIST = -.2; //-.4
+	public static final double VMAX_ELBOW = .1;
+	public static final double VMIN_ELBOW = -.07;
 	
 	public static final double QUASI_LOW_ELBOW_RATE = .01;
 	
+	public static double MIN_WRIST_ANGLE_CROSS;
+	public static double MID_ELBOW_ANGLE;
 	
+	public boolean isClimb = false;
 
-	public WarlordsPIDController elbowAngPID = new WarlordsPIDController();
-	private WarlordsPIDController elbowAngVelMaxPID = new WarlordsPIDController();
-	private WarlordsPIDController elbowAngVelMinPID = new WarlordsPIDController();
+	private WarlordsPIDController elbowAngPID = new WarlordsPIDController();
+	public WarlordsPIDController elbowAngVelMaxPID = new WarlordsPIDController();
+	public WarlordsPIDController elbowAngVelMinPID = new WarlordsPIDController();
 	public WarlordsPIDController wristAngPID = new WarlordsPIDController();
-	private WarlordsPIDController wristAngVelMaxPID = new WarlordsPIDController();
-	private WarlordsPIDController wristAngVelMinPID = new WarlordsPIDController();
+//	public  WarlordsPIDController wristAngVelMaxPID = new WarlordsPIDController();
+//	public WarlordsPIDController wristAngVelMinPID = new WarlordsPIDController();
 
 	public TransferNode wristAngVelMaxTN = new TransferNode(0);
 	public TransferNode wristAngVelMinTN = new TransferNode(0);
@@ -144,14 +144,26 @@ public class Arm extends Subsystem {
 	public PIDSourceWrapper wristMinAngSource = new PIDSourceWrapper();
 	public PIDSourceWrapper elbowMaxAngSource = new PIDSourceWrapper();
 	public PIDSourceWrapper elbowMinAngSource = new PIDSourceWrapper();
+	public PIDOutputWrapper elbowOutputSource = new PIDOutputWrapper();
+	public PIDOutputWrapper wristOutputSource = new PIDOutputWrapper();
 
 	
 	
-	public double getVMaxElbow() {
-		double thetaCritical = FastMath.acos((CRITICAL_DISTANCE - L2*FastMath.cos(getWristAngle() * 2 * Math.PI)) / L1) / Math.PI / 2;
-		double vMax = ConstantsIO.kP_ElbowAng * (Math.abs(getElbowAngle()) - thetaCritical);
-		vMax = Math.max(vMax, 0);
-		return vMax;
+	public double[] getThetasCritical() {
+		double theta2 = RobotMap.wristEncoderWrapperDistance.pidGet() * 2 * Math.PI;
+		double x = L1 + L2 * FastMath.cos(theta2);
+		double y = L2 * FastMath.sin(theta2);
+		double angle = FastMath.atan2(y, x) / 2 / Math.PI;
+		if (angle > .5) {
+			angle -= 1;
+		}
+		double dist = FastMath.hypot(x, y);
+		double margin = CRITICAL_DISTANCE / dist;
+		if (margin > 1) { 
+			return new double[] {0, 0};
+		}
+		double criticalAngle = FastMath.acos(margin) / Math.PI / 2;
+		return new double[] {-angle, criticalAngle};
 	}
 	
 
@@ -179,9 +191,9 @@ public class Arm extends Subsystem {
 		double pwm = RobotMap.elbowTalon.getMotorOutputPercent();
 		double iMin = MAX_DOWN_CURRENT_ELBOW;
 		if (Math.abs(pwm) > .5) {
-			iMin = -Math.min(iMin, Math.abs(i/pwm));
+			iMin = Math.min(iMin, Math.abs(i/pwm));
 		}
-		return RobotMap.elbowEncoderWrapperDistance.pidGet() < MIN_ELBOW_ANGLE ? -2 : iMin;
+		return RobotMap.elbowEncoderWrapperDistance.pidGet() < MIN_ELBOW_ANGLE ? -2 : -iMin;
 	}
 	
 	public double getIMaxWrist() {
@@ -205,15 +217,22 @@ public class Arm extends Subsystem {
 		double pwm = RobotMap.wristTalon.getMotorOutputPercent();
 		double iMin = MAX_DOWN_CURRENT_WRIST;
 		if (Math.abs(pwm) > .5) {
-			iMin = -Math.min(iMin, Math.abs(i/pwm));
+			iMin = Math.min(iMin, Math.abs(i/pwm));
 		}
-		return RobotMap.wristEncoderWrapperDistance.pidGet() < MIN_WRIST_ANGLE ? -2 : iMin;
+		return RobotMap.wristEncoderWrapperDistance.pidGet() < MIN_WRIST_ANGLE ? -2 : -iMin;
 
 	}
 	
 
 	public Arm() {
+		
+		MIN_WRIST_ANGLE_CROSS = FastMath.acos((CONSERVATIVE_CRITICAL_DISTANCE * CONSERVATIVE_CRITICAL_DISTANCE - L2 * L2 - L1 * L1) 
+				/ 2 / L1 / L2) / 2 / Math.PI; 
+		MID_ELBOW_ANGLE = -FastMath.acos((L1 * L1 + CONSERVATIVE_CRITICAL_DISTANCE * CONSERVATIVE_CRITICAL_DISTANCE - L2 * L2) 
+				/ 2 / CONSERVATIVE_CRITICAL_DISTANCE / L1) / 2 / Math.PI;
 
+		System.out.println("CROSS:" + MIN_WRIST_ANGLE_CROSS);
+		System.out.println("MID:" + MID_ELBOW_ANGLE);
 		new Timer().schedule(new CheckCurrentSensorTask(), 0, 20);
 		// Elbow
 		elbowMaxAngSource.setPidSource(() -> {
@@ -225,17 +244,11 @@ public class Arm extends Subsystem {
 		});
 		
 		elbowMinAngVelSource.setPidSource(() -> {
-			if (getElbowAngle() < 0) {
-				return -.2;
-			}
-			return -Math.min(getVMaxElbow(), .2);
+			return isClimb ? -.1 : -.2;
 		});
 		
 		elbowMaxAngVelSource.setPidSource(() -> {
-			if (getElbowAngle() > 0) {
-				return .3;
-			}
-			return Math.min(getVMaxElbow(), .3);
+			return isClimb ? .15 : .3;
 		});
 		
 		elbowMaxCurrentSource.setPidSource(() -> {
@@ -245,6 +258,7 @@ public class Arm extends Subsystem {
 		elbowMinCurrentSource.setPidSource(() -> {
 			return getIMinElbow();
 		});
+		
 		
 		elbowAngVelMaxPID.setSources(RobotMap.elbowEncoderWrapperRate);
 		elbowAngVelMaxPID.setOutputRange(0, 1);
@@ -258,10 +272,15 @@ public class Arm extends Subsystem {
 		elbowAngVelMinPID.setOutputs(elbowAngVelMinTN);
 		elbowAngVelMinPID.setSetpointSource(elbowMinAngVelSource);
 
-		
 		elbowAngPID.setSources(RobotMap.elbowEncoderWrapperDistance);
 		elbowAngPID.setOutputSources(elbowMaxAngSource, elbowMinAngSource);
-		elbowAngPID.setOutputs(RobotMap.elbowCurrentWrapper);
+		elbowAngPID.setOutputs(elbowOutputSource);
+		elbowAngPID.setVelocitySource(RobotMap.elbowEncoderWrapperRate);
+		
+		elbowOutputSource.setPidOutput((double out) -> {
+			double pwm = out + ConstantsIO.levitateElbowCurrent * FastMath.cos(2 * Math.PI * getElbowAngle());
+			RobotMap.elbowCurrentWrapper.set(pwm);
+		});
 		
 		//Wrist
 		
@@ -277,23 +296,31 @@ public class Arm extends Subsystem {
 			return RobotMap.wristEncoderWrapperRate.pidGet() + RobotMap.elbowEncoderWrapperRate.pidGet();
 		});
 		
-		wristAngVelMaxPID.setSources(wristAngVelSource);
-		wristAngVelMaxPID.setOutputRange(0, 1);
-		wristAngVelMaxPID.setOutputSources(wristMaxCurrentSource, null);
-		wristAngVelMaxPID.setOutputs(wristAngVelMaxTN);
-		
-		wristAngVelMinPID.setSources(wristAngVelSource);
-		wristAngVelMinPID.setOutputRange(-1, 0);
-		wristAngVelMinPID.setOutputSources(null, wristMinCurrentSource);
-		wristAngVelMinPID.setOutputs(elbowAngVelMinTN);
-		
+//		wristAngVelMaxPID.setSources(RobotMap.wristEncoderWrapperRate);
+//		wristAngVelMaxPID.setOutputRange(0, 1);
+//		wristAngVelMaxPID.setOutputSources(wristMaxCurrentSource, null);
+//		wristAngVelMaxPID.setSetpoint(VMAX_WRIST);
+//		wristAngVelMaxPID.setOutputs(wristAngVelMaxTN);
+//		
+//		wristAngVelMinPID.setSources(RobotMap.wristEncoderWrapperRate);
+//		wristAngVelMinPID.setSetpoint(VMIN_WRIST);
+//		wristAngVelMinPID.setOutputRange(-1, 0);
+//		wristAngVelMinPID.setOutputSources(null, wristMinCurrentSource);
+//		wristAngVelMinPID.setOutputs(wristOutputSource);
+//		
 		wristAngSource.setPidSource(() -> {
 			return RobotMap.wristEncoderWrapperDistance.pidGet() + RobotMap.elbowEncoderWrapperDistance.pidGet();
 		});
 		
-		wristAngPID.setSources(wristAngSource);
-		wristAngPID.setOutputSources(wristAngVelMaxTN, wristAngVelMinTN);
-		wristAngPID.setOutputs(RobotMap.wristCurrentWrapper);
+		wristAngPID.setSources(RobotMap.wristEncoderWrapperDistance);
+		wristAngPID.setOutputSources(wristMaxCurrentSource, wristMinCurrentSource);
+		wristAngPID.setOutputs(wristOutputSource);
+		wristAngPID.setVelocitySource(RobotMap.wristEncoderWrapperRate);
+		
+		wristOutputSource.setPidOutput((double out) -> {
+			double pwm = out; //+ ConstantsIO.levitateWristCurrent * FastMath.cos(2 * Math.PI * getWristAngle());
+			RobotMap.wristCurrentWrapper.set(pwm);
+		});
 
 	}
 
@@ -314,16 +341,23 @@ public class Arm extends Subsystem {
 	public void reset() {
 //		RobotMap.arm.setElbowPos(ArmSetpoint.SWITCH.elbowPos);
 //    	RobotMap.arm.setThetaLow(ArmSetpoint.SWITCH.wristPos);
-		double theta2 = RobotMap.arm.getWristAngle();
-    	if (RobotMap.arm.getElbowAngle() > 0) {
-			RobotMap.arm.setThetaHigh(theta2);
-		} else {
-			RobotMap.arm.setThetaLow(theta2);
-		}
-		RobotMap.arm.setElbowPos(RobotMap.elbowEncoderWrapperDistance.pidGet());
+		RobotMap.arm.setThetaWrist(RobotMap.wristEncoderWrapperDistance.pidGet());
+		RobotMap.arm.setThetaElbow(RobotMap.elbowEncoderWrapperDistance.pidGet());
     	RobotMap.elbowCurrentWrapper.set(0);
     	RobotMap.wristCurrentWrapper.set(0);
 
+	}
+	
+	public void setIsClimb(boolean isClimb) {
+		this.isClimb = isClimb;
+		System.out.println(isClimb);
+	}
+	
+	public void setElbowSetpoint(double setpoint) {
+		elbowAngPID.enable();
+		elbowAngVelMaxPID.enable();
+		elbowAngVelMinPID.enable();
+		elbowAngPID.setSetpoint(setpoint);
 	}
 
 	public double getM2() {
@@ -341,36 +375,34 @@ public class Arm extends Subsystem {
 
 	public void setWristPos(double pos) {
 		wristAngPID.setSetpoint(pos);
-		wristAngVelMaxPID.setSetpoint(VMAX_WRIST);
-		wristAngVelMinPID.setSetpoint(VMIN_WRIST);
+//		wristAngVelMaxPID.setSetpoint(VMAX_WRIST);
+//		wristAngVelMinPID.setSetpoint(VMIN_WRIST);
 		if (Math.abs(pos - wristAngSource.pidGet()) < WRIST_TOLERANCE) {
 			setWristManual(0);
 		} else {
 			wristAngPID.enable();
-			wristAngVelMaxPID.enable();
-			wristAngVelMinPID.enable();
+//			wristAngVelMaxPID.enable();
+//			wristAngVelMinPID.enable();
 		}
 	}
 
 	public void setWristManual(double pwm) {
 		wristAngPID.disable();
-		wristAngVelMaxPID.disable();
-		wristAngVelMinPID.disable();
-		RobotMap.wristCurrentWrapper.set(pwm * ALPHA_MAX_WRIST);
+//		wristAngVelMaxPID.disable();
+//		wristAngVelMinPID.disable();
+		wristOutputSource.pidWrite(pwm * ALPHA_MAX_WRIST);
 	}
 
 	public void setElbowManual(double pwm) {
 		elbowAngPID.disable();
 		elbowAngVelMaxPID.disable();
 		elbowAngVelMinPID.disable();
-		RobotMap.elbowCurrentWrapper.set(pwm * ALPHA_MAX_ELBOW);
+		elbowOutputSource.pidWrite(pwm * ALPHA_MAX_ELBOW);
 	}
 
 	public double getMinWristPos() {
-		double margin = (CRITICAL_DISTANCE - (L1 * FastMath.cos(getElbowAngle() * 2 * Math.PI))) / L2;
-		return Math.abs(RobotMap.elbowEncoderWrapperDistance.pidGet()) < CRITICAL_ANGLE
-				? FastMath.acos(margin) / 2 / Math.PI
-				: -0.25;
+		double margin = (CONSERVATIVE_CRITICAL_DISTANCE - (L1 * FastMath.cos(getElbowAngle() * 2 * Math.PI))) / L2;
+		return margin > 1 || Math.abs(getElbowAngle()) > CRITICAL_ANGLE ? -100 : FastMath.acos(margin) / 2 / Math.PI - RobotMap.elbowEncoderWrapperDistance.pidGet();
 	}
 
 	public void initElbowEnc() {
@@ -397,13 +429,12 @@ public class Arm extends Subsystem {
 		RobotMap.wristEncoderWrapperDistance.setPosition(currPos);
 	}
 
-	public void setElbowPos(double pos) {
-		elbowAngPID.enable();
-		elbowAngVelMaxPID.enable();
-		elbowAngVelMinPID.enable();
-		elbowAngVelMaxPID.setSetpoint(VMAX_ELBOW);
-		elbowAngVelMinPID.setSetpoint(VMIN_ELBOW);
-		elbowAngPID.setSetpoint(pos);
+	public void setThetaElbow(double pos) {
+		this.thetaElbow = pos;
+	}
+	
+	public double getThetaElbow() {
+		return thetaElbow;
 	}
 
 	public double getElbowAngle() {
@@ -424,8 +455,8 @@ public class Arm extends Subsystem {
 		}
 		if (wristPIDisEnabled()) {
 			wristAngPID.disable();
-			wristAngVelMaxPID.disable();
-			wristAngVelMinPID.disable();
+//			wristAngVelMaxPID.disable();
+//			wristAngVelMinPID.disable();
 			RobotMap.wristCurrentWrapper.set(0);
 		}
 
@@ -441,8 +472,9 @@ public class Arm extends Subsystem {
 		}
 		if (wristPIDisEnabled()) {
 			wristAngPID.disable();
-			wristAngVelMaxPID.disable();
+//			wristAngVelMaxPID.disable();
 			elbowAngVelMinPID.disable();
+			elbowAngVelMaxPID.disable();
 			RobotMap.wristCurrentWrapper.set(0);
 		}
 
@@ -451,13 +483,13 @@ public class Arm extends Subsystem {
 	}
 
 
-	public double getWristAngVelMaxError() {
-		return wristAngVelMaxPID.getAvgError();
-	}
-	
-	public double getWristAngVelMinError() {
-		return wristAngVelMinPID.getAvgError();
-	}
+//	public double getWristAngVelMaxError() {
+//		return wristAngVelMaxPID.getAvgError();
+//	}
+//	
+//	public double getWristAngVelMinError() {
+//		return wristAngVelMinPID.getAvgError();
+//	}
 
 	public double getWristAngError() {
 		return wristAngPID.getAvgError();
@@ -490,9 +522,9 @@ public class Arm extends Subsystem {
 	public double getWristCurrentError() {
 		return RobotMap.wristTalon.getClosedLoopError(0);
 	}
-
+//
 	public boolean wristPIDisEnabled() {
-		return wristAngVelMaxPID.isEnabled(); // wristAngPID.isEnabled() &&
+		return wristAngPID.isEnabled();
 	}
 
 	public boolean elbowPIDisEnabled() {
@@ -500,12 +532,12 @@ public class Arm extends Subsystem {
 	}
 
 	public void updateConstants() {
-		elbowAngPID.setPID(ConstantsIO.kP_ElbowAng, 0, 0);
-		elbowAngVelMaxPID.setPID(ConstantsIO.kP_ElbowAngVelMax, ConstantsIO.kI_ElbowAngVelMax, 0, ConstantsIO.kF_ElbowAngVelMax);
-		elbowAngVelMinPID.setPID(ConstantsIO.kP_ElbowAngVelMin, ConstantsIO.kI_ElbowAngVelMin, 0, ConstantsIO.kF_ElbowAngVelMin);
-		wristAngPID.setPID(ConstantsIO.kP_WristAng, 0, 0);
-		wristAngVelMaxPID.setPID(ConstantsIO.kP_WristAngVelMax, ConstantsIO.kI_WristAngVelMax, 0, ConstantsIO.kF_WristAngVelMax);
-		wristAngVelMinPID.setPID(ConstantsIO.kP_WristAngVelMin, ConstantsIO.kI_WristAngVelMin, 0, ConstantsIO.kF_WristAngVelMin);
+		elbowAngPID.setPID(ConstantsIO.kP_ElbowAng, ConstantsIO.kI_ElbowAng, ConstantsIO.kD_ElbowAng);
+		elbowAngVelMaxPID.setPID(ConstantsIO.kP_ElbowAngVel, ConstantsIO.kI_ElbowAngVel, 0, ConstantsIO.kF_ElbowAngVel);
+		elbowAngVelMinPID.setPID(ConstantsIO.kP_ElbowAngVel, ConstantsIO.kI_ElbowAngVel, 0, ConstantsIO.kF_ElbowAngVel);
+		wristAngPID.setPID(ConstantsIO.kP_WristAng, ConstantsIO.kI_WristAng, ConstantsIO.kD_WristAng);
+//		wristAngVelMaxPID.setPID(ConstantsIO.kP_WristAngVel, ConstantsIO.kI_WristAngVel, 0, ConstantsIO.kF_WristAngVel);
+//		wristAngVelMinPID.setPID(ConstantsIO.kP_WristAngVel, ConstantsIO.kI_WristAngVel, 0, ConstantsIO.kF_WristAngVel);
 		RobotMap.elbowTalon.configForwardSoftLimitThreshold(ConstantsIO.kSoftLimitForward_Elbow, 0);
 		RobotMap.elbowTalon.configForwardSoftLimitEnable(false, 0);
 		RobotMap.elbowTalon.configReverseSoftLimitThreshold(ConstantsIO.kSoftLimitReverse_Elbow, 0);

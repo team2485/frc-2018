@@ -1,6 +1,7 @@
 package org.usfirst.frc.team2485.robot;
 
 import org.usfirst.frc.team2485.robot.subsystems.Arm;
+import org.usfirst.frc.team2485.robot.subsystems.Climber;
 import org.usfirst.frc.team2485.robot.subsystems.DriveTrain;
 import org.usfirst.frc.team2485.robot.subsystems.Intake;
 import org.usfirst.frc.team2485.util.DeadReckoning;
@@ -41,6 +42,8 @@ public class RobotMap {
 	public static final int elbowPort2 = 13;
 	public static final int wristPort = 4;
 	
+	public static final int climberPort = 7;
+	
 	public static final int driveRightPortTalon = 1;
 	public static final int driveRightPortVictor2 = 11;
 	public static final int driveRightPortVictor3 = 21;
@@ -66,6 +69,8 @@ public class RobotMap {
 	public static TalonSRX wristTalon;
 	
 	public static TalonSRX[] elbowTalons;
+	
+	public static TalonSRX climberTalon;
 
 	
 	public static TalonSRX driveLeftTalon;
@@ -87,6 +92,8 @@ public class RobotMap {
 	public static TalonSRXWrapper wristTalonWrapper;
 	public static SpeedControllerWrapper elbowCurrentWrapper;
 	public static SpeedControllerWrapper wristCurrentWrapper;
+	
+	public static TalonSRXWrapper climberWrapper;
 	
 	public static TalonSRXWrapper driveLeftTalonCurrentWrapper1;
 	public static TalonSRXWrapper driveLeftTalonCurrentWrapper2;
@@ -136,6 +143,7 @@ public class RobotMap {
 	public static DriveTrain driveTrain;
 	public static Intake intake;
 	public static Arm arm;
+	public static Climber climber;
 
 	public static void init() {
 		
@@ -165,6 +173,9 @@ public class RobotMap {
 		
 		elbowCurrentWrapper = new SpeedControllerWrapper(elbowTalonWrapper);
 		wristCurrentWrapper = new SpeedControllerWrapper(wristTalonWrapper);
+		
+		climberTalon = new TalonSRX(climberPort);
+		climberWrapper = new TalonSRXWrapper(ControlMode.PercentOutput, climberTalon);
 		
 		driveLeftTalon = new TalonSRX(driveLeftPortTalon);
 		driveLeftVictor2 = new VictorSPX(driveLeftPortVictor2);
@@ -261,6 +272,7 @@ public class RobotMap {
 		driveTrain = new DriveTrain();
 		intake = new Intake();
 		arm = new Arm();
+		climber = new Climber();
 		
 	}
 

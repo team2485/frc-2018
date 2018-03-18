@@ -33,6 +33,7 @@ public class FastMath {
 		}
 		int index = (int) (theta / 2 / Math.PI * numSamples);
 		double rem = theta / 2 / Math.PI * numSamples % 1;
+		
 		return cos[index] * (1 - rem) + cos[index + 1] * rem;
 	}
 	
@@ -110,5 +111,9 @@ public class FastMath {
 
 	public static double toKilograms(double lb) {
 		return lb * 0.45359237;
+	}
+	
+	public static double hypot(double x, double y) {
+		return sqrt(x * x + y * y);
 	}
 }

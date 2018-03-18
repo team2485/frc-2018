@@ -36,6 +36,8 @@ public class WarlordsPIDController extends WarlordsControlSystem {
 	
 	private PIDSource maxOutputSource, minOutputSource;
 	
+	private PIDSource velSource;
+	
 	private PIDSource kPSource, kISource, kDSource, kFSource;
 		
 	/**
@@ -134,6 +136,10 @@ public class WarlordsPIDController extends WarlordsControlSystem {
 	 */
 	public boolean isContinuous() {
 		return continuous;
+	}
+	
+	public void setVelocitySource(PIDSource velSource) {
+		this.velSource = velSource;
 	}
 	
 	/**
@@ -258,8 +264,12 @@ public class WarlordsPIDController extends WarlordsControlSystem {
 		} else {
 			integralTerm += integralError;			
 		}
-		
-		double derivativeTerm = kD * (propTerm - lastPropTerm);
+		double derivativeTerm;
+		if (velSource == null) {
+			derivativeTerm = kD * (propTerm - lastPropTerm);
+		} else {
+			derivativeTerm = -kP * kD * velSource.pidGet();
+		}
 		
 		double outputPreSat = propTerm + integralTerm + derivativeTerm + kF*setpoint;
 				

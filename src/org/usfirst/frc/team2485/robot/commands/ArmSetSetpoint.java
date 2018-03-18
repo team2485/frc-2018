@@ -16,18 +16,20 @@ public class ArmSetSetpoint extends InstantCommand {
 //        requires(RobotMap.arm);
         theta1 = setpoint.getElbowPos();
         theta2 = setpoint.getWristPos();
+        if (setpoint.equals(ArmSetpoint.CLIMB)) {
+        	RobotMap.arm.setIsClimb(true);
+        } else { 
+        	RobotMap.arm.setIsClimb(false);
+        }
         
     }
 
     // Called just before this Command runs the first time
     protected void initialize() {
     	WristWithControllers.isManual = false;
-    	RobotMap.arm.setElbowPos(theta1);
-    	if (theta1 > 0) {
-    		RobotMap.arm.setThetaHigh(theta2);
-    	} else {
-    		RobotMap.arm.setThetaLow(theta2);
-    	}
+    	RobotMap.arm.setThetaElbow(theta1);
+    	RobotMap.arm.setThetaWrist(theta2 - theta1);
+    	
     	
     }
 

@@ -11,7 +11,7 @@ public class WaitUntilArmUp extends Command{
 
 	@Override
 	protected boolean isFinished() {
-		return Math.abs(RobotMap.arm.wristAngPID.getSetpoint() - RobotMap.arm.getWristAngle()) < .02 && Math.abs(RobotMap.arm.elbowAngPID.getSetpoint() - RobotMap.arm.getElbowAngle()) < .03;
+		return Math.abs(RobotMap.arm.wristAngPID.getSetpoint() - RobotMap.arm.getWristAngle()) < .02 && Math.abs(RobotMap.arm.getThetaElbow() - RobotMap.arm.getElbowAngle()) < .03;
 	}
 	
 	
