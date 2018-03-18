@@ -36,7 +36,7 @@ public class WarlordsPIDController extends WarlordsControlSystem {
 	
 	private PIDSource maxOutputSource, minOutputSource;
 	
-	private PIDSource velSource;
+	private PIDSource velSource, velSetpointSource;
 	
 	private PIDSource kPSource, kISource, kDSource, kFSource;
 		
@@ -140,6 +140,10 @@ public class WarlordsPIDController extends WarlordsControlSystem {
 	
 	public void setVelocitySource(PIDSource velSource) {
 		this.velSource = velSource;
+	}
+	
+	public void setVelocitySetpointSources(PIDSource velSetpointSources) {
+		this.velSetpointSource = velSetpointSources;
 	}
 	
 	/**
@@ -265,13 +269,19 @@ public class WarlordsPIDController extends WarlordsControlSystem {
 			integralTerm += integralError;			
 		}
 		double derivativeTerm;
+		double ffTerm;
 		if (velSource == null) {
 			derivativeTerm = kD * (propTerm - lastPropTerm);
-		} else {
+			ffTerm = kF*setpoint;
+		} else if (velSetpointSource == null){
 			derivativeTerm = -kP * kD * velSource.pidGet();
+			ffTerm = kF*setpoint;
+		} else {
+			derivativeTerm = kP * kD * (velSetpointSource.pidGet() - velSource.pidGet());
+			ffTerm = kF * velSetpointSource.pidGet();
 		}
 		
-		double outputPreSat = propTerm + integralTerm + derivativeTerm + kF*setpoint;
+		double outputPreSat = propTerm + integralTerm + derivativeTerm + ffTerm;
 				
 		if (outputPreSat < minOutput) {
 			result = minOutput;
