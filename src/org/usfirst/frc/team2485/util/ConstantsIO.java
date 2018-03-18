@@ -33,14 +33,11 @@ public class ConstantsIO {
 	
 	public static double kPMax_Distance;
 	
-	public static double kP_DriveAngleMax;
 	public static double kP_DriveAngle;
+	public static double kI_DriveAngle;
+	public static double kD_DriveAngle;
+	public static double kF_DriveAngle;
 
-	public static double kP_DriveAngVel;
-	public static double kI_DriveAngVel;
-	public static double kD_DriveAngVel;
-	public static double kF_DriveAngVel;
-	
 	public static double kP_AngVelTeleop;
 	public static double kI_AngVelTeleop;
 	public static double kD_AngVelTeleop;
@@ -49,7 +46,6 @@ public class ConstantsIO {
 	public static double kP_ElbowAng;
 	public static double kI_ElbowAng;
 	public static double kD_ElbowAng;
-	
 	
 	public static double kP_ElbowAngVel;
 	public static double kI_ElbowAngVel;
@@ -143,12 +139,9 @@ public class ConstantsIO {
 		kF_DriveVelocity = Double.parseDouble(data.get("kF_DriveVelocity"));
 
 		kP_DriveAngle = Double.parseDouble(data.get("kP_DriveAngle"));
-		kP_DriveAngleMax = Double.parseDouble(data.get("kP_DriveAngleMax"));
-		
-		kP_DriveAngVel = Double.parseDouble(data.get("kP_DriveAngVel"));
-		kI_DriveAngVel = Double.parseDouble(data.get("kI_DriveAngVel"));
-		kD_DriveAngVel = Double.parseDouble(data.get("kD_DriveAngVel"));
-		kF_DriveAngVel = Double.parseDouble(data.get("kF_DriveAngVel"));
+		kI_DriveAngle = Double.parseDouble(data.get("kI_DriveAngle"));
+		kD_DriveAngle = Double.parseDouble(data.get("kD_DriveAngle"));
+		kF_DriveAngle = Double.parseDouble(data.get("kF_DriveAngle"));
 		
 		kP_Drift = Double.parseDouble(data.get("kP_Drift"));
 		
