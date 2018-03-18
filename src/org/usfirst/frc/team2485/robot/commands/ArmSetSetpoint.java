@@ -12,15 +12,12 @@ public class ArmSetSetpoint extends InstantCommand {
 	
 	double theta1;
 	double theta2;
+	boolean isClimb;
     public ArmSetSetpoint(ArmSetpoint setpoint) {
 //        requires(RobotMap.arm);
         theta1 = setpoint.getElbowPos();
         theta2 = setpoint.getWristPos();
-        if (setpoint.equals(ArmSetpoint.CLIMB)) {
-        	RobotMap.arm.setIsClimb(true);
-        } else { 
-        	RobotMap.arm.setIsClimb(false);
-        }
+        isClimb = setpoint.equals(ArmSetpoint.CLIMB);
         
     }
 
@@ -30,7 +27,9 @@ public class ArmSetSetpoint extends InstantCommand {
     	RobotMap.arm.setThetaElbow(theta1);
     	RobotMap.arm.setThetaWrist(theta2 - theta1);
     	
-    	
+    	 if (isClimb) {
+         	RobotMap.arm.setIsClimb(true);
+         } 
     }
 
 }

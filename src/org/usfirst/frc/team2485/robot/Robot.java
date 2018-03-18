@@ -4,10 +4,12 @@ package org.usfirst.frc.team2485.robot;
 import org.usfirst.frc.team2485.robot.commandGroups.ScaleAuto;
 import org.usfirst.frc.team2485.robot.commandGroups.SwitchAuto;
 import org.usfirst.frc.team2485.robot.commands.AngleVelocityTest;
+import org.usfirst.frc.team2485.robot.commands.ArmSetSetpoint;
 import org.usfirst.frc.team2485.robot.commands.DriveStraight;
 import org.usfirst.frc.team2485.robot.commands.DriveTo;
 import org.usfirst.frc.team2485.robot.commands.HighLowCurrentTest;
 import org.usfirst.frc.team2485.robot.commands.SetVelocities;
+import org.usfirst.frc.team2485.robot.subsystems.Arm.ArmSetpoint;
 import org.usfirst.frc.team2485.util.AutoPath;
 import org.usfirst.frc.team2485.util.ConstantsIO;
 import org.usfirst.frc.team2485.util.FastMath;
@@ -51,10 +53,11 @@ public class Robot extends IterativeRobot {
 		ConstantsIO.init();
 		OI.init();
 		RobotMap.updateConstants();
+		Scheduler.getInstance().enable();
 		
 
-		ScaleAuto.init();
-		SwitchAuto.init();
+//		ScaleAuto.init();
+//		SwitchAuto.init();
 		
 	}
 
@@ -98,7 +101,12 @@ public class Robot extends IterativeRobot {
 //		RobotMap.elbowEncoderWrapperDistance.setPosition(-.190);
 //		RobotMap.wristEncoderWrapperDistance.setPosition(0.416);
 		
-//		isHomed = true; // so we don't crash immediately in actual matches		
+//		isHomed = true; // so we don't crash immediately in actual matches	
+		
+		if (!isHomed) { // set to true in auto init, only relevant for pit testing
+			throw new RuntimeException("Not homed");
+		}
+		
 
 		String positions = DriverStation.getInstance().getGameSpecificMessage().toUpperCase();
 		boolean switchLeft = positions.charAt(0) == 'L';
@@ -133,9 +141,18 @@ public class Robot extends IterativeRobot {
 //		Scheduler.getInstance().add(new AngleVelocityTest(.3, -.3, 7270)); //please check this
 
 		//Angle PID testing
-//		AutoPath path = new AutoPath(AutoPath.getPointsForBezier(
-//		));
-//		Scheduler.getInstance().add(new DriveTo(path, 60, false, 8000, false));
+		
+//		Pair[] controlPoints = {
+//				new Pair(190, -212),
+//				new Pair(0, -212),
+//				new Pair(0.0, 0.0),
+//		};
+//		double[] dists = {100};
+//		AutoPath path =  AutoPath.getAutoPathForClothoidSpline(controlPoints, dists);
+		
+//		Scheduler.getInstance().add(new DriveTo(path, 30, true, 10000, false));
+//		Scheduler.getInstance().add(new DriveStraight(100, 30, 10000000));
+		Scheduler.getInstance().add(new ArmSetSetpoint(ArmSetpoint.SWITCH));
 	}
 
 	/**
@@ -205,7 +222,6 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Velocity Error", RobotMap.driveTrain.getVelocityError());
 		SmartDashboard.putNumber("Distance Error", RobotMap.driveTrain.getDistError());
 		SmartDashboard.putNumber("Angle Error", RobotMap.driveTrain.getAngleError());
-		SmartDashboard.putNumber("Angular Velocity Error", RobotMap.driveTrain.getAngleRateError());
 //	
 //		SmartDashboard.putNumber("Distance PID Output", RobotMap.driveTrain.getDistancePIDOutput());
 //		SmartDashboard.putNumber("Velocity PID Output", RobotMap.driveTrain.getVelocityPIDOutput());
@@ -241,11 +257,15 @@ public class Robot extends IterativeRobot {
 //		SmartDashboard.putNumber("Elbow Enc Raw", RobotMap.elbowTalon.getSelectedSensorPosition(0));
 //		SmartDashboard.putNumber("Wrist Current", RobotMap.wristTalon.getOutputCurrent());
 		SmartDashboard.putNumber("Elbow Current", RobotMap.elbowTalon.getOutputCurrent());
-		SmartDashboard.putNumber("Drive Ang Vel Setpoint", RobotMap.driveTrain.angularVelocityPID.getSetpoint());
 		
 		SmartDashboard.putNumber("Wrist Min Current", RobotMap.arm.wristMinCurrentSource.pidGet());
 		SmartDashboard.putNumber("Wrist Max Current", RobotMap.arm.wristMaxCurrentSource.pidGet());
 		SmartDashboard.putNumber("Wrist Current", RobotMap.wristTalon.getOutputCurrent());
+		SmartDashboard.putNumber("Angle PID Output", RobotMap.driveTrain.angleOutputTN.pidGet());
+		SmartDashboard.putNumber("Velocity PID Output", RobotMap.driveTrain.velocityTN.pidGet());
+		SmartDashboard.putNumber("Distance PID Output", RobotMap.driveTrain.distanceTN.pidGet());
+		SmartDashboard.putNumber("Velocity Setpoint TN", RobotMap.driveTrain.velocitySetpointTN.pidGet());
+		SmartDashboard.putNumber("kP Distance", RobotMap.driveTrain.kp_distancePIDSource.pidGet());
 //		SmartDashboard.putNumber("Wrist Ang TN", RobotMap.arm.wristAngTN.getOutput());
 //		SmartDashboard.putNumber("Wrist Max Current Source", RobotMap.arm.wristMaxCurrentSource.pidGet());
 //		
@@ -300,6 +320,14 @@ public class Robot extends IterativeRobot {
 		} else {
 			RobotMap.arm.setWristCurrent(0);
 			RobotMap.arm.setElbowCurrent(0);
+		}
+		
+		if (OI.driver.getRawButton(OI.XBOX_LBUMPER_PORT)) {
+			RobotMap.climber.setManual(-.05);
+		} else if (OI.driver.getRawButton(OI.XBOX_RBUMPER_PORT)) {
+			RobotMap.climber.setManual(.05);
+		} else {
+			RobotMap.climber.setManual(0);
 		}
 		RobotMap.elbowEncoderWrapperDistance.setPosition(-.190);
 		RobotMap.wristEncoderWrapperDistance.setPosition(0.416);

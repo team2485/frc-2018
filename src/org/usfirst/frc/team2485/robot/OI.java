@@ -168,6 +168,8 @@ public class OI {
 		Command c = new ArmEmergencyControl();
 		OPERATOR_LSTICK_BUTTON.whenPressed(c);
 		OPERATOR_RSTICK_BUTTON.cancelWhenPressed(c);
+		OPERATOR_START_BUTTON.whenReleased(new HoldPosition());
+		OPERATOR_BACK_BUTTON.whenReleased(new HoldPosition());
 		
 		
 		

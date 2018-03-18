@@ -42,6 +42,8 @@ public class ConstantsIO {
 	public static double kI_AngVelTeleop;
 	public static double kD_AngVelTeleop;
 	public static double kF_AngVelTeleop;
+	
+	public static double filterCoefficient;
 
 	public static double kP_ElbowAng;
 	public static double kI_ElbowAng;
@@ -143,12 +145,17 @@ public class ConstantsIO {
 		kD_DriveAngle = Double.parseDouble(data.get("kD_DriveAngle"));
 		kF_DriveAngle = Double.parseDouble(data.get("kF_DriveAngle"));
 		
+		filterCoefficient = Double.parseDouble(data.get("filterCoefficient"));
+		
 		kP_Drift = Double.parseDouble(data.get("kP_Drift"));
 		
 		kUpRamp_Velocity = Double.parseDouble(data.get("kUpRamp_Velocity"));
 		kDownRamp_Velocity = Double.parseDouble(data.get("kDownRamp_Velocity"));
 		kUpRamp_AngVelocity = Double.parseDouble(data.get("kUpRamp_AngVelocity"));
 		kDownRamp_AngVelocity = Double.parseDouble(data.get("kDownRamp_AngVelocity"));
+		
+		System.out.println(kUpRamp_Velocity);
+		System.out.println(kDownRamp_Velocity);
 		
 		kP_ElbowAng = Double.parseDouble(data.get("kP_ElbowAng"));
 		kI_ElbowAng = Double.parseDouble(data.get("kI_ElbowAng"));

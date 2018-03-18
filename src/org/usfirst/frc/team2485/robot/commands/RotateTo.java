@@ -29,8 +29,6 @@ public class RotateTo extends Command {
 		super.initialize();
 		startTime = System.currentTimeMillis();
 		RobotMap.driveTrain.zeroEncoders();
-		RobotMap.driveTrain.angularVelocityRampRate.setRampRates(ConstantsIO.kUpRamp_AngVelocity, ConstantsIO.kDownRamp_AngVelocity);
-
 	}
 	@Override
 	protected void execute() {
@@ -58,6 +56,5 @@ public class RotateTo extends Command {
 	@Override
 	protected void end() {
 		// TODO Auto-generated method stub
-		RobotMap.driveTrain.angularVelocityRampRate.setRampRates(100, 100);
 	}
 }

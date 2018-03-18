@@ -37,6 +37,7 @@ public class Arm extends Subsystem {
 
 	public void setThetaWrist(double thetaWrist) {
 		this.thetaWrist = thetaWrist;
+		WristWithControllers.manualSetpoint = false;
 	}
 	
 	public double getThetaWrist() {
@@ -46,7 +47,7 @@ public class Arm extends Subsystem {
 	
 
 	public static enum ArmSetpoint {
-		INTAKE(-.192, -0.035), SWITCH(-.192, 0.15), SECOND_STORY(-.192, 0.025), SCALE_HIGH_BACK(0.16, 0.39), SCALE_MIDDLE_BACK(0.16, 0.46), SCALE_LOW_BACK(0.16, 0.5), SEVEN_FOOT_SCALE(.26, .124), CLIMB(.3, .25);
+		INTAKE(-.192, -0.035), SWITCH(-.192, 0.15), SECOND_STORY(-.192, 0.025), SCALE_HIGH_BACK(0.16, 0.39), SCALE_MIDDLE_BACK(0.16, 0.46), SCALE_LOW_BACK(0.16, 0.5), SEVEN_FOOT_SCALE(.26, .124), CLIMB(.26, .225);
 
 		private final double elbowPos;
 		private final double wristPos;
@@ -231,8 +232,6 @@ public class Arm extends Subsystem {
 		MID_ELBOW_ANGLE = -FastMath.acos((L1 * L1 + CONSERVATIVE_CRITICAL_DISTANCE * CONSERVATIVE_CRITICAL_DISTANCE - L2 * L2) 
 				/ 2 / CONSERVATIVE_CRITICAL_DISTANCE / L1) / 2 / Math.PI;
 
-		System.out.println("CROSS:" + MIN_WRIST_ANGLE_CROSS);
-		System.out.println("MID:" + MID_ELBOW_ANGLE);
 		new Timer().schedule(new CheckCurrentSensorTask(), 0, 20);
 		// Elbow
 		elbowMaxAngSource.setPidSource(() -> {
@@ -244,7 +243,7 @@ public class Arm extends Subsystem {
 		});
 		
 		elbowMinAngVelSource.setPidSource(() -> {
-			return isClimb ? -.1 : -.2;
+			return isClimb ? -.15 : -.2;
 		});
 		
 		elbowMaxAngVelSource.setPidSource(() -> {
@@ -265,17 +264,20 @@ public class Arm extends Subsystem {
 		elbowAngVelMaxPID.setOutputSources(elbowMaxCurrentSource, null);
 		elbowAngVelMaxPID.setOutputs(elbowAngVelMaxTN);
 		elbowAngVelMaxPID.setSetpointSource(elbowMaxAngVelSource);
+		elbowAngVelMaxPID.setPeriod(40);
 		
 		elbowAngVelMinPID.setSources(RobotMap.elbowEncoderWrapperRate);
 		elbowAngVelMinPID.setOutputRange(-1, 0);
 		elbowAngVelMinPID.setOutputSources(null, elbowMinCurrentSource);
 		elbowAngVelMinPID.setOutputs(elbowAngVelMinTN);
 		elbowAngVelMinPID.setSetpointSource(elbowMinAngVelSource);
+		elbowAngVelMinPID.setPeriod(40);
 
 		elbowAngPID.setSources(RobotMap.elbowEncoderWrapperDistance);
 		elbowAngPID.setOutputSources(elbowMaxAngSource, elbowMinAngSource);
 		elbowAngPID.setOutputs(elbowOutputSource);
 		elbowAngPID.setVelocitySource(RobotMap.elbowEncoderWrapperRate);
+		elbowAngPID.setPeriod(40);
 		
 		elbowOutputSource.setPidOutput((double out) -> {
 			double pwm = out + ConstantsIO.levitateElbowCurrent * FastMath.cos(2 * Math.PI * getElbowAngle());
@@ -316,6 +318,7 @@ public class Arm extends Subsystem {
 		wristAngPID.setOutputSources(wristMaxCurrentSource, wristMinCurrentSource);
 		wristAngPID.setOutputs(wristOutputSource);
 		wristAngPID.setVelocitySource(RobotMap.wristEncoderWrapperRate);
+		wristAngPID.setPeriod(40);
 		
 		wristOutputSource.setPidOutput((double out) -> {
 			double pwm = out; //+ ConstantsIO.levitateWristCurrent * FastMath.cos(2 * Math.PI * getWristAngle());
@@ -354,10 +357,14 @@ public class Arm extends Subsystem {
 	}
 	
 	public void setElbowSetpoint(double setpoint) {
-		elbowAngPID.enable();
-		elbowAngVelMaxPID.enable();
-		elbowAngVelMinPID.enable();
-		elbowAngPID.setSetpoint(setpoint);
+		if (Math.abs(setpoint - getElbowAngle()) < ELBOW_TOLERANCE) {
+			setElbowManual(0);
+		} else {
+			elbowAngPID.enable();
+			elbowAngVelMaxPID.enable();
+			elbowAngVelMinPID.enable();
+			elbowAngPID.setSetpoint(setpoint);
+		}
 	}
 
 	public double getM2() {

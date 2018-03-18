@@ -277,7 +277,7 @@ public class RobotMap {
 	}
 
 	public static void updateConstants() {
-//		driveTrain.updateConstants();
+		driveTrain.updateConstants();
 		arm.updateConstants();
 	}
 	

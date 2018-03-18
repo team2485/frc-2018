@@ -71,6 +71,10 @@ public class RampRate extends WarlordsControlSystem {
 		double val = getNextValue(setpoint);
 		for (PIDOutput out : outputs) {
 			out.pidWrite(val);
+			System.out.println("Val: " + val);
+			System.out.println("Setpoint: " + setpoint);
+			System.out.println("Up RR: " + upRampRate);
+			System.out.println("Down RR: " + downRampRate);
 		}
 	}
 	
