@@ -148,6 +148,9 @@ public class DriveTrain extends Subsystem {
 		anglePID.setOutputs(angleOutputTN);
 		anglePID.setVelocitySource(lowPassFilterAngVelTN);
 		anglePID.setOutputSources(maxAngleORSource, minAngleORSource);
+		anglePID.setSetpointSource(angleSetpointTN);
+		anglePID.setInputRange(0, 2 * Math.PI);
+		anglePID.setContinuous(true);
 		
 		leftCurrentPIDSource.setPidSource(() -> {
 			return angleOutputTN.pidGet() + velocityTN.pidGet();
@@ -166,7 +169,7 @@ public class DriveTrain extends Subsystem {
 	}
 
 	public void initDefaultCommand() {
-//		setDefaultCommand(new DriveWithControllers());
+		setDefaultCommand(new DriveWithControllers());
 	}
 	
 	public double getAverageSpeed() {
@@ -398,7 +401,6 @@ public class DriveTrain extends Subsystem {
 		System.out.println("Theoretically Driving");
 
 		distancePID.setOutputRange(-maxSpeed, maxSpeed);
-		anglePID.setOutputRange(-3, 3);
 
 		return distancePID.isOnTarget() && anglePID.isOnTarget() && Math.abs(encoderAvgVelocityPIDSource.pidGet()) < LOW_ENC_RATE;
 	}

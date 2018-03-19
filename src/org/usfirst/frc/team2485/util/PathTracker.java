@@ -52,8 +52,8 @@ public class PathTracker {
 		double deltaY = y - targPoint.y;
 		// get right normal and tangent vectors
 		double angle = targPoint.heading; //in radians
-		double tX = Math.sin(angle);
-		double tY = Math.cos(angle);
+		double tX = FastMath.sin(angle);
+		double tY = FastMath.cos(angle);
 		double nX = tY;
 		double nY = -tX;
 		// calculate drift and progress (express error in basis formed by t and n)

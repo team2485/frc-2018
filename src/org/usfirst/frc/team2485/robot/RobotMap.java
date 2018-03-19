@@ -18,6 +18,7 @@ import com.ctre.phoenix.motorcontrol.VelocityMeasPeriod;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.sensors.PigeonIMU;
+import com.ctre.phoenix.sensors.PigeonIMU_StatusFrame;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PIDSourceType;
@@ -211,6 +212,8 @@ public class RobotMap {
 		
 		// SENSORS
 		pigeon = new PigeonIMU(intakeRightTalon);
+		pigeon.setStatusFramePeriod(PigeonIMU_StatusFrame.BiasedStatus_2_Gyro, 10, 0);
+		pigeon.setStatusFramePeriod(PigeonIMU_StatusFrame.CondStatus_11_GyroAccum, 10, 0);
 		irSensor = new DigitalInput(irSensorPort);
 		pigeonRateWrapper = new PigeonWrapperRateAndAngle(pigeon, PIDSourceType.kRate, Units.RADS);
 		pigeonDisplacementWrapper = new PigeonWrapperRateAndAngle(pigeon, PIDSourceType.kDisplacement, Units.RADS);

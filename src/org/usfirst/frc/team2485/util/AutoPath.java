@@ -10,7 +10,7 @@ import java.util.Arrays;
 
 public class AutoPath {
 	private static final double MAX_VELOCITY = 100;
-	private static final double MAX_ACCELERATION_CURVE = 1;
+	private static final double MAX_ACCELERATION_CURVE = 2.5;
 	private static final double MAX_ACCELERATION_LINEAR = 20;
 	public class Point {
 		public double x, y; 

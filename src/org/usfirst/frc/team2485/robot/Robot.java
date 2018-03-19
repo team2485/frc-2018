@@ -53,11 +53,10 @@ public class Robot extends IterativeRobot {
 		ConstantsIO.init();
 		OI.init();
 		RobotMap.updateConstants();
-		Scheduler.getInstance().enable();
 		
 
-//		ScaleAuto.init();
-//		SwitchAuto.init();
+		ScaleAuto.init();
+		SwitchAuto.init();
 		
 	}
 
@@ -78,7 +77,7 @@ public class Robot extends IterativeRobot {
 	public void disabledPeriodic() {
 		Scheduler.getInstance().run();
 		RobotMap.driveTrain.reset();
-//		updateSmartDashboard();
+		updateSmartDashboard();
 	}
 	
 
@@ -101,12 +100,7 @@ public class Robot extends IterativeRobot {
 //		RobotMap.elbowEncoderWrapperDistance.setPosition(-.190);
 //		RobotMap.wristEncoderWrapperDistance.setPosition(0.416);
 		
-//		isHomed = true; // so we don't crash immediately in actual matches	
-		
-		if (!isHomed) { // set to true in auto init, only relevant for pit testing
-			throw new RuntimeException("Not homed");
-		}
-		
+//		isHomed = true; // so we don't crash immediately in actual matches		
 
 		String positions = DriverStation.getInstance().getGameSpecificMessage().toUpperCase();
 		boolean switchLeft = positions.charAt(0) == 'L';
@@ -149,10 +143,13 @@ public class Robot extends IterativeRobot {
 //		};
 //		double[] dists = {100};
 //		AutoPath path =  AutoPath.getAutoPathForClothoidSpline(controlPoints, dists);
-		
-//		Scheduler.getInstance().add(new DriveTo(path, 30, true, 10000, false));
+//		RobotMap.deadReckoning.start();
+//		RobotMap.pathTracker.start(path);
+//		Scheduler.getInstance().add(new DriveTo(path, 60, true, 10000, false));
 //		Scheduler.getInstance().add(new DriveStraight(100, 30, 10000000));
-		Scheduler.getInstance().add(new ArmSetSetpoint(ArmSetpoint.SWITCH));
+		RobotMap.deadReckoning.start();
+		//Scheduler.getInstance().add(new SwitchAuto(switchLeft));
+		Scheduler.getInstance().add(new ScaleAuto(startLeft, scaleLeft));
 	}
 
 	/**
@@ -257,15 +254,15 @@ public class Robot extends IterativeRobot {
 //		SmartDashboard.putNumber("Elbow Enc Raw", RobotMap.elbowTalon.getSelectedSensorPosition(0));
 //		SmartDashboard.putNumber("Wrist Current", RobotMap.wristTalon.getOutputCurrent());
 		SmartDashboard.putNumber("Elbow Current", RobotMap.elbowTalon.getOutputCurrent());
+		SmartDashboard.putNumber("Angle TN", RobotMap.driveTrain.angleOutputTN.pidGet());
+		//SmartDashboard.putNumber("Yaw Rate", RobotMap.pigeonRateWrapper.pidGet());
+		//SmartDashboard.putNumber("Drift", RobotMap.pathTracker.getDrift());
+		SmartDashboard.putNumber("X", RobotMap.deadReckoning.getX());
+		SmartDashboard.putNumber("Y", RobotMap.deadReckoning.getY());
 		
-		SmartDashboard.putNumber("Wrist Min Current", RobotMap.arm.wristMinCurrentSource.pidGet());
-		SmartDashboard.putNumber("Wrist Max Current", RobotMap.arm.wristMaxCurrentSource.pidGet());
-		SmartDashboard.putNumber("Wrist Current", RobotMap.wristTalon.getOutputCurrent());
-		SmartDashboard.putNumber("Angle PID Output", RobotMap.driveTrain.angleOutputTN.pidGet());
-		SmartDashboard.putNumber("Velocity PID Output", RobotMap.driveTrain.velocityTN.pidGet());
-		SmartDashboard.putNumber("Distance PID Output", RobotMap.driveTrain.distanceTN.pidGet());
-		SmartDashboard.putNumber("Velocity Setpoint TN", RobotMap.driveTrain.velocitySetpointTN.pidGet());
-		SmartDashboard.putNumber("kP Distance", RobotMap.driveTrain.kp_distancePIDSource.pidGet());
+		
+		
+
 //		SmartDashboard.putNumber("Wrist Ang TN", RobotMap.arm.wristAngTN.getOutput());
 //		SmartDashboard.putNumber("Wrist Max Current Source", RobotMap.arm.wristMaxCurrentSource.pidGet());
 //		

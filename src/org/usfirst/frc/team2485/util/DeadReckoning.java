@@ -50,19 +50,18 @@ public class DeadReckoning {
 	private synchronized void update() {
 		double curDist = (leftEnc.pidGet() + rightEnc.pidGet()) / 2;
 		double deltaDist = curDist - lastDist;
-		short [] xyz = new short [3];
-		gyro.getPigeon().getBiasedAccelerometer(xyz);
+		
 
 		double[] ypr = new double[3];
 		gyro.getPigeon().getYawPitchRoll(ypr);
 //
-//		double acceleration = (xyz[1] * 9.8 * 100 / 16384 / 2.54) - 9.8 * 100 / 2.54 * Math.sin(Math.toRadians(ypr[1]));
+//		double acceleration = (xyz[1] * 9.8 * 100 / 16384 / 2.54) - 9.8 * 100 / 2.54 * FastMath.sin(FastMath.toRadians(ypr[1]));
 //		double deltaDist = velocity * .01 + acceleration / 2 * .0001;
 //		velocity += acceleration * .01;
 		double angle = gyro.pidGet(); //use fused heading to accommodate for the 0.25 degree drift that occurs in 15 seconds.
 		double avgAngle = (lastAngle + angle) / 2;
-		x += deltaDist * Math.sin(avgAngle);
-		y += deltaDist * Math.cos(avgAngle);
+		x += deltaDist * FastMath.sin(avgAngle);
+		y += deltaDist * FastMath.cos(avgAngle);
 
 		lastDist = curDist;
 		lastAngle = angle;

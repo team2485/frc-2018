@@ -1,0 +1,15 @@
+diff a/src/org/usfirst/frc/team2485/robot/Robot.java b/src/org/usfirst/frc/team2485/robot/Robot.java	(rejected hunks)
+@@ -101,7 +101,12 @@
+ //		RobotMap.elbowEncoderWrapperDistance.setPosition(-.190);
+ //		RobotMap.wristEncoderWrapperDistance.setPosition(0.416);
+ 		
+-//		isHomed = true; // so we don't crash immediately in actual matches		
++//		isHomed = true; // so we don't crash immediately in actual matches	
++		
++		if (!isHomed) { // set to true in auto init, only relevant for pit testing
++			throw new RuntimeException("Not homed");
++		}
++		
+ 
+ 		String positions = DriverStation.getInstance().getGameSpecificMessage().toUpperCase();
+ 		boolean switchLeft = positions.charAt(0) == 'L';

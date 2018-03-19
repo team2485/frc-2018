@@ -35,7 +35,7 @@ public class ScaleAuto extends CommandGroup {
 			isStraight = true;
 		} else {
 			AutoPath path = scaleLeft ? pathLeftCross : pathRightCross;
-			DriveTo crossPath = new DriveTo(path, 100, true, 100000, true);
+			DriveTo crossPath = new DriveTo(path, 60, true, 100000, false);
 			crossPath.setAngleTolerance(.2);
 			drive.addSequential(new ResetDriveTrain());
 			drive.addSequential(crossPath);
@@ -47,7 +47,7 @@ public class ScaleAuto extends CommandGroup {
 		everythingBeforeEject.addParallel(drive);
 		everythingBeforeEject.addParallel(everythingElse);
 		addSequential(everythingBeforeEject);
-		addSequential(new Eject(false, true));
+		addSequential(new Eject(false, false));
 		if (!isStraight) {
 			addSequential(new ArmSetSetpoint(ArmSetpoint.SWITCH));
 		} else {

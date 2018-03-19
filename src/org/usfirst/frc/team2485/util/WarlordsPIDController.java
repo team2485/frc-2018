@@ -150,7 +150,16 @@ public class WarlordsPIDController extends WarlordsControlSystem {
 	 * @return error as calculated by the PID control loop
 	 */
 	public double getError() {
-		return setpoint - sources[0].pidGet();
+		double error = setpoint - sources[0].pidGet();
+		while (continuous && Math.abs(error) > (maxInput - minInput) / 2) {
+			if (error > 0) {
+				error -= maxInput - minInput;
+			} else {
+				error += maxInput - minInput;
+			}
+			
+		}
+		return error;
 	}
 	
 	/**
@@ -204,9 +213,9 @@ public class WarlordsPIDController extends WarlordsControlSystem {
 		if (errorBuffer.size() == 0) {
 			return false;
 		} else if (usesPercentTolerance) {
-			return Math.abs(getAvgError()) < setpoint * percentTolerance;
+			return Math.abs(getError()) < setpoint * percentTolerance;
 		} else {
-			return Math.abs(getAvgError()) < absoluteTolerance;
+			return Math.abs(getError()) < absoluteTolerance;
 		}
 	}
 

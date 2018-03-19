@@ -24,7 +24,7 @@ public class DriveTo extends Command{
 		this.distTolerance = 7;
 		this.angleTolerance = 0.08;
 		this.variableVMax = variableVMax;
-		setInterruptible(false);
+		setInterruptible(true);
 		requires(RobotMap.driveTrain);
 	}
 	
@@ -82,7 +82,6 @@ public class DriveTo extends Command{
 
 	@Override
 	protected boolean isFinished() {
-		return false;
-//		return (finished || (System.currentTimeMillis() - startTime) > timeout) && (System.currentTimeMillis() - startTime) > 50;
+		return (finished || (System.currentTimeMillis() - startTime) > timeout) && (System.currentTimeMillis() - startTime) > 50;
 	}
 }
