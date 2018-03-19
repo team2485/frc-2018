@@ -88,12 +88,13 @@ public class ScaleAuto extends CommandGroup {
 		int sign = left ? -1 : 1;
 		
 		Pair[] controlPoints = {
-				new Pair(-218 * sign, -285), //-222.57 * sign, -281.11
-				new Pair(-190 * sign, -212),
-				new Pair(0, -212),
+				new Pair(-221.0 * sign, -307.0),
+				new Pair(-259.0 * sign, -307.0), 
+				new Pair(-259.0 * sign, -204.5),
+				new Pair(0.0, -204.5),
 				new Pair(0.0, 0.0),
 		};
-		double[] dists = {62, 100};
+		double[] dists = {63.0, 107.0, 126.0};
 		return AutoPath.getAutoPathForClothoidSpline(controlPoints, dists);
 //		Pair[] controlPoints = {new Pair(sign*-209, -299), new Pair(sign*-260.0, -212), new Pair(0.0, -212), new Pair(0.0, 0.0),};
 //		double[] dists = { 50, 100 };
@@ -104,8 +105,8 @@ public class ScaleAuto extends CommandGroup {
 	
 	public static AutoPath getStraight(boolean left) {
 		int sign = left ? -1 : 1;
-		Pair[] controlPoints = { new Pair(sign*45, -275), new Pair(0, -147), new Pair(0, 0) };
-		double[] dists = { 120 };
+		Pair[] controlPoints = {new Pair(sign*26.0, -273.0), new Pair(0, -167.0), new Pair(0.0, 0.0)};
+		double[] dists = {119.0,};
 		return AutoPath.getAutoPathForClothoidSpline(controlPoints, dists);
 
 	}
