@@ -150,6 +150,9 @@ public class WarlordsPIDController extends WarlordsControlSystem {
 	 * @return error as calculated by the PID control loop
 	 */
 	public double getError() {
+		if (setpointSource != null) {
+			setpoint = setpointSource.pidGet();
+		}
 		double error = setpoint - sources[0].pidGet();
 		while (continuous && Math.abs(error) > (maxInput - minInput) / 2) {
 			if (error > 0) {

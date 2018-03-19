@@ -20,7 +20,7 @@ public abstract class WarlordsControlSystem implements PIDOutput {
 
 	private Timer pidTimer;
 	
-	private PIDSource setpointSource;
+	protected PIDSource setpointSource;
 
 
 	public WarlordsControlSystem() {

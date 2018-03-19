@@ -31,11 +31,8 @@ public class DriveTrain extends Subsystem {
 	private WarlordsPIDController anglePID = new WarlordsPIDController();
 	private WarlordsPIDController velocityPID = new WarlordsPIDController();
 	
-	
 	private RampRate velocityRampRate = new RampRate();
 
-	public TransferNode driveStraightTN = new TransferNode(0);
-	public TransferNode angleSetpointTN = new TransferNode(0);
 	public TransferNode distanceTN = new TransferNode(0);
 	public TransferNode angleTN = new TransferNode(0);
 	public TransferNode velocityTN = new TransferNode(0);
@@ -45,7 +42,6 @@ public class DriveTrain extends Subsystem {
 	public TransferNode lowPassFilterAngVelTN = new TransferNode(0);
 
 	public PIDSourceWrapper kp_distancePIDSource = new PIDSourceWrapper();
-	private PIDSourceWrapper anglePIDSetpointSource = new PIDSourceWrapper();
 	private PIDSourceWrapper encoderDistancePIDSource = new PIDSourceWrapper();
 	private PIDSourceWrapper encoderAvgVelocityPIDSource = new PIDSourceWrapper();
 	private PIDSourceWrapper leftCurrentPIDSource = new PIDSourceWrapper();
@@ -90,10 +86,6 @@ public class DriveTrain extends Subsystem {
 
 			return Math.min(ConstantsIO.kPMax_Distance,
 					FastMath.sqrt(2 * ConstantsIO.accelerationMax / Math.abs(distancePID.getError())));
-		});
-
-		anglePIDSetpointSource.setPidSource(() -> {
-			return angleSetpointTN.pidGet() /*+ RobotMap.pathTracker.getDrift() * ConstantsIO.kP_Drift**/;
 		});
 
 		encoderDistancePIDSource.setPidSource(() -> {
@@ -148,7 +140,6 @@ public class DriveTrain extends Subsystem {
 		anglePID.setOutputs(angleOutputTN);
 		anglePID.setVelocitySource(lowPassFilterAngVelTN);
 		anglePID.setOutputSources(maxAngleORSource, minAngleORSource);
-		anglePID.setSetpointSource(angleSetpointTN);
 		anglePID.setInputRange(0, 2 * Math.PI);
 		anglePID.setContinuous(true);
 		
@@ -392,7 +383,7 @@ public class DriveTrain extends Subsystem {
 		leftMotorSetter.enable();
 		rightMotorSetter.enable();
 		angVelFilter.enable();
-		angleSetpointTN.setOutput(angle);
+		anglePID.setSetpoint(angle);
 		distancePID.setSetpoint(distance);
 		curvatureSetpointTN.setOutput(curvature);
 		distancePID.setAbsoluteTolerance(toleranceDist);
@@ -448,7 +439,7 @@ public class DriveTrain extends Subsystem {
 			angleOutputTN.setOutput(0);
 			curvatureSetpointTN.setOutput(0);
 			angleTN.setOutput(0);
-			angleSetpointTN.setOutput(0);
+			anglePID.setSetpoint(0);
 			velocitySetpointTN.setOutput(0);
 			angVelFilter.disable();
 		}
