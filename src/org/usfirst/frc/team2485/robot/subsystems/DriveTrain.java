@@ -81,9 +81,6 @@ public class DriveTrain extends Subsystem {
 	public DriveTrain() {
 
 		kp_distancePIDSource.setPidSource(() -> {
-			System.out.println(Math.min(ConstantsIO.kPMax_Distance,
-					FastMath.sqrt(2 * ConstantsIO.accelerationMax / Math.abs(distancePID.getError()))));
-
 			return Math.min(ConstantsIO.kPMax_Distance,
 					FastMath.sqrt(2 * ConstantsIO.accelerationMax / Math.abs(distancePID.getError())));
 		});

@@ -6,14 +6,12 @@ import org.usfirst.frc.team2485.robot.subsystems.Arm;
 import org.usfirst.frc.team2485.util.ThresholdHandler;
 
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.GearTooth;
 import edu.wpi.first.wpilibj.command.Command;
 
 /**
  *
  */
 public class WristWithControllers extends Command {
-	private static final double ELBOW_TOLERANCE = 0.0025;
 	public static boolean isManual = true;
 	public static boolean manualSetpoint = false;
 	private double minWristPos;

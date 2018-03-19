@@ -3,17 +3,8 @@ package org.usfirst.frc.team2485.robot;
 
 import org.usfirst.frc.team2485.robot.commandGroups.ScaleAuto;
 import org.usfirst.frc.team2485.robot.commandGroups.SwitchAuto;
-import org.usfirst.frc.team2485.robot.commands.AngleVelocityTest;
-import org.usfirst.frc.team2485.robot.commands.ArmSetSetpoint;
-import org.usfirst.frc.team2485.robot.commands.DriveStraight;
-import org.usfirst.frc.team2485.robot.commands.DriveTo;
-import org.usfirst.frc.team2485.robot.commands.HighLowCurrentTest;
-import org.usfirst.frc.team2485.robot.commands.SetVelocities;
-import org.usfirst.frc.team2485.robot.subsystems.Arm.ArmSetpoint;
-import org.usfirst.frc.team2485.util.AutoPath;
 import org.usfirst.frc.team2485.util.ConstantsIO;
 import org.usfirst.frc.team2485.util.FastMath;
-import org.usfirst.frc.team2485.util.AutoPath.Pair;
 
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoMode.PixelFormat;
@@ -30,10 +21,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * creating this project, you must also update the manifest file in the resource
  * directory.
  */
+
 public class Robot extends IterativeRobot {
 
 	private boolean isHomed = false;
-	private static boolean shouldCrash = false;
 	private boolean startedCamera = false;
 
 	/**
@@ -41,9 +32,6 @@ public class Robot extends IterativeRobot {
 	 * used for any initialization code.
 	 */
 	
-	public static void forceDisable() {
-		shouldCrash = true;
-	}
 	
 	@Override
 	public void robotInit() {
@@ -70,7 +58,6 @@ public class Robot extends IterativeRobot {
 		Scheduler.getInstance().removeAll();
 		RobotMap.driveTrain.reset();
 		RobotMap.arm.reset();
-		shouldCrash = false;
 	}
 
 	@Override
@@ -94,14 +81,19 @@ public class Robot extends IterativeRobot {
 	 * to the switch structure below with additional strings & commands.
 	 */
 	@Override
+	@SuppressWarnings("unused")
 	public void autonomousInit() {
 		ConstantsIO.init();
 		RobotMap.updateConstants();
+		
 //		RobotMap.elbowEncoderWrapperDistance.setPosition(-.190);
 //		RobotMap.wristEncoderWrapperDistance.setPosition(0.416);
+//		isHomed = true; // so we don't crash immediately in actual matches	
 		
-//		isHomed = true; // so we don't crash immediately in actual matches		
-
+		if (!isHomed) {
+			throw new RuntimeException("Not homed");
+		}
+		
 		String positions = DriverStation.getInstance().getGameSpecificMessage().toUpperCase();
 		boolean switchLeft = positions.charAt(0) == 'L';
 		boolean scaleLeft = positions.charAt(1) == 'L';
@@ -113,43 +105,13 @@ public class Robot extends IterativeRobot {
 		RobotMap.driveLeftTalon.enableCurrentLimit(false);
 		RobotMap.driveRightTalon.enableCurrentLimit(false);
 		RobotMap.driveTrain.reset();
+		RobotMap.deadReckoning.start();
+
 				
 		// CHANGE AUTO HERE
 		boolean startLeft = false;
-//		Scheduler.getInstance().add(new SetVelocities(30, 0));
-//		Scheduler.getInstance().add(new HighLowCurrentTest(5, 2, 5, 2, 4000));
+		Scheduler.getInstance().add(new SwitchAuto(switchLeft));
 //		Scheduler.getInstance().add(new ScaleAuto(startLeft, scaleLeft));
-
-		
-		//Current PID testing
-//		Scheduler.getInstance().add(new HighLowCurrentTest(10, 5, 10, 5, 100)); 
-		
-		//Velocity PID testing
-//		Scheduler.getInstance().add(new DriveStraight(100, 100, //needs to be set!1000)); 
-		
-		//Distance PID testing
-//		Scheduler.getInstance().add(new DriveStraight(200, 30, 1000));
-//		Scheduler.getInstance().add(new DriveStraight(300, 100, 1000));
-
-		//Angle Velocity PID testing
-//		Scheduler.getInstance().add(new AngleVelocityTest(.3, -.3, 7270)); //please check this
-
-		//Angle PID testing
-		
-//		Pair[] controlPoints = {
-//				new Pair(190, -212),
-//				new Pair(0, -212),
-//				new Pair(0.0, 0.0),
-//		};
-//		double[] dists = {100};
-//		AutoPath path =  AutoPath.getAutoPathForClothoidSpline(controlPoints, dists);
-//		RobotMap.deadReckoning.start();
-//		RobotMap.pathTracker.start(path);
-//		Scheduler.getInstance().add(new DriveTo(path, 60, true, 10000, false));
-//		Scheduler.getInstance().add(new DriveStraight(100, 30, 10000000));
-		RobotMap.deadReckoning.start();
-		//Scheduler.getInstance().add(new SwitchAuto(switchLeft));
-		Scheduler.getInstance().add(new ScaleAuto(startLeft, scaleLeft));
 	}
 
 	/**

@@ -44,7 +44,6 @@ public class DriveTo extends Command{
 	protected void initialize() {
 		super.initialize();
 		startTime = System.currentTimeMillis();
-		System.out.println("Not-theoretically driving");
 		RobotMap.driveTrain.zeroEncoders();
 
 	}

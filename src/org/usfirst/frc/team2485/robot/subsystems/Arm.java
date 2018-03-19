@@ -1,9 +1,5 @@
 package org.usfirst.frc.team2485.robot.subsystems;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
-import org.usfirst.frc.team2485.robot.Robot;
 import org.usfirst.frc.team2485.robot.RobotMap;
 import org.usfirst.frc.team2485.robot.commands.WristWithControllers;
 import org.usfirst.frc.team2485.util.ConstantsIO;
@@ -21,7 +17,6 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 public class Arm extends Subsystem {
 
 	
-	private int numBadCurrents = 0;
 	public static final double CRITICAL_DISTANCE = toMeters(40); // temp //distance from mast to 16 inches past frame
 																	// perimeter
 	public static final double CONSERVATIVE_CRITICAL_DISTANCE = toMeters(32);
@@ -232,7 +227,6 @@ public class Arm extends Subsystem {
 		MID_ELBOW_ANGLE = -FastMath.acos((L1 * L1 + CONSERVATIVE_CRITICAL_DISTANCE * CONSERVATIVE_CRITICAL_DISTANCE - L2 * L2) 
 				/ 2 / CONSERVATIVE_CRITICAL_DISTANCE / L1) / 2 / Math.PI;
 
-		new Timer().schedule(new CheckCurrentSensorTask(), 0, 20);
 		// Elbow
 		elbowMaxAngSource.setPidSource(() -> {
 			return elbowAngVelMaxTN.pidGet();
@@ -353,7 +347,6 @@ public class Arm extends Subsystem {
 	
 	public void setIsClimb(boolean isClimb) {
 		this.isClimb = isClimb;
-		System.out.println(isClimb);
 	}
 	
 	public void setElbowSetpoint(double setpoint) {
@@ -568,26 +561,5 @@ public class Arm extends Subsystem {
 		return elbowAngPID.getSetpoint();
 	}
 
-	public class CheckCurrentSensorTask extends TimerTask {
-
-		@Override
-		public void run() {
-			if(!isElbowCurrentSensorWorking()) {
-				if (numBadCurrents > 5) {
-					System.out.println("Elbow problem");
-					Robot.forceDisable();
-				}
-				numBadCurrents++;
-			} else if (!isWristCurrentSensorWorking()) {
-				if (numBadCurrents > 5) {
-					System.out.println("Wrist problem");
-					Robot.forceDisable();
-				}
-				numBadCurrents++;
-			} else {
-				numBadCurrents = 0;
-			}
-		}
-		
-	}
+	
 }

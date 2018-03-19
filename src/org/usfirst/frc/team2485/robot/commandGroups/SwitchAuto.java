@@ -4,7 +4,6 @@ import org.usfirst.frc.team2485.robot.commands.ArmSetSetpoint;
 import org.usfirst.frc.team2485.robot.commands.DriveStraight;
 import org.usfirst.frc.team2485.robot.commands.DriveTo;
 import org.usfirst.frc.team2485.robot.commands.ResetDriveTrain;
-import org.usfirst.frc.team2485.robot.commands.Wait;
 import org.usfirst.frc.team2485.robot.subsystems.Arm.ArmSetpoint;
 import org.usfirst.frc.team2485.util.AutoPath;
 import org.usfirst.frc.team2485.util.AutoPath.Pair;
