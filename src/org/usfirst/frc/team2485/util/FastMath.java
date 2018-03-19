@@ -3,7 +3,7 @@ package org.usfirst.frc.team2485.util;
 
 
 public class FastMath {
-	public static final int numSamples = 1000;
+	public static final int numSamples = 100000;
 	public static double[] cos;
 	public static double[] acos;
 	public static double[] sqrt;
@@ -27,14 +27,13 @@ public class FastMath {
 	}
 	
 	public static double cos(double theta) {
-		theta %= Math.PI * 2;
-		if (theta < 0) {
-			theta += Math.PI * 2;
+		int index = (int) (theta / 2 / Math.PI * numSamples + .5);
+
+		index %= numSamples;
+		if (index < 0) {
+			index += numSamples;
 		}
-		int index = (int) (theta / 2 / Math.PI * numSamples);
-		double rem = theta / 2 / Math.PI * numSamples % 1;
-		
-		return cos[index] * (1 - rem) + cos[index + 1] * rem;
+		return cos[index];
 	}
 	
 	public static double tan(double theta) {
@@ -52,9 +51,8 @@ public class FastMath {
 		} else if (a > 1) {
 			return Math.PI / 2 - atan(1 / a);
 		} else {
-			int index = (int) (a * numSamples);
-			double rem = (a * numSamples) % 1;
-			return atan[index] * (1 - rem) + atan[index + 1] * rem;
+			int index = (int) (a * numSamples + .5);
+			return atan[index];
 		}
 	}
 
@@ -71,30 +69,13 @@ public class FastMath {
 		} else if (a <= -1) {
 			return Math.PI;
 		} else {
-			int index = (int) ((a + 1) / 2 * numSamples);
-			double rem = ((a + 1) / 2 * numSamples) % 1;
-			return acos[index] * (1 - rem) + acos[index + 1] * rem;
+			int index = (int) ((a + 1) / 2 * numSamples + .5);
+			return acos[index];
 		}
 	}
 	
 	public static double sqrt(double a) {
-		if (a < 0) {
-			return Double.NaN;
-		} else if (a == 0){
-			return 0;
-		}
-		double ans = 1;
-		while (a >= 4) {
-			ans *= 2;
-			a /= 4;
-		}
-		while (a < 1) {
-			ans /= 2;
-			a *= 4;
-		}
-		int index = (int) ((a - 1) / 3 * numSamples);
-		double rem = ((a - 1) / 3 * numSamples) % 1;
-		return (sqrt[index] * (1 - rem) + sqrt[index + 1] * rem) * ans;
+		return Math.sqrt(a);
 	}
 	
 	public static double toRadians(double angle) {
