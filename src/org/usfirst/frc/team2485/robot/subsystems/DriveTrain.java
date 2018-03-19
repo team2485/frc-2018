@@ -32,12 +32,14 @@ public class DriveTrain extends Subsystem {
 	private WarlordsPIDController velocityPID = new WarlordsPIDController();
 	
 	private RampRate velocityRampRate = new RampRate();
+	public RampRate angRampRate = new RampRate();
 
 	public TransferNode distanceTN = new TransferNode(0);
 	public TransferNode angleTN = new TransferNode(0);
 	public TransferNode velocityTN = new TransferNode(0);
 	public TransferNode velocitySetpointTN = new TransferNode(0);
 	public TransferNode angleOutputTN = new TransferNode(0);
+	public TransferNode angleOutputRampedTN = new TransferNode(0);
 	public TransferNode curvatureSetpointTN = new TransferNode(0);
 	public TransferNode lowPassFilterAngVelTN = new TransferNode(0);
 
@@ -140,12 +142,15 @@ public class DriveTrain extends Subsystem {
 		anglePID.setInputRange(0, 2 * Math.PI);
 		anglePID.setContinuous(true);
 		
+		angRampRate.setSetpointSource(angleOutputTN);
+		angRampRate.setOutputs(angleOutputRampedTN);
+		
 		leftCurrentPIDSource.setPidSource(() -> {
-			return angleOutputTN.pidGet() + velocityTN.pidGet();
+			return angleOutputRampedTN.pidGet() + velocityTN.pidGet();
 		});
 		
 		rightCurrentPIDSource.setPidSource(() -> {
-			return velocityTN.pidGet() - angleOutputTN.pidGet();
+			return velocityTN.pidGet() - angleOutputRampedTN.pidGet();
 		});
 		
 		leftMotorSetter.setSetpointSource(leftCurrentPIDSource);
@@ -331,6 +336,8 @@ public class DriveTrain extends Subsystem {
 	public void reset() {
 
 		enablePID(false);
+		RobotMap.driveTrain.angRampRate.setRampRates(100, 100);
+
 		
 		rightMotorSetter.disable();
 		leftMotorSetter.disable();
@@ -352,6 +359,7 @@ public class DriveTrain extends Subsystem {
 	public void setVelocities(double linearVel, double angVel) {
 
 		anglePID.disable();
+		angRampRate.disable();
 		distancePID.disable();
 		leftMotorSetter.enable();
 		rightMotorSetter.enable();
@@ -375,6 +383,7 @@ public class DriveTrain extends Subsystem {
 	public boolean driveTo(double distance, double maxSpeed, double angle, double curvature, double toleranceDist, double toleranceAngle) {
 		velocityPID.enable();
 		anglePID.enable();
+		angRampRate.enable();
 		distancePID.enable();
 		velocityRampRate.enable();
 		leftMotorSetter.enable();
@@ -393,15 +402,7 @@ public class DriveTrain extends Subsystem {
 		return distancePID.isOnTarget() && anglePID.isOnTarget() && Math.abs(encoderAvgVelocityPIDSource.pidGet()) < LOW_ENC_RATE;
 	}
 	
-	public void setAngVel(double angVel) {
-		//needs to be fixed
-		velocityPID.disable();
-		anglePID.disable();
-		distancePID.disable();
-		velocityRampRate.enable();
-		leftMotorSetter.enable();
-		rightMotorSetter.enable();
-	}
+	
 	
 	
 
@@ -417,6 +418,7 @@ public class DriveTrain extends Subsystem {
 		angVelFilter.setFilterCoefficient(ConstantsIO.filterCoefficient);
 		velocityPID.setPID(ConstantsIO.kP_DriveVelocity, ConstantsIO.kI_DriveVelocity, ConstantsIO.kD_DriveVelocity,
 				ConstantsIO.kF_DriveVelocity);
+		angRampRate.setRampRates(100, 100);
 		velocityRampRate.setRampRates(ConstantsIO.kUpRamp_Velocity, ConstantsIO.kDownRamp_Velocity);
 	}
 
@@ -426,9 +428,11 @@ public class DriveTrain extends Subsystem {
 			anglePID.enable();
 			distancePID.enable();
 			velocityRampRate.enable();
+			angRampRate.enable();
 		} else {
 			velocityPID.disable();
 			anglePID.disable();
+			angRampRate.disable();
 			distancePID.disable();
 			velocityRampRate.disable();
 			distanceTN.setOutput(0);

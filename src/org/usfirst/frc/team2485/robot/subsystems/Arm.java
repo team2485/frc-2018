@@ -442,7 +442,7 @@ public class Arm extends Subsystem {
 	}
 
 	public double getWristAngle() {
-		return (RobotMap.wristEncoderWrapperDistance.pidGet()) + getElbowAngle();
+		return (RobotMap.wristEncoderWrapperDistance.pidGet());
 	}
 
 	// Testing

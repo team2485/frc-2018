@@ -1,8 +1,13 @@
 
 package org.usfirst.frc.team2485.robot;
 
+import org.usfirst.frc.team2485.robot.commandGroups.Eject;
 import org.usfirst.frc.team2485.robot.commandGroups.ScaleAuto;
 import org.usfirst.frc.team2485.robot.commandGroups.SwitchAuto;
+import org.usfirst.frc.team2485.robot.commands.ArmSetSetpoint;
+import org.usfirst.frc.team2485.robot.commands.ResetDriveTrain;
+import org.usfirst.frc.team2485.robot.commands.RotateTo;
+import org.usfirst.frc.team2485.robot.subsystems.Arm.ArmSetpoint;
 import org.usfirst.frc.team2485.util.ConstantsIO;
 import org.usfirst.frc.team2485.util.FastMath;
 
@@ -11,8 +16,10 @@ import edu.wpi.cscore.VideoMode.PixelFormat;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import javafx.scene.transform.Rotate;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -106,6 +113,20 @@ public class Robot extends IterativeRobot {
 		RobotMap.driveRightTalon.enableCurrentLimit(false);
 		RobotMap.driveTrain.reset();
 		RobotMap.deadReckoning.start();
+		
+		//Testing
+//		CommandGroup drive = new CommandGroup();
+//		CommandGroup arm = new CommandGroup();
+//		drive.addSequential(new RotateTo(Math.PI/2, 10000));
+//		drive.addSequential(new ResetDriveTrain());
+//		arm.addSequential(new ArmSetSetpoint(ArmSetpoint.SCALE_LOW_BACK));
+//		CommandGroup otherThings = new CommandGroup();
+//		otherThings.addParallel(drive);
+//		otherThings.addParallel(arm);
+//		CommandGroup everything = new CommandGroup();
+//		everything.addSequential(otherThings);
+//		everything.addSequential(new Eject(false, true));
+//		Scheduler.getInstance().add(everything);
 
 				
 		// CHANGE AUTO HERE

@@ -99,6 +99,8 @@ public class ConstantsIO {
 
 	public static double kP_DriveStraight;
 	public static double kI_DriveStraight;
+	
+	public static double kUpRamp_AngCurrent;
 
 
 	public static void init() {
@@ -174,6 +176,8 @@ public class ConstantsIO {
 		kP_WristAngVel = Double.parseDouble(data.get("kP_WristAngVel"));
 		kI_WristAngVel = Double.parseDouble(data.get("kI_WristAngVel"));
 		kF_WristAngVel = Double.parseDouble(data.get("kF_WristAngVel"));
+		
+		kUpRamp_AngCurrent = Double.parseDouble(data.get("kUpRamp_AngCurrent"));
 		
 		
 //		kUpSpeed_WristAngVel = Double.parseDouble(data.get("kUpSpeed_WristAngVel"));

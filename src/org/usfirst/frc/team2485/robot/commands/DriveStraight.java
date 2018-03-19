@@ -63,6 +63,8 @@ public class DriveStraight extends Command{
 		super.initialize();
 		RobotMap.driveTrain.zeroEncoders();
 		startTime = System.currentTimeMillis();
+		RobotMap.driveTrain.angRampRate.setRampRates(100, 100);
+
 		//if (setAngle)
 		//	angle = RobotMap.pigeon.getAngle();
 	}
