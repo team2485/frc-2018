@@ -131,8 +131,8 @@ public class Robot extends IterativeRobot {
 				
 		// CHANGE AUTO HERE
 		boolean startLeft = false;
-		Scheduler.getInstance().add(new SwitchAuto(switchLeft));
-//		Scheduler.getInstance().add(new ScaleAuto(startLeft, scaleLeft));
+//		Scheduler.getInstance().add(new SwitchAuto(switchLeft));
+		Scheduler.getInstance().add(new ScaleAuto(startLeft, scaleLeft));
 	}
 
 	/**
@@ -285,6 +285,7 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void testPeriodic() {
+		RobotMap.arm.setIsClimb(false);
 		if (OI.driver.getRawButton(OI.XBOX_A_PORT)) {
 			RobotMap.arm.setElbowCurrent(-2);
 			RobotMap.arm.setWristCurrent(0);

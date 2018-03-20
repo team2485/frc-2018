@@ -25,7 +25,7 @@ public class DriveTrain extends Subsystem {
 	// constants
 	public static final double LOW_ENC_RATE = 2;
 	private static final double SPEED_LIMIT = .75;
-	private static final double CURRENT_LIMIT_ARM_UP = 20, CURRENT_LIMIT_ARM_DOWN = 80;
+	private static final double CURRENT_LIMIT_ARM_UP = 30, CURRENT_LIMIT_ARM_DOWN = 80;
 
 	public WarlordsPIDController distancePID = new WarlordsPIDController();
 	private WarlordsPIDController anglePID = new WarlordsPIDController();
@@ -274,11 +274,12 @@ public class DriveTrain extends Subsystem {
 		RobotMap.driveRightTalon.enableCurrentLimit(true);
 
 		double percentUp = (RobotMap.elbowEncoderWrapperDistance.pidGet() - ArmSetpoint.SWITCH.getElbowPos()) / 
-				(0.25 - ArmSetpoint.SWITCH.getElbowPos());
+				(ArmSetpoint.SCALE_HIGH_BACK.getElbowPos() - ArmSetpoint.SWITCH.getElbowPos());
+		percentUp = Math.min(1, percentUp);
 		double I = percentUp * (CURRENT_LIMIT_ARM_UP - CURRENT_LIMIT_ARM_DOWN) + CURRENT_LIMIT_ARM_DOWN;
 		double speed = percentUp * (SPEED_LIMIT - 1) + 1;
 		if (quickturn) {
-			speed = percentUp * (0.25 - 1) + 1;
+			speed = percentUp * (0.4 - 1) + 1;
 
 		}
 		if(I < 24) {

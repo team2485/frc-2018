@@ -26,16 +26,16 @@ public class ScaleAuto extends CommandGroup {
 		if(startLeft == scaleLeft) {
 			drive.addSequential(new ResetDriveTrain());
 			AutoPath path = scaleLeft ? pathLeftStraight : pathRightStraight;
-			drive.addSequential(new DriveTo(path, 100, true, 100000, true));
+			drive.addSequential(new DriveTo(path, 60, true, 10000, false));
 			isStraight = true;
 		} else {
 			AutoPath path = scaleLeft ? pathLeftCross : pathRightCross;
 			DriveTo crossPath = new DriveTo(path, 60, true, 100000, false);
-			crossPath.setAngleTolerance(.2);
+//			crossPath.setAngleTolerance(.2);
 			drive.addSequential(new ResetDriveTrain());
 			drive.addSequential(crossPath);
-			drive.addSequential(new ResetDriveTrain());
-			drive.addSequential(new RotateTo(scaleLeft ? 0.866 : -0.866, 10000));
+//			drive.addSequential(new ResetDriveTrain());
+//			drive.addSequential(new RotateTo(scaleLeft ? 0.866 : -0.866, 10000));
 		} 
 		
 		drive.addSequential(new ResetDriveTrain());
@@ -86,15 +86,14 @@ public class ScaleAuto extends CommandGroup {
 	
 	public static AutoPath getCross(boolean left) {
 		int sign = left ? -1 : 1;
-		
+	
 		Pair[] controlPoints = {
-				new Pair(-221.0 * sign, -307.0),
-				new Pair(-259.0 * sign, -307.0), 
-				new Pair(-259.0 * sign, -204.5),
-				new Pair(0.0, -204.5),
+				new Pair(-197.0 * sign, -280), 
+				new Pair(-215.0 * sign, -220),
+				new Pair(0.0, -220),
 				new Pair(0.0, 0.0),
 		};
-		double[] dists = {63.0, 107.0, 126.0};
+		double[] dists = {50.0, 75.0, };
 		return AutoPath.getAutoPathForClothoidSpline(controlPoints, dists);
 //		Pair[] controlPoints = {new Pair(sign*-209, -299), new Pair(sign*-260.0, -212), new Pair(0.0, -212), new Pair(0.0, 0.0),};
 //		double[] dists = { 50, 100 };
@@ -105,8 +104,8 @@ public class ScaleAuto extends CommandGroup {
 	
 	public static AutoPath getStraight(boolean left) {
 		int sign = left ? -1 : 1;
-		Pair[] controlPoints = {new Pair(sign*26.0, -273.0), new Pair(0, -167.0), new Pair(0.0, 0.0)};
-		double[] dists = {119.0,};
+		Pair[] controlPoints = {new Pair(sign*35.0, -285.0), new Pair(0, -167.0), new Pair(0.0, 0.0)};
+		double[] dists = {90.0,};
 		return AutoPath.getAutoPathForClothoidSpline(controlPoints, dists);
 
 	}
