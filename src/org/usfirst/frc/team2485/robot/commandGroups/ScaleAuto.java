@@ -1,13 +1,19 @@
 package org.usfirst.frc.team2485.robot.commandGroups;
 
+import org.usfirst.frc.team2485.robot.RobotMap;
 import org.usfirst.frc.team2485.robot.commands.ArmSetSetpoint;
 import org.usfirst.frc.team2485.robot.commands.DriveTo;
 import org.usfirst.frc.team2485.robot.commands.ResetDriveTrain;
 import org.usfirst.frc.team2485.robot.commands.RotateTo;
+import org.usfirst.frc.team2485.robot.commands.SetIntakeManual;
+import org.usfirst.frc.team2485.robot.commands.StopIntaking;
+import org.usfirst.frc.team2485.robot.commands.Wait;
+import org.usfirst.frc.team2485.robot.commands.WaitUntilArmUp;
 import org.usfirst.frc.team2485.robot.commands.WaitUntilClose;
 import org.usfirst.frc.team2485.robot.subsystems.Arm.ArmSetpoint;
 import org.usfirst.frc.team2485.util.AutoPath;
 import org.usfirst.frc.team2485.util.AutoPath.Pair;
+import org.usfirst.frc.team2485.util.FinishedCondition;
 
 import edu.wpi.first.wpilibj.command.CommandGroup;
 
@@ -31,39 +37,33 @@ public class ScaleAuto extends CommandGroup {
 		} else {
 			AutoPath path = scaleLeft ? pathLeftCross : pathRightCross;
 			DriveTo crossPath = new DriveTo(path, 60, true, 100000, false);
-//			crossPath.setAngleTolerance(.2);
 			drive.addSequential(new ResetDriveTrain());
 			drive.addSequential(crossPath);
-//			drive.addSequential(new ResetDriveTrain());
-//			drive.addSequential(new RotateTo(scaleLeft ? 0.866 : -0.866, 10000));
 		} 
 		
 		drive.addSequential(new ResetDriveTrain());
 		everythingBeforeEject.addParallel(drive);
 		everythingBeforeEject.addParallel(everythingElse);
 		addSequential(everythingBeforeEject);
-		addSequential(new Eject(false, false));
-		if (!isStraight) {
-			addSequential(new ArmSetSetpoint(ArmSetpoint.SWITCH));
-		} else {
-			addSequential(new ArmSetSetpoint(ArmSetpoint.SWITCH)); //intaking path: change setpoint to intake
+		addSequential(new Eject(true, true));
+		addSequential(new ArmSetSetpoint(ArmSetpoint.INTAKE)); //intaking path: change setpoint to intake
+		addSequential(new WaitUntilArmUp());
 
-//			addSequential(new WaitUntilArmUp());
-//
-//			CommandGroup getCube = new CommandGroup();
-//			CommandGroup driveToIntake = new CommandGroup();
-//			CommandGroup intaking = new CommandGroup();
-//			driveToIntake.addSequential(new DriveTo(scaleLeft ? intakePathLeft : intakePathRight, 20, false, 6000, false));
-//			driveToIntake.addSequential(new ResetDriveTrain());
-//			intaking.addSequential(new SetIntakeManual(.6));
-//			intaking.addSequential(new Wait(() -> {
-//				return RobotMap.intake.hasCube();
-//			}));
-//			intaking.addSequential(new StopIntaking());
-//			getCube.addParallel(driveToIntake);
-//			getCube.addParallel(intaking);
-//			addSequential(getCube);
-		}
+		CommandGroup getCube = new CommandGroup();
+		CommandGroup driveToIntake = new CommandGroup();
+		CommandGroup intaking = new CommandGroup();
+		driveToIntake.addSequential(new DriveTo(scaleLeft ? intakePathLeft : intakePathRight, 20, false, 6000, false));
+		driveToIntake.addSequential(new ResetDriveTrain());
+		intaking.addSequential(new SetIntakeManual(.6));
+		intaking.addSequential(new Wait(() -> {
+			return RobotMap.intake.hasCube();
+		}));
+		intaking.addSequential(new StopIntaking());
+		intaking.addSequential(new ArmSetSetpoint(ArmSetpoint.SWITCH));
+		getCube.addParallel(driveToIntake);
+		getCube.addParallel(intaking);
+		addSequential(getCube);
+		addSequential(new Eject(true, true));
 
 	}
 
@@ -104,7 +104,7 @@ public class ScaleAuto extends CommandGroup {
 	
 	public static AutoPath getStraight(boolean left) {
 		int sign = left ? -1 : 1;
-		Pair[] controlPoints = {new Pair(sign*35.0, -285.0), new Pair(0, -167.0), new Pair(0.0, 0.0)};
+		Pair[] controlPoints = {new Pair(sign*33.0, -280.0), new Pair(0, -170), new Pair(0.0, 0.0)};
 		double[] dists = {90.0,};
 		return AutoPath.getAutoPathForClothoidSpline(controlPoints, dists);
 

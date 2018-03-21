@@ -14,9 +14,17 @@ public class StartEjecting extends InstantCommand {
 	@Override
 	protected void initialize() {
 		if (hard) {
-			RobotMap.intake.setRollers(-0.6);
+			if (RobotMap.arm.getElbowAngle() > 0) {
+				RobotMap.intake.setRollers(-0.6);
+			} else {
+				RobotMap.intake.setRollers(-0.8);
+			}
 		} else {
-			RobotMap.intake.setRollers(-0.25);
+			if (RobotMap.arm.getElbowAngle() > 0) {
+				RobotMap.intake.setRollers(-0.25);
+			} else {
+				RobotMap.intake.setRollers(-0.4);
+			}
 		}
 		
 	}
