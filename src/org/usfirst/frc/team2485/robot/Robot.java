@@ -93,13 +93,13 @@ public class Robot extends IterativeRobot {
 		ConstantsIO.init();
 		RobotMap.updateConstants();
 		
-//		RobotMap.elbowEncoderWrapperDistance.setPosition(-.190);
-//		RobotMap.wristEncoderWrapperDistance.setPosition(0.416);
-//		isHomed = true; // so we don't crash immediately in actual matches	
+		RobotMap.elbowEncoderWrapperDistance.setPosition(-.190);
+		RobotMap.wristEncoderWrapperDistance.setPosition(0.416);
+		isHomed = true; // so we don't crash immediately in actual matches	
 		
-		if (!isHomed) {
-			throw new RuntimeException("Not homed");
-		}
+//		if (!isHomed) {
+//			throw new RuntimeException("Not homed");
+//		}
 		
 		String positions = DriverStation.getInstance().getGameSpecificMessage().toUpperCase();
 		boolean switchLeft = positions.charAt(0) == 'L';

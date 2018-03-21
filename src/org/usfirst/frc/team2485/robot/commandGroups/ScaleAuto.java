@@ -10,6 +10,7 @@ import org.usfirst.frc.team2485.robot.commands.StopIntaking;
 import org.usfirst.frc.team2485.robot.commands.Wait;
 import org.usfirst.frc.team2485.robot.commands.WaitUntilArmUp;
 import org.usfirst.frc.team2485.robot.commands.WaitUntilClose;
+import org.usfirst.frc.team2485.robot.commands.WaitUntilCubeIntaken;
 import org.usfirst.frc.team2485.robot.subsystems.Arm.ArmSetpoint;
 import org.usfirst.frc.team2485.util.AutoPath;
 import org.usfirst.frc.team2485.util.AutoPath.Pair;
@@ -55,9 +56,7 @@ public class ScaleAuto extends CommandGroup {
 		driveToIntake.addSequential(new DriveTo(scaleLeft ? intakePathLeft : intakePathRight, 20, false, 6000, false));
 		driveToIntake.addSequential(new ResetDriveTrain());
 		intaking.addSequential(new SetIntakeManual(.6));
-		intaking.addSequential(new Wait(() -> {
-			return RobotMap.intake.hasCube();
-		}));
+		intaking.addSequential(new WaitUntilCubeIntaken());
 		intaking.addSequential(new StopIntaking());
 		intaking.addSequential(new ArmSetSetpoint(ArmSetpoint.SWITCH));
 		getCube.addParallel(driveToIntake);
