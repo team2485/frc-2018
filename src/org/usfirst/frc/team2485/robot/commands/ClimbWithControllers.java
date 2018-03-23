@@ -1,6 +1,7 @@
 package org.usfirst.frc.team2485.robot.commands;
 
 import org.usfirst.frc.team2485.robot.OI;
+import org.usfirst.frc.team2485.robot.Robot;
 import org.usfirst.frc.team2485.robot.RobotMap;
 import org.usfirst.frc.team2485.util.ThresholdHandler;
 
@@ -27,6 +28,9 @@ public class ClimbWithControllers extends Command {
     	// TODO Auto-generated method stub
     	super.execute();
     	double pwm = ThresholdHandler.deadbandAndScale(OI.operator.getRawAxis(OI.XBOX_LTRIGGER_PORT), OI.XBOX_TRIGGER_DEADBAND, 0, 1);
+    	if (pwm == 0) {
+    		pwm = ThresholdHandler.deadbandAndScale(OI.operatorBackup.getRawAxis(OI.XBOX_LTRIGGER_PORT), OI.XBOX_TRIGGER_DEADBAND, 0, 1);
+    	}
     	if(!RobotMap.arm.isClimb) {
     		pwm = 0;
     	}

@@ -1,6 +1,7 @@
 package org.usfirst.frc.team2485.robot.commands;
 
 import org.usfirst.frc.team2485.robot.OI;
+import org.usfirst.frc.team2485.robot.Robot;
 import org.usfirst.frc.team2485.robot.RobotMap;
 import org.usfirst.frc.team2485.robot.subsystems.Arm;
 import org.usfirst.frc.team2485.util.ThresholdHandler;
@@ -30,9 +31,16 @@ public class WristWithControllers extends Command {
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
     	counter++;
+    	double[] thetasCritical = RobotMap.arm.getThetasCritical();
+    	double theta1 = RobotMap.arm.getThetaElbow();
     	double axis = -ThresholdHandler.deadbandAndScale(OI.operator.getRawAxis(OI.XBOX_LYJOYSTICK_PORT), OI.XBOX_AXIS_DEADBAND, 0, 1); // joystick command
+    	if (axis == 0) {
+    		axis = -ThresholdHandler.deadbandAndScale(OI.operatorBackup.getRawAxis(OI.XBOX_LYJOYSTICK_PORT), 0.25, 0, 1);
+    	}
     	if (counter % 4 == 0) {
     		minWristPos = RobotMap.arm.getMinWristPos();
+    		thetasCritical = RobotMap.arm.getThetasCritical();
+        	theta1 = RobotMap.arm.getThetaElbow();
     	}
     	double theta2 = RobotMap.wristEncoderWrapperDistance.pidGet();
     	if (DriverStation.getInstance().isAutonomous()) {
@@ -47,13 +55,11 @@ public class WristWithControllers extends Command {
     	}
     	
     	
-    	double[] thetasCritical = RobotMap.arm.getThetasCritical();
-    	double theta1 = RobotMap.arm.getThetaElbow();
+    
     	
-
     	if (thetasCritical[1] == 0 || RobotMap.arm.isClimb) {
     		RobotMap.arm.setElbowSetpoint(theta1);
-    	} else if (RobotMap.arm.getThetaElbow() < thetasCritical[0]) {
+    	} else if (RobotMap.arm.getElbowAngle() < thetasCritical[0]) {
     		RobotMap.arm.setElbowSetpoint(Math.min(thetasCritical[0] - thetasCritical[1], theta1));
     	} else {
     		RobotMap.arm.setElbowSetpoint(Math.max(thetasCritical[0] + thetasCritical[1], theta1));
@@ -65,7 +71,7 @@ public class WristWithControllers extends Command {
     		if (RobotMap.arm.isClimb) {
     			double angle = Math.max(Math.min(RobotMap.arm.getThetaWrist(), .23 - RobotMap.arm.getElbowAngle()), -RobotMap.arm.getElbowAngle());
     			RobotMap.arm.setWristPos(manualSetpoint ? RobotMap.arm.getThetaWrist() : angle);
-    		} else if ((RobotMap.arm.getElbowAngle() - Arm.MID_ELBOW_ANGLE) * (RobotMap.arm.getElbowSetpoint() - Arm.MID_ELBOW_ANGLE) < 0) { // crossing from low to high
+    		} else if ((RobotMap.arm.getElbowAngle() - Arm.MID_ELBOW_ANGLE) * (RobotMap.arm.getThetaElbow() - Arm.MID_ELBOW_ANGLE) < 0) { // crossing from low to high
     			RobotMap.arm.setWristPos(Math.max(Arm.MIN_WRIST_ANGLE_CROSS, RobotMap.arm.getThetaWrist()));
     		} else {
     			RobotMap.arm.setWristPos(Math.max(RobotMap.arm.getThetaWrist(), minWristPos));

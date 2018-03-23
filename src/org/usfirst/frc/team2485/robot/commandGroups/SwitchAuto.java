@@ -17,11 +17,11 @@ public class SwitchAuto extends CommandGroup {
 		AutoPath path = left ? leftPath : rightPath;
 //		RobotMap.pathTracker.start(path);
 		DriveTo drive = new DriveTo(path, 60, false, 8000, false);
-		drive.setDistTolerance(5);
+		drive.setDistTolerance(10);
 		addSequential(drive);
 		addSequential(new ResetDriveTrain());
 		addSequential(new Eject(true, false));
-		addSequential(new DriveStraight(-30, 50, 5000));
+		addSequential(new DriveStraight(-30, 0, 50, 5000));
 		
 	}
 	public static void init() {
@@ -34,7 +34,7 @@ public class SwitchAuto extends CommandGroup {
 		return new AutoPath(AutoPath.getPointsForBezier(2000, new Pair(0.0, 0.0),
 				new Pair(0, 44.0),
 				new Pair(sign * 53.5 - 6, 30.0),
-				new Pair(sign * 53.5 - 6, 104)), 
+				new Pair(sign * 53.5 - 6, 94)), 
 				AutoPath.getPointsForBezier(2000, 
 						new Pair(sign * 53.5 - 6, 104), 
 						new Pair(sign * 53.5 - 6, 120)));

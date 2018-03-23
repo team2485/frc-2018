@@ -64,7 +64,7 @@ public class RampRate extends WarlordsControlSystem {
 	public void setLastValue(double lastValue) {
 		this.lastValue = lastValue;
 	}
-
+	
 
 	@Override
 	protected void calculate() {

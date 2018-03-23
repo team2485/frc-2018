@@ -29,7 +29,7 @@ public class ArmSetSetpoint extends InstantCommand {
     	
     	 if (isClimb) {
          	RobotMap.arm.setIsClimb(true);
-         } 
+         }
     }
 
 }

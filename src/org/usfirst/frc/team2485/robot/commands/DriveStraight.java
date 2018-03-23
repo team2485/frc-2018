@@ -14,7 +14,7 @@ public class DriveStraight extends Command{
 	private int timeout;
 	private long startTime;
 	private double tolerance;
-	//private boolean setAngle = false;
+	private boolean setAngle = false;
 	private FinishedCondition finishedCondition = FinishedCondition.FALSE_CONDITION;
 	
 	/**
@@ -25,7 +25,7 @@ public class DriveStraight extends Command{
 	 */
 	public DriveStraight(double dist, double maxVelocity, int timeout) {
 		this(dist, 0, maxVelocity, timeout);
-		//setAngle = true;
+		setAngle = true;
 	}
 	
 	/**
@@ -57,7 +57,9 @@ public class DriveStraight extends Command{
 	public void setFinishedCondition(FinishedCondition finishedCondition) {
 		this.finishedCondition = finishedCondition;
 	}
-	
+	public void setTolerance(double tolerance) {
+		this.tolerance = tolerance;
+	}
 	@Override
 	protected void initialize() {
 		super.initialize();
@@ -65,8 +67,8 @@ public class DriveStraight extends Command{
 		startTime = System.currentTimeMillis();
 		RobotMap.driveTrain.angRampRate.setRampRates(100, 100);
 
-		//if (setAngle)
-		//	angle = RobotMap.pigeon.getAngle();
+		if (setAngle)
+			angle = RobotMap.pigeonDisplacementWrapper.pidGet();
 	}
 	@Override
 	protected void execute() {

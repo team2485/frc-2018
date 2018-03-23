@@ -26,6 +26,8 @@ public class OI {
 	
 	public static Joystick driver;
 	public static Joystick operator;
+	public static Joystick driverBackup;
+	public static Joystick operatorBackup;
 	
 	public static final int XBOX_A_PORT = 1;
 	public static final int XBOX_B_PORT = 2;
@@ -80,9 +82,41 @@ public class OI {
 	public static JoystickButton OPERATOR_BACK_BUTTON;
 	
 	
+//Backup Buttons
+	public static JoystickButton DRIVER_BACKUP_UP;
+	public static JoystickButton DRIVER_BACKUP_DOWN;
+	public static JoystickButton DRIVER_BACKUP_LEFT;
+	private static JoystickButton DRIVER_BACKUP_RIGHT;
+	private static JoystickButton DRIVER_BACKUP_A;
+	private static JoystickButton DRIVER_BACKUP_B;
+	private static JoystickButton DRIVER_BACKUP_X;
+	private static JoystickButton DRIVER_BACKUP_Y;
+	private static JoystickButton DRIVER_BACKUP_LBUMPER;
+	private static JoystickButton DRIVER_BACKUP_RBUMPER;
+	private static JoystickButton DRIVER_BACKUP_XBOX;
+	
+	private static JoystickButton OPERATOR_BACKUP_UP;
+	private static JoystickButton OPERATOR_BACKUP_DOWN;
+	private static JoystickButton OPERATOR_BACKUP_LEFT;
+	private static JoystickButton OPERATOR_BACKUP_RIGHT;
+	private static JoystickButton OPERATOR_BACKUP_A;
+	private static JoystickButton OPERATOR_BACKUP_B;
+	private static JoystickButton OPERATOR_BACKUP_X;
+	private static JoystickButton OPERATOR_BACKUP_Y;
+	private static JoystickButton OPERATOR_BACKUP_LBUMPER;
+	private static JoystickButton OPERATOR_BACKUP_RBUMPER;
+	private static JoystickButton OPERATOR_BACKUP_XBOX;
+	private static JoystickButton OPERATOR_BACKUP_LSTICK_BUTTON;
+	private static JoystickButton OPERATOR_BACKUP_RSTICK_BUTTON;
+	private static JoystickButton OPERATOR_BACKUP_START_BUTTON;
+	private static JoystickButton OPERATOR_BACKUP_BACK_BUTTON;
+	
+	
 	public static void init() {
 		driver = new Joystick(0);
 		operator = new Joystick(1);
+		driverBackup = new Joystick(2);
+		operatorBackup = new Joystick(3);
 		
 		DRIVER_UP = new JoystickButton(driver, XBOX_UP_PORT);
 		DRIVER_DOWN = new JoystickButton(driver, XBOX_DOWN_PORT);
@@ -119,6 +153,7 @@ public class OI {
 		
 		OPERATOR_START_BUTTON = new JoystickButton(operator, XBOX_START_BUTTON);
 		OPERATOR_BACK_BUTTON = new JoystickButton(operator, XBOX_BACK_BUTTON);
+
 
 		
 
@@ -179,5 +214,84 @@ public class OI {
 		//TESTING
 //		DRIVER_X.whenPressed(new ZeroArmEncoders());
 		
+		DRIVER_BACKUP_UP = new JoystickButton(driverBackup, XBOX_UP_PORT);
+		DRIVER_BACKUP_DOWN = new JoystickButton(driverBackup, XBOX_DOWN_PORT);
+		DRIVER_BACKUP_LEFT = new JoystickButton(driverBackup, XBOX_LEFT_PORT);
+		DRIVER_BACKUP_RIGHT = new JoystickButton(driverBackup, XBOX_RIGHT_PORT);
+		
+		DRIVER_BACKUP_A = new JoystickButton(driverBackup, XBOX_A_PORT);
+		DRIVER_BACKUP_B = new JoystickButton(driverBackup, XBOX_B_PORT);
+		DRIVER_BACKUP_X = new JoystickButton(driverBackup, XBOX_X_PORT);
+		DRIVER_BACKUP_Y = new JoystickButton(driverBackup, XBOX_Y_PORT);
+		
+		DRIVER_BACKUP_LBUMPER = new JoystickButton(driverBackup, XBOX_LBUMPER_PORT);
+		DRIVER_BACKUP_RBUMPER = new JoystickButton(driverBackup, XBOX_RBUMPER_PORT);
+		
+		DRIVER_BACKUP_XBOX = new JoystickButton(driverBackup, XBOX_XBOX_PORT);
+		
+		DRIVER_BACKUP_B.whenPressed(new Eject(true, false));
+		DRIVER_BACKUP_RBUMPER.whenPressed(new Eject(false, false));
+		DRIVER_BACKUP_Y.whenPressed(new SetIntakeManual(0));
+		DRIVER_BACKUP_A.whenPressed(new SetIntakeManual(.75)); // anton change this 
+		
+		OPERATOR_BACKUP_UP = new JoystickButton(operatorBackup, XBOX_UP_PORT);
+		OPERATOR_BACKUP_DOWN = new JoystickButton(operatorBackup, XBOX_DOWN_PORT);
+		OPERATOR_BACKUP_LEFT = new JoystickButton(operatorBackup, XBOX_LEFT_PORT);
+		OPERATOR_BACKUP_RIGHT = new JoystickButton(operatorBackup, XBOX_RIGHT_PORT);
+		
+		OPERATOR_BACKUP_A = new JoystickButton(operatorBackup, XBOX_A_PORT);
+		OPERATOR_BACKUP_B = new JoystickButton(operatorBackup, XBOX_B_PORT);
+		OPERATOR_BACKUP_X = new JoystickButton(operatorBackup, XBOX_X_PORT);
+		OPERATOR_BACKUP_Y = new JoystickButton(operatorBackup, XBOX_Y_PORT);
+		
+		OPERATOR_BACKUP_LBUMPER = new JoystickButton(operatorBackup, XBOX_LBUMPER_PORT);
+		OPERATOR_BACKUP_RBUMPER = new JoystickButton(operatorBackup, XBOX_RBUMPER_PORT);
+		
+		OPERATOR_BACKUP_XBOX = new JoystickButton(operatorBackup, XBOX_XBOX_PORT);
+		
+		OPERATOR_BACKUP_LSTICK_BUTTON = new JoystickButton(operatorBackup, XBOX_LSTICK_BUTTON_PORT);
+		OPERATOR_BACKUP_RSTICK_BUTTON = new JoystickButton(operatorBackup, XBOX_RSTICK_BUTTON_PORT);
+		
+		OPERATOR_BACKUP_START_BUTTON = new JoystickButton(operatorBackup, XBOX_START_BUTTON);
+		OPERATOR_BACKUP_BACK_BUTTON = new JoystickButton(operatorBackup, XBOX_BACK_BUTTON);
+		
+		
+		OPERATOR_BACKUP_Y.whenPressed(scaleHighBack);
+		OPERATOR_BACKUP_Y.whenReleased(new CancelCommand(scaleHighBack));
+		OPERATOR_BACKUP_Y.whenPressed(new StopIntaking()); // only stops if intake rollers running forward
+		
+		OPERATOR_BACKUP_X.whenPressed(scaleMiddleBack);
+		OPERATOR_BACKUP_X.whenReleased(new CancelCommand(scaleMiddleBack));
+		OPERATOR_BACKUP_X.whenPressed(new StopIntaking());
+		
+		OPERATOR_BACKUP_B.whenPressed(new ArmSetSetpoint(ArmSetpoint.SWITCH));
+		OPERATOR_BACKUP_B.whenPressed(new StopIntaking());
+		
+		OPERATOR_BACKUP_A.whenPressed(scaleLowBack);
+		OPERATOR_BACKUP_A.whenReleased(new CancelCommand(scaleLowBack));
+		OPERATOR_BACKUP_A.whenPressed(new StopIntaking());
+		
+		OPERATOR_BACKUP_RBUMPER.whenPressed(new ArmSetSetpoint(ArmSetpoint.SECOND_STORY));
+		OPERATOR_BACKUP_LBUMPER.whenPressed(new ArmSetSetpoint(ArmSetpoint.INTAKE));
+		
+		OPERATOR_BACKUP_START_BUTTON.whenPressed(scaleSeven);	
+		OPERATOR_BACKUP_START_BUTTON.whenReleased(new CancelCommand(scaleSeven));
+		OPERATOR_BACKUP_START_BUTTON.whenPressed(new StopIntaking());
+		
+		OPERATOR_BACKUP_BACK_BUTTON.whenPressed(climber);
+		OPERATOR_BACKUP_BACK_BUTTON.whenReleased(new CancelCommand(climber));
+		OPERATOR_BACKUP_BACK_BUTTON.whenPressed(new StopIntaking());
+	
+
+		OPERATOR_BACKUP_A.whenReleased(new HoldPosition());
+		OPERATOR_BACKUP_B.whenReleased(new HoldPosition());
+		OPERATOR_BACKUP_X.whenReleased(new HoldPosition());
+		OPERATOR_BACKUP_Y.whenReleased(new HoldPosition());
+		OPERATOR_BACKUP_RBUMPER.whenReleased(new HoldPosition());
+		OPERATOR_BACKUP_LBUMPER.whenReleased(new HoldPosition());
+		OPERATOR_BACKUP_LSTICK_BUTTON.whenPressed(c);
+		OPERATOR_BACKUP_RSTICK_BUTTON.cancelWhenPressed(c);
+		OPERATOR_BACKUP_START_BUTTON.whenReleased(new HoldPosition());
+		OPERATOR_BACKUP_BACK_BUTTON.whenReleased(new HoldPosition());
 	}
 }

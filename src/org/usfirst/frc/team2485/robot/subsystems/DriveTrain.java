@@ -270,33 +270,19 @@ public class DriveTrain extends Subsystem {
 
 		RobotMap.driveLeftTalon.enableVoltageCompensation(false);
 		RobotMap.driveRightTalon.enableVoltageCompensation(false);
-		RobotMap.driveLeftTalon.enableCurrentLimit(true);
-		RobotMap.driveRightTalon.enableCurrentLimit(true);
+		RobotMap.driveLeftTalon.enableCurrentLimit(false);
+		RobotMap.driveRightTalon.enableCurrentLimit(false);
 
-		double percentUp = (RobotMap.elbowEncoderWrapperDistance.pidGet() - ArmSetpoint.SWITCH.getElbowPos()) / 
-				(ArmSetpoint.SCALE_HIGH_BACK.getElbowPos() - ArmSetpoint.SWITCH.getElbowPos());
-		percentUp = Math.min(1, percentUp);
-		double I = percentUp * (CURRENT_LIMIT_ARM_UP - CURRENT_LIMIT_ARM_DOWN) + CURRENT_LIMIT_ARM_DOWN;
-		double speed = percentUp * (SPEED_LIMIT - 1) + 1;
-		if (quickturn) {
-			speed = percentUp * (0.4 - 1) + 1;
-
-		}
-		if(I < 24) {
-			RobotMap.driveLeftTalon.configContinuousCurrentLimit((int) (I/2), 0);
-			RobotMap.driveRightTalon.configContinuousCurrentLimit((int) (I/2), 0);
-			RobotMap.driveLeftVictor3.set(ControlMode.PercentOutput, 0);
-			RobotMap.driveLeftVictor4.set(ControlMode.PercentOutput, 0);
-			RobotMap.driveRightVictor3.set(ControlMode.PercentOutput, 0);
-			RobotMap.driveRightVictor4.set(ControlMode.PercentOutput, 0);
-		} else {
-			RobotMap.driveLeftTalon.configContinuousCurrentLimit((int) (I/4), 0);
-			RobotMap.driveRightTalon.configContinuousCurrentLimit((int) (I/4), 0);
-			RobotMap.driveLeftVictor3.follow(RobotMap.driveLeftTalon);
-			RobotMap.driveLeftVictor4.follow(RobotMap.driveLeftTalon);
-			RobotMap.driveRightVictor3.follow(RobotMap.driveRightTalon);
-			RobotMap.driveRightVictor4.follow(RobotMap.driveRightTalon);
-		}
+//		double percentUp = (RobotMap.elbowEncoderWrapperDistance.pidGet() - ArmSetpoint.SWITCH.getElbowPos()) / 
+//				(ArmSetpoint.SCALE_HIGH_BACK.getElbowPos() - ArmSetpoint.SWITCH.getElbowPos());
+//		percentUp = Math.min(1, percentUp);
+////		double I = percentUp * (CURRENT_LIMIT_ARM_UP - CURRENT_LIMIT_ARM_DOWN) + CURRENT_LIMIT_ARM_DOWN;
+//		double speed = percentUp * (SPEED_LIMIT - 1) + 1;
+//		if (quickturn) {
+//			speed = percentUp * (0.4 - 1) + 1;
+//
+//		}
+		double speed = 1;
 
 
 		leftPwm *= speed;
@@ -343,9 +329,8 @@ public class DriveTrain extends Subsystem {
 		rightMotorSetter.disable();
 		leftMotorSetter.disable();
 		
-		RobotMap.driveLeftPWM.set(0);
-		RobotMap.driveRightPWM.set(0);
-
+		RobotMap.driveLeftPWM.emergencyStop();
+		RobotMap.driveRightPWM.emergencyStop();
 
 	}
 
@@ -395,9 +380,7 @@ public class DriveTrain extends Subsystem {
 		curvatureSetpointTN.setOutput(curvature);
 		distancePID.setAbsoluteTolerance(toleranceDist);
 		anglePID.setAbsoluteTolerance(toleranceAngle);
-
-		System.out.println("Theoretically Driving");
-
+		
 		distancePID.setOutputRange(-maxSpeed, maxSpeed);
 
 		return distancePID.isOnTarget() && anglePID.isOnTarget() && Math.abs(encoderAvgVelocityPIDSource.pidGet()) < LOW_ENC_RATE;
@@ -410,9 +393,9 @@ public class DriveTrain extends Subsystem {
 	public void updateConstants() {
 		for (TalonSRX t : RobotMap.driveTalons) {
 			t.enableVoltageCompensation(false);
-			t.enableCurrentLimit(true);
-			t.configContinuousCurrentLimit(ConstantsIO.IMax, 0);
-			t.configPeakCurrentLimit(ConstantsIO.IMax, 0);
+			t.enableCurrentLimit(false);
+//			t.configContinuousCurrentLimit(ConstantsIO.IMax, 0);
+//			t.configPeakCurrentLimit(ConstantsIO.IMax, 0);
 
 		}
 		anglePID.setPID(ConstantsIO.kP_DriveAngle, ConstantsIO.kI_DriveAngle, ConstantsIO.kD_DriveAngle, ConstantsIO.kF_DriveAngle);

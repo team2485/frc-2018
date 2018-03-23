@@ -18,6 +18,8 @@ public class SpeedControllerWrapper implements SpeedController {
 
 	private SpeedController[] speedControllerList;
 	private double[] scaleFactors;
+	private double upRampRate, downRampRate;
+	private double lastValue;
 
 	public SpeedControllerWrapper(SpeedController[] speedControllerList, double[] scaleFactors) {
 
@@ -32,6 +34,43 @@ public class SpeedControllerWrapper implements SpeedController {
 
 	public SpeedControllerWrapper(SpeedController speedController) {
 		this(new SpeedController[] {speedController});
+	}
+	
+	public void setRampRate(double upRampRate, double downRampRate) {
+		this.upRampRate = upRampRate;
+		this.downRampRate = downRampRate;
+	}
+	
+	public double getNextValue(double desired) {
+		if ((lastValue > 0 && desired < 0) || (lastValue < 0 && desired > 0)) {
+			desired = 0; // makes sure desired and lastValue have the same sign to make math easy
+		}
+		
+		if (Math.abs(desired) > Math.abs(lastValue)) {
+			if (Math.abs(desired - lastValue) > upRampRate) {
+				if (desired > 0) {
+					lastValue += upRampRate;
+				} else {
+					lastValue -= upRampRate;
+				}
+			} else {
+				lastValue = desired;
+			}
+		} else {
+			if (Math.abs(desired - lastValue) > downRampRate) {
+				if (lastValue > 0) {
+					lastValue -= downRampRate;
+
+				} else {
+					lastValue += downRampRate;
+
+				}
+			} else {
+				lastValue = desired;
+			}
+		}
+		
+		return lastValue;
 	}
 	
 	/**
@@ -96,9 +135,17 @@ public class SpeedControllerWrapper implements SpeedController {
 
 	@Override
 	public void set(double pwm) {
+		if (upRampRate > 0 && downRampRate > 0) {
+			pwm = getNextValue(pwm);
+		}
 		for (int i = 0; i < speedControllerList.length; i++) {
 			speedControllerList[i].set(pwm * scaleFactors[i]);	
 		}
+	} 
+	
+	public void emergencyStop() {
+		lastValue = 0;
+		set(0);
 	}
 
 	@Override

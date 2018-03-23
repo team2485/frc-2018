@@ -33,6 +33,8 @@ public class Robot extends IterativeRobot {
 
 	private boolean isHomed = false;
 	private boolean startedCamera = false;
+	public static boolean operatorBackup = false, driverBackup = false;
+	boolean debug;
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -52,6 +54,8 @@ public class Robot extends IterativeRobot {
 
 		ScaleAuto.init();
 		SwitchAuto.init();
+		
+		debug = false;
 		
 	}
 
@@ -112,7 +116,7 @@ public class Robot extends IterativeRobot {
 		RobotMap.driveLeftTalon.enableCurrentLimit(false);
 		RobotMap.driveRightTalon.enableCurrentLimit(false);
 		RobotMap.driveTrain.reset();
-		RobotMap.deadReckoning.start();
+//		RobotMap.deadReckoning.start();
 		
 		//Testing
 //		CommandGroup drive = new CommandGroup();
@@ -132,7 +136,7 @@ public class Robot extends IterativeRobot {
 		// CHANGE AUTO HERE
 		boolean startLeft = false;
 //		Scheduler.getInstance().add(new SwitchAuto(switchLeft));
-		Scheduler.getInstance().add(new ScaleAuto(startLeft, scaleLeft));
+		Scheduler.getInstance().add(new ScaleAuto(startLeft, switchLeft, scaleLeft));
 	}
 
 	/**
@@ -172,6 +176,7 @@ public class Robot extends IterativeRobot {
 		
 		
 		
+		
 	}
 
 	/**
@@ -180,39 +185,42 @@ public class Robot extends IterativeRobot {
 	@Override
 	public void teleopPeriodic() {
 		Scheduler.getInstance().run();
+		
 		updateSmartDashboard();
 		
 		
 //		if (shouldCrash) {
 //			throw new RuntimeException("Current Sensor failed");
 //		}
+		
 	}
 	
 
 	public void updateSmartDashboard() {
 	
-//		SmartDashboard.putNumber("Yaw", RobotMap.pigeonDisplacementWrapper.pidGet());
-//		SmartDashboard.putNumber("Yaw Rate", RobotMap.pigeonRateWrapper.pidGet());
+		if (debug) {
+		SmartDashboard.putNumber("Yaw", RobotMap.pigeonDisplacementWrapper.pidGet());
+		SmartDashboard.putNumber("Yaw Rate", RobotMap.pigeonRateWrapper.pidGet());
 //		SmartDashboard.putNumber("velocity setpoint", RobotMap.driveTrain.velocitySetpointTN.getOutput());
 //		SmartDashboard.putNumber("Yaw Rate Error", RobotMap.driveTrain.getAngleRateError());
 		SmartDashboard.putNumber("Left Encoder Dist", RobotMap.driveLeftEncoderWrapperDistance.pidGet());
 		SmartDashboard.putNumber("Right Encoder Dist", RobotMap.driveRightEncoderWrapperDistance.pidGet());
-//		SmartDashboard.putNumber("Left Encoder Rate", RobotMap.driveLeftEncoderWrapperRate.pidGet());
-//		SmartDashboard.putNumber("Right Encoder Rate", RobotMap.driveRightEncoderWrapperRate.pidGet());
-		SmartDashboard.putNumber("Velocity Error", RobotMap.driveTrain.getVelocityError());
-		SmartDashboard.putNumber("Distance Error", RobotMap.driveTrain.getDistError());
-		SmartDashboard.putNumber("Angle Error", RobotMap.driveTrain.getAngleError());
+		SmartDashboard.putNumber("Left Encoder Rate", RobotMap.driveLeftEncoderWrapperRate.pidGet());
+		SmartDashboard.putNumber("Right Encoder Rate", RobotMap.driveRightEncoderWrapperRate.pidGet());
+//		SmartDashboard.putNumber("Velocity Error", RobotMap.driveTrain.getVelocityError());
+//		SmartDashboard.putNumber("Distance Error", RobotMap.driveTrain.getDistError());
+//		SmartDashboard.putNumber("Angle Error", RobotMap.driveTrain.getAngleError());
 //	
 //		SmartDashboard.putNumber("Distance PID Output", RobotMap.driveTrain.getDistancePIDOutput());
 //		SmartDashboard.putNumber("Velocity PID Output", RobotMap.driveTrain.getVelocityPIDOutput());
 //		SmartDashboard.putNumber("Left Current Output", RobotMap.driveLeftTalon.getMotorOutputPercent());
-		SmartDashboard.putNumber("Left Current", RobotMap.driveLeftTalon.getOutputCurrent());
-		SmartDashboard.putNumber("Right Current", RobotMap.driveRightTalon.getOutputCurrent());
+//		SmartDashboard.putNumber("Left Current", RobotMap.driveLeftTalon.getOutputCurrent());
+//		SmartDashboard.putNumber("Right Current", RobotMap.driveRightTalon.getOutputCurrent());
 //		SmartDashboard.putNumber("Relative Wrist", RobotMap.wristTalon.getSensorCollection().getQuadraturePosition());
 //		SmartDashboard.putNumber("Relative Elbow", RobotMap.elbowTalon.getSensorCollection().getQuadraturePosition());
 //		
-		SmartDashboard.putNumber("Left Current Error", RobotMap.driveLeftTalon.getClosedLoopError(0));
-		SmartDashboard.putNumber("Right Current Error", -RobotMap.driveRightTalon.getClosedLoopError(0));
+//		SmartDashboard.putNumber("Left Current Error", RobotMap.driveLeftTalon.getClosedLoopError(0));
+//		SmartDashboard.putNumber("Right Current Error", -RobotMap.driveRightTalon.getClosedLoopError(0));
 //		
 //		SmartDashboard.putNumber("Velocity TN", RobotMap.driveTrain.velocityTN.pidGet());
 //		SmartDashboard.putNumber("Ang Vel TN", RobotMap.driveTrain.angularVelocityTN.pidGet());
@@ -225,23 +233,28 @@ public class Robot extends IterativeRobot {
 //		SmartDashboard.putNumber("Intake Current", RobotMap.intakeLeftTalon.getOutputCurrent());
 //		SmartDashboard.putNumber("X", RobotMap.deadReckoning.getX());
 //		SmartDashboard.putNumber("Y", RobotMap.deadReckoning.getY());
-//		SmartDashboard.putNumber("Elbow Current error", RobotMap.elbowTalon.getClosedLoopError(0));
-//		SmartDashboard.putNumber("Wrist Current Error", RobotMap.wristTalon.getClosedLoopError(0));
-//		SmartDashboard.putNumber("Wrist Current", RobotMap.wristTalon.getOutputCurrent());
-//		SmartDashboard.putNumber("Wrist Enc Rate", RobotMap.wristEncoderWrapperRate.pidGet());
-//		SmartDashboard.putNumber("Elbow Enc Rate", RobotMap.elbowEncoderWrapperRate.pidGet());
+		SmartDashboard.putNumber("Elbow Current error", RobotMap.elbowTalon.getClosedLoopError(0));
+		SmartDashboard.putNumber("Wrist Current Error", RobotMap.wristTalon.getClosedLoopError(0));
+		SmartDashboard.putNumber("Wrist Current", RobotMap.wristTalon.getOutputCurrent());
+		SmartDashboard.putNumber("Wrist Enc Rate", RobotMap.wristEncoderWrapperRate.pidGet());
+		SmartDashboard.putNumber("Elbow Enc Rate", RobotMap.elbowEncoderWrapperRate.pidGet());
 		SmartDashboard.putNumber("Wrist Ang Error", RobotMap.arm.getWristAngError());
 		SmartDashboard.putNumber("Elbow Ang Vel Max Error", RobotMap.arm.getElbowAngVelMaxError());
 		SmartDashboard.putNumber("Elbow Ang Vel Min Error", RobotMap.arm.getElbowAngVelMinError());
 		SmartDashboard.putNumber("Elbow Ang Error", RobotMap.arm.getElbowAngError());
-//		SmartDashboard.putNumber("Elbow Enc Raw", RobotMap.elbowTalon.getSelectedSensorPosition(0));
-//		SmartDashboard.putNumber("Wrist Current", RobotMap.wristTalon.getOutputCurrent());
+		SmartDashboard.putNumber("Elbow Enc Raw", RobotMap.elbowTalon.getSelectedSensorPosition(0));
+		SmartDashboard.putNumber("Wrist Current", RobotMap.wristTalon.getOutputCurrent());
 		SmartDashboard.putNumber("Elbow Current", RobotMap.elbowTalon.getOutputCurrent());
-		SmartDashboard.putNumber("Angle TN", RobotMap.driveTrain.angleOutputTN.pidGet());
+		SmartDashboard.putNumber("Intake Average Current", (RobotMap.intakeLeftTalon.getOutputCurrent() + RobotMap.intakeRightTalon.getOutputCurrent())/2);
+//		SmartDashboard.putNumber("Angle TN", RobotMap.driveTrain.angleOutputTN.pidGet());
 		//SmartDashboard.putNumber("Yaw Rate", RobotMap.pigeonRateWrapper.pidGet());
 		//SmartDashboard.putNumber("Drift", RobotMap.pathTracker.getDrift());
-		SmartDashboard.putNumber("X", RobotMap.deadReckoning.getX());
-		SmartDashboard.putNumber("Y", RobotMap.deadReckoning.getY());
+//		SmartDashboard.putNumber("X", RobotMap.deadReckoning.getX());
+//		SmartDashboard.putNumber("Y", RobotMap.deadReckoning.getY());
+		SmartDashboard.putNumber("Elbow Current Error", RobotMap.elbowTalon.getOutputCurrent());
+		
+//		SmartDashboard.putNumber("Sonic Distance", RobotMap.sonic.getRangeInches());
+//		SmartDashboard.putBoolean("Sonic", RobotMap.sonic.getRangeInches() < 5);
 		
 		
 		
@@ -261,8 +274,8 @@ public class Robot extends IterativeRobot {
 //
 //		SmartDashboard.putNumber("Average Speed", RobotMap.driveTrain.getAverageSpeed());
 //		
-//		SmartDashboard.putNumber("Wrist PercentOutput", RobotMap.wristTalon.getMotorOutputPercent());
-//		SmartDashboard.putNumber("Elbow PercentOutput", RobotMap.elbowTalon.getMotorOutputPercent());
+		SmartDashboard.putNumber("Wrist PercentOutput", RobotMap.wristTalon.getMotorOutputPercent());
+		SmartDashboard.putNumber("Elbow PercentOutput", RobotMap.elbowTalon.getMotorOutputPercent());
 //		
 //		SmartDashboard.putNumber("Angle Setpoint TN", RobotMap.driveTrain.angleSetpointTN.getOutput());
 //		
@@ -275,16 +288,18 @@ public class Robot extends IterativeRobot {
 //		
 //
 //		
-//		SmartDashboard.putNumber("Wrist Encoder Distance", RobotMap.wristEncoderWrapperDistance.pidGet());
+		SmartDashboard.putNumber("Wrist Encoder Distance", RobotMap.wristEncoderWrapperDistance.pidGet());
 //		
 //		SmartDashboard.putNumber("X", RobotMap.deadReckoning.getX());
 //		SmartDashboard.putNumber("Y", RobotMap.deadReckoning.getY());
+		}
 	}
 	/**
 	 * This function is called periodically during test mode
 	 */
 	@Override
 	public void testPeriodic() {
+		debug = true;
 		RobotMap.arm.setIsClimb(false);
 		if (OI.driver.getRawButton(OI.XBOX_A_PORT)) {
 			RobotMap.arm.setElbowCurrent(-2);

@@ -258,20 +258,20 @@ public class Arm extends Subsystem {
 		elbowAngVelMaxPID.setOutputSources(elbowMaxCurrentSource, null);
 		elbowAngVelMaxPID.setOutputs(elbowAngVelMaxTN);
 		elbowAngVelMaxPID.setSetpointSource(elbowMaxAngVelSource);
-		elbowAngVelMaxPID.setPeriod(40);
+		elbowAngVelMaxPID.setPeriod(100);
 		
 		elbowAngVelMinPID.setSources(RobotMap.elbowEncoderWrapperRate);
 		elbowAngVelMinPID.setOutputRange(-1, 0);
 		elbowAngVelMinPID.setOutputSources(null, elbowMinCurrentSource);
 		elbowAngVelMinPID.setOutputs(elbowAngVelMinTN);
 		elbowAngVelMinPID.setSetpointSource(elbowMinAngVelSource);
-		elbowAngVelMinPID.setPeriod(40);
+		elbowAngVelMinPID.setPeriod(100);
 
 		elbowAngPID.setSources(RobotMap.elbowEncoderWrapperDistance);
 		elbowAngPID.setOutputSources(elbowMaxAngSource, elbowMinAngSource);
 		elbowAngPID.setOutputs(elbowOutputSource);
 		elbowAngPID.setVelocitySource(RobotMap.elbowEncoderWrapperRate);
-		elbowAngPID.setPeriod(40);
+		elbowAngPID.setPeriod(100);
 		
 		elbowOutputSource.setPidOutput((double out) -> {
 			double pwm = out + ConstantsIO.levitateElbowCurrent * FastMath.cos(2 * Math.PI * getElbowAngle());
@@ -312,7 +312,7 @@ public class Arm extends Subsystem {
 		wristAngPID.setOutputSources(wristMaxCurrentSource, wristMinCurrentSource);
 		wristAngPID.setOutputs(wristOutputSource);
 		wristAngPID.setVelocitySource(RobotMap.wristEncoderWrapperRate);
-		wristAngPID.setPeriod(40);
+		wristAngPID.setPeriod(100);
 		
 		wristOutputSource.setPidOutput((double out) -> {
 			double pwm = out; //+ ConstantsIO.levitateWristCurrent * FastMath.cos(2 * Math.PI * getWristAngle());
@@ -347,6 +347,7 @@ public class Arm extends Subsystem {
 	
 	public void setIsClimb(boolean isClimb) {
 		this.isClimb = isClimb;
+		System.out.println("set climb:"+ isClimb);
 	}
 	
 	public void setElbowSetpoint(double setpoint) {

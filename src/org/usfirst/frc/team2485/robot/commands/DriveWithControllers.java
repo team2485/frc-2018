@@ -1,6 +1,7 @@
 package org.usfirst.frc.team2485.robot.commands;
 
 import org.usfirst.frc.team2485.robot.OI;
+import org.usfirst.frc.team2485.robot.Robot;
 import org.usfirst.frc.team2485.robot.RobotMap;
 import org.usfirst.frc.team2485.util.ThresholdHandler;
 
@@ -29,7 +30,16 @@ public class DriveWithControllers extends Command {
     			OI.XBOX_AXIS_DEADBAND, 0, 1);
     	
     	
+    	
        	boolean quickturn = OI.driver.getRawButton(OI.XBOX_X_PORT);
+       	
+       	if (!quickturn && steering == 0 && throttle == 0) {
+       		throttle = ThresholdHandler.deadbandAndScale(OI.driverBackup.getRawAxis(OI.XBOX_RTRIGGER_PORT), OI.XBOX_TRIGGER_DEADBAND, 0, 1) 
+        			- ThresholdHandler.deadbandAndScale(OI.driverBackup.getRawAxis(OI.XBOX_LTRIGGER_PORT), OI.XBOX_TRIGGER_DEADBAND, 0, 1);
+        	steering = ThresholdHandler.deadbandAndScale(OI.driverBackup.getRawAxis(OI.XBOX_LXJOSYSTICK_PORT), 
+        			0.25, 0, 1);
+           	quickturn = OI.driverBackup.getRawButton(OI.XBOX_X_PORT);
+       	}
        	
        	
     	RobotMap.driveTrain.WARlordsDrive(throttle, steering, quickturn);
