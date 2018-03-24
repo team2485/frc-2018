@@ -42,7 +42,7 @@ public class Arm extends Subsystem {
 	
 
 	public static enum ArmSetpoint {
-		INTAKE(-.192, -0.035), SWITCH(-.192, 0.15), SECOND_STORY(-.192, 0.025), SCALE_HIGH_BACK(0.16, 0.39), SCALE_MIDDLE_BACK(0.16, 0.46), SCALE_LOW_BACK(0.16, 0.5), SEVEN_FOOT_SCALE(.26, .124), CLIMB(.26, .225);
+		INTAKE(-.192, -0.030), SWITCH(-.192, 0.15), SECOND_STORY(-.192, 0.025), SCALE_HIGH_BACK(0.16, 0.39), SCALE_MIDDLE_BACK(0.16, 0.46), SCALE_LOW_BACK(0.16, 0.5), SEVEN_FOOT_SCALE(.26, .124), CLIMB(.26, .225);
 
 		private final double elbowPos;
 		private final double wristPos;
@@ -95,7 +95,7 @@ public class Arm extends Subsystem {
 	// encoder failsafes
 	private static final double MIN_WRIST_ANGLE = -0.35;
 	private static final double MAX_WRIST_ANGLE = .4;
-	private static final double MIN_ELBOW_ANGLE = -.1;
+	private static final double MIN_ELBOW_ANGLE = -.14;
 	private static final double MAX_ELBOW_ANGLE = 0.25;
 	private static final double LOW_ENC_RATE = 0.0025;
 	private static final double MAX_PWM_THRESHOLD_NO_CURRENT = .1;

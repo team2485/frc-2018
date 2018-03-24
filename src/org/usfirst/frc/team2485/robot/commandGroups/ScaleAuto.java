@@ -35,7 +35,7 @@ public class ScaleAuto extends CommandGroup {
 		if (startLeft == scaleLeft) {
 			drive.addSequential(new ResetDriveTrain());
 			AutoPath path = scaleLeft ? pathLeftStraight : pathRightStraight;
-			drive.addSequential(new DriveTo(path, 85, true, 10000, false));
+			drive.addSequential(new DriveTo(path, 100, true, 10000, false));
 			isStraight = true;
 		} else {
 			AutoPath path = scaleLeft ? pathLeftCross : pathRightCross;
@@ -55,21 +55,26 @@ public class ScaleAuto extends CommandGroup {
 		CommandGroup getCube = new CommandGroup();
 		CommandGroup driveToIntake = new CommandGroup();
 		CommandGroup intaking = new CommandGroup();
-		driveToIntake.addSequential(new DriveTo(scaleLeft ? intakePathLeft : intakePathRight, 50, false, 8000, false));
+		driveToIntake.addSequential(new DriveTo(scaleLeft ? intakePathLeft : intakePathRight, 50, false, 3500, false));
 		driveToIntake.addSequential(new ResetDriveTrain());
 		intaking.addSequential(new SetIntakeManual(.75));
-		intaking.addSequential(new WaitUntilCubeIntaken());
+		intaking.addSequential(new WaitUntilCubeIntaken(4000));
 		intaking.addSequential(new StopIntaking());
 		intaking.addSequential(new ArmSetSetpoint(ArmSetpoint.SWITCH));
 		getCube.addParallel(driveToIntake);
 		getCube.addParallel(intaking);
 		addSequential(getCube);
-		if (switchLeft == scaleLeft) {
-			DriveStraight finalDrive = new DriveStraight(20, 30, 2000);
-			finalDrive.setTolerance(10);
-			addSequential(finalDrive);
-			addSequential(new Eject(true, true));
-		} 
+//		if (switchLeft == scaleLeft) {
+//			DriveStraight finalDrive = new DriveStraight(20, 30, 2000);
+//			finalDrive.setTolerance(10);
+//			addSequential(finalDrive);
+//			addSequential(new Eject(true, true));
+//		} else {
+			addSequential(new ArmSetSetpoint(ArmSetpoint.SCALE_HIGH_BACK));
+			addSequential(new DriveTo(scaleLeft ? intakePathLeft : intakePathRight, 50, true, 5000, false));
+			addSequential(new ResetDriveTrain());
+			addSequential(new Eject(false, true));
+//		}
 
 	}
 
@@ -92,7 +97,7 @@ public class ScaleAuto extends CommandGroup {
 	public static AutoPath getCross(boolean left) {
 		int sign = left ? -1 : 1;
 
-		Pair[] controlPoints = { new Pair(-197.0 * sign, -280), new Pair(-215.0 * sign, -220), new Pair(0.0, -220),
+		Pair[] controlPoints = { new Pair(-197 * sign, -280), new Pair(-215 * sign, -220), new Pair(0.0, -220),
 				new Pair(0.0, 0.0), };
 		double[] dists = { 50.0, 75.0, };
 		return AutoPath.getAutoPathForClothoidSpline(controlPoints, dists);
@@ -106,7 +111,7 @@ public class ScaleAuto extends CommandGroup {
 
 	public static AutoPath getStraight(boolean left) {
 		int sign = left ? -1 : 1;
-		Pair[] controlPoints = { new Pair(sign * 39.0, -280.0), new Pair(0, -150), new Pair(0.0, 0.0) };
+		Pair[] controlPoints = { new Pair(sign * 39.0, -275.0), new Pair(0, -145), new Pair(0.0, 0.0) };
 		double[] dists = { 90.0, };
 		return AutoPath.getAutoPathForClothoidSpline(controlPoints, dists);
 
@@ -119,5 +124,6 @@ public class ScaleAuto extends CommandGroup {
 		return intakePath;
 
 	}
+	
 
 }

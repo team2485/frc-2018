@@ -7,13 +7,14 @@ import edu.wpi.first.wpilibj.command.Command;
 public class WaitUntilCubeIntaken extends Command {
 	double maxCurrent = 30;
 	double startTime;
-	double timeout = 4000;
 	double startSpikeTime;
 	boolean cubeIntaken = false;
 	boolean overCurrent = false;
+	long timeout;
 	
-	public WaitUntilCubeIntaken() {
+	public WaitUntilCubeIntaken(long timeout) {
 		requires(RobotMap.intake);
+		this.timeout = timeout;
 	}
 	
 	protected void initialize() {

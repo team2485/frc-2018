@@ -273,20 +273,32 @@ public class DriveTrain extends Subsystem {
 		RobotMap.driveLeftTalon.enableCurrentLimit(false);
 		RobotMap.driveRightTalon.enableCurrentLimit(false);
 
-//		double percentUp = (RobotMap.elbowEncoderWrapperDistance.pidGet() - ArmSetpoint.SWITCH.getElbowPos()) / 
-//				(ArmSetpoint.SCALE_HIGH_BACK.getElbowPos() - ArmSetpoint.SWITCH.getElbowPos());
-//		percentUp = Math.min(1, percentUp);
-////		double I = percentUp * (CURRENT_LIMIT_ARM_UP - CURRENT_LIMIT_ARM_DOWN) + CURRENT_LIMIT_ARM_DOWN;
+		double percentUp = (RobotMap.elbowEncoderWrapperDistance.pidGet() - ArmSetpoint.SWITCH.getElbowPos()) / 
+				(ArmSetpoint.SCALE_HIGH_BACK.getElbowPos() - ArmSetpoint.SWITCH.getElbowPos());
+		percentUp = Math.min(1, percentUp);
+		
+		double upRamp = percentUp * (ConstantsIO.kUpRamp_TeleopUp - ConstantsIO.kUpRamp_TeleopDown) + ConstantsIO.kUpRamp_TeleopDown;
+		double downRamp = percentUp * (ConstantsIO.kDownRamp_TeleopUp - ConstantsIO.kDownRamp_TeleopDown) + ConstantsIO.kDownRamp_TeleopDown;
+		
+////	double I = percentUp * (CURRENT_LIMIT_ARM_UP - CURRENT_LIMIT_ARM_DOWN) + CURRENT_LIMIT_ARM_DOWN;
 //		double speed = percentUp * (SPEED_LIMIT - 1) + 1;
-//		if (quickturn) {
-//			speed = percentUp * (0.4 - 1) + 1;
-//
-//		}
 		double speed = 1;
+
+		if (quickturn) {
+			speed = percentUp * (0.4 - 1) + 1;
+			if (percentUp > .5) {
+				speed *= Math.abs(steering);
+			}
+
+		}
 
 
 		leftPwm *= speed;
 		rightPwm *= speed;
+		
+		RobotMap.driveLeftPWM.setRampRate(upRamp, downRamp);
+		RobotMap.driveRightPWM.setRampRate(upRamp, downRamp);
+		
 
 		RobotMap.driveLeftPWM.set(leftPwm);
 		RobotMap.driveRightPWM.set(rightPwm);
@@ -404,6 +416,7 @@ public class DriveTrain extends Subsystem {
 				ConstantsIO.kF_DriveVelocity);
 		angRampRate.setRampRates(100, 100);
 		velocityRampRate.setRampRates(ConstantsIO.kUpRamp_Velocity, ConstantsIO.kDownRamp_Velocity);
+		RobotMap.driveLeftPWM.setRampRate(ConstantsIO.kUpRamp_TeleopDown, ConstantsIO.kDownRamp_TeleopDown);
 	}
 
 	public void enablePID(boolean enable) {

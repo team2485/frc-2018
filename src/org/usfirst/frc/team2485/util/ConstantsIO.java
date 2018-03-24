@@ -82,6 +82,12 @@ public class ConstantsIO {
 	
 	public static double levitateWristCurrent;
 	public static double levitateElbowCurrent;
+	
+	public static double kUpRamp_TeleopDown;
+	public static double kDownRamp_TeleopDown;
+	
+	public static double kUpRamp_TeleopUp;
+	public static double kDownRamp_TeleopUp;
 
 
 
@@ -178,6 +184,12 @@ public class ConstantsIO {
 		kF_WristAngVel = Double.parseDouble(data.get("kF_WristAngVel"));
 		
 		kUpRamp_AngCurrent = Double.parseDouble(data.get("kUpRamp_AngCurrent"));
+		
+		kUpRamp_TeleopDown = Double.parseDouble(data.get("kUpRamp_TeleopDown"));
+		kDownRamp_TeleopDown = Double.parseDouble(data.get("kDownRamp_TeleopDown"));
+		
+		kUpRamp_TeleopUp = Double.parseDouble(data.get("kUpRamp_TeleopUp"));
+		kDownRamp_TeleopUp = Double.parseDouble(data.get("kUpRamp_TeleopUp"));
 		
 		
 //		kUpSpeed_WristAngVel = Double.parseDouble(data.get("kUpSpeed_WristAngVel"));
