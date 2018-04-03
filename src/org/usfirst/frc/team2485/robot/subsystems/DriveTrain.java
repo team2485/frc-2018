@@ -28,7 +28,7 @@ public class DriveTrain extends Subsystem {
 	private static final double CURRENT_LIMIT_ARM_UP = 30, CURRENT_LIMIT_ARM_DOWN = 80;
 
 	public WarlordsPIDController distancePID = new WarlordsPIDController();
-	private WarlordsPIDController anglePID = new WarlordsPIDController();
+	public WarlordsPIDController anglePID = new WarlordsPIDController();
 	private WarlordsPIDController velocityPID = new WarlordsPIDController();
 	
 	private RampRate velocityRampRate = new RampRate();
@@ -124,11 +124,11 @@ public class DriveTrain extends Subsystem {
 		});
 		
 		minAngleORSource.setPidSource(() -> {
-			return -getMaxCurrent();
+			return -10;
 		});
 		
 		maxAngleORSource.setPidSource(() -> {
-			return getMaxCurrent();
+			return 10;
 		});
 		
 		angVelFilter.setSetpointSource(RobotMap.pigeonRateWrapper);

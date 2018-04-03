@@ -194,17 +194,17 @@ public class OI {
 		OPERATOR_BACK_BUTTON.whenPressed(new StopIntaking());
 	
 
-		OPERATOR_A.whenReleased(new HoldPosition());
-		OPERATOR_B.whenReleased(new HoldPosition());
-		OPERATOR_X.whenReleased(new HoldPosition());
-		OPERATOR_Y.whenReleased(new HoldPosition());
-		OPERATOR_RBUMPER.whenReleased(new HoldPosition());
-		OPERATOR_LBUMPER.whenReleased(new HoldPosition());
+//		OPERATOR_A.whenReleased(new HoldPosition());
+//		OPERATOR_B.whenReleased(new HoldPosition());
+//		OPERATOR_X.whenReleased(new HoldPosition());
+//		OPERATOR_Y.whenReleased(new HoldPosition());
+//		OPERATOR_RBUMPER.whenReleased(new HoldPosition());
+//		OPERATOR_LBUMPER.whenReleased(new HoldPosition());
 		Command c = new ArmEmergencyControl();
 		OPERATOR_LSTICK_BUTTON.whenPressed(c);
 		OPERATOR_RSTICK_BUTTON.cancelWhenPressed(c);
-		OPERATOR_START_BUTTON.whenReleased(new HoldPosition());
-		OPERATOR_BACK_BUTTON.whenReleased(new HoldPosition());
+//		OPERATOR_START_BUTTON.whenReleased(new HoldPosition());
+//		OPERATOR_BACK_BUTTON.whenReleased(new HoldPosition());
 		
 		
 		

@@ -18,6 +18,11 @@ public class Intake extends Subsystem {
 	public TalonSRX left;
 	public TalonSRX right;
 	
+	public double maxCurrent = 30; 
+	public boolean overCurrent = false;
+	public double startSpikeTime;
+	public boolean cubeIntaken = false;
+	
 	public Intake() {
 		this.left = RobotMap.intakeLeftTalon;
 		this.right = RobotMap.intakeRightTalon;
@@ -26,6 +31,21 @@ public class Intake extends Subsystem {
 	public void initDefaultCommand() {
 	}
 
+	
+	public boolean isIntaken() {
+		double averageCurrent = (RobotMap.intakeLeftTalon.getOutputCurrent() + RobotMap.intakeRightTalon.getOutputCurrent())/2;
+		if (averageCurrent >= maxCurrent && !overCurrent) {
+			startSpikeTime = System.currentTimeMillis();
+			overCurrent = true;
+		} else if (averageCurrent < maxCurrent) {
+			overCurrent = false;
+		}
+		if (overCurrent && (System.currentTimeMillis() - startSpikeTime) > 250) {
+			cubeIntaken = true;
+		}
+		return cubeIntaken;
+	} 
+	
 	public void setRollers(double pwm) {
 		left.set(ControlMode.PercentOutput, pwm);
 		right.set(ControlMode.PercentOutput, -pwm);

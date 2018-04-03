@@ -167,7 +167,7 @@ public class RobotMap {
 		elbowVictor = new VictorSPX(elbowPort2);
 		wristTalon = new TalonSRX(wristPort);
 
-		wristTalon.setInverted(true);
+		wristTalon.setInverted(false);
 		elbowVictor.follow(elbowTalon);
 
 		elbowTalonWrapper = new TalonSRXWrapper(ControlMode.Current, elbowTalon);

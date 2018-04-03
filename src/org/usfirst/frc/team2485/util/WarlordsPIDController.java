@@ -226,6 +226,14 @@ public class WarlordsPIDController extends WarlordsControlSystem {
 		
 		maxOutputSource=max;
 		minOutputSource=min;
+	}	
+	
+	public double getMaxOutput() {
+		return maxOutput;
+	}
+	
+	public double getMinOutput() {
+		return minOutput;
 	}
 	
 	/**

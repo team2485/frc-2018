@@ -9,8 +9,8 @@ import java.util.Arrays;
  */
 
 public class AutoPath {
-	private static final double MAX_VELOCITY = 100;
-	private static final double MAX_ACCELERATION_CURVE = 2.5;
+	private static final double MAX_VELOCITY = 1000;
+	private static final double MAX_ANG_VEL = .75;
 	private static final double MAX_ACCELERATION_LINEAR = 20;
 	public class Point {
 		public double x, y; 
@@ -158,8 +158,8 @@ public class AutoPath {
 			for (int j = i; j < points.length; j++) {
 				if (Math.abs(points[j].curvature) > 0 && 
 						2 * MAX_ACCELERATION_LINEAR * (points[j].arcLength - points[i].arcLength) < points[i].maxSpeed * points[i].maxSpeed) {
-					double maxSpeedSquared = MAX_ACCELERATION_CURVE / Math.abs(points[j].curvature);
-					double maxSpeed = Math.sqrt(maxSpeedSquared + 2 * MAX_ACCELERATION_LINEAR * (points[j].arcLength - points[i].arcLength));
+					double maxSpeed = MAX_ANG_VEL / Math.abs(points[j].curvature);
+					maxSpeed = Math.sqrt(maxSpeed * maxSpeed + 2 * MAX_ACCELERATION_LINEAR * (points[j].arcLength - points[i].arcLength));
 					points[i].maxSpeed = Math.min(points[i].maxSpeed, maxSpeed);
 				}
 			}

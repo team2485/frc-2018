@@ -63,7 +63,7 @@ public class DriveStraight extends Command{
 	@Override
 	protected void initialize() {
 		super.initialize();
-		RobotMap.driveTrain.zeroEncoders();
+//		RobotMap.driveTrain.zeroEncoders();
 		startTime = System.currentTimeMillis();
 		RobotMap.driveTrain.angRampRate.setRampRates(100, 100);
 

@@ -17,6 +17,7 @@ public class WristWithControllers extends Command {
 	public static boolean manualSetpoint = false;
 	private double minWristPos;
 	private int counter;
+	private boolean buttonHeld = false;
 	
     public WristWithControllers() {
     	requires(RobotMap.arm);
@@ -30,6 +31,21 @@ public class WristWithControllers extends Command {
 
     // Called repeatedly when this Command is scheduled to run
     protected void execute() {
+    	
+    	boolean newButtonHeld = OI.operator.getRawButton(OI.XBOX_LBUMPER_PORT) ||
+    			OI.operator.getRawButton(OI.XBOX_RBUMPER_PORT) ||
+    			OI.operator.getRawButton(OI.XBOX_A_PORT) ||
+    			OI.operator.getRawButton(OI.XBOX_B_PORT) ||
+    			OI.operator.getRawButton(OI.XBOX_X_PORT) ||
+    			OI.operator.getRawButton(OI.XBOX_Y_PORT) || 
+    			OI.operator.getRawButton(OI.XBOX_BACK_BUTTON) ||
+    			OI.operator.getRawButton(OI.XBOX_START_BUTTON);
+    	if (!newButtonHeld && buttonHeld) {
+    		RobotMap.arm.setThetaWrist(RobotMap.wristEncoderWrapperDistance.pidGet());
+			RobotMap.arm.setThetaElbow(RobotMap.elbowEncoderWrapperDistance.pidGet());
+    	}
+    	buttonHeld = newButtonHeld;
+			
     	counter++;
     	double[] thetasCritical = RobotMap.arm.getThetasCritical();
     	double theta1 = RobotMap.arm.getThetaElbow();

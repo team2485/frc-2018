@@ -9,7 +9,8 @@ import edu.wpi.first.wpilibj.command.Command;
 public class DriveTo extends Command{
 	private AutoPath path;
 	private double maxVelocity;
-	private boolean finished, reverse;
+	private boolean finished; 
+	private boolean reverse;
 	private long startTime;
 	private int timeout;
 	private double distTolerance;
@@ -44,7 +45,7 @@ public class DriveTo extends Command{
 	protected void initialize() {
 		super.initialize();
 		startTime = System.currentTimeMillis();
-		RobotMap.driveTrain.zeroEncoders();
+//		RobotMap.driveTrain.zeroEncoders();
 		RobotMap.driveTrain.angRampRate.setRampRates(100, 100);
 	}
 	@Override
@@ -60,7 +61,7 @@ public class DriveTo extends Command{
 		double currentMaxSpeed = maxVelocity;
 		
 		if (variableVMax) {
-			currentMaxSpeed = Math.min(maxVelocity, path.getPointAtDist(RobotMap.driveTrain.getAverageEncoderDistance()).maxSpeed);
+			currentMaxSpeed = Math.min(maxVelocity, path.getPointAtDist(arcLength).maxSpeed);
 		}
 		
 		finished = RobotMap.driveTrain.driveTo(pathLength, currentMaxSpeed, 

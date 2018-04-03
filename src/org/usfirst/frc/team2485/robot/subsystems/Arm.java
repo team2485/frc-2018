@@ -42,7 +42,7 @@ public class Arm extends Subsystem {
 	
 
 	public static enum ArmSetpoint {
-		INTAKE(-.192, -0.030), SWITCH(-.192, 0.15), SECOND_STORY(-.192, 0.025), SCALE_HIGH_BACK(0.16, 0.39), SCALE_MIDDLE_BACK(0.16, 0.46), SCALE_LOW_BACK(0.16, 0.5), SEVEN_FOOT_SCALE(.26, .124), CLIMB(.26, .225);
+		INTAKE(-.192, -0.030), SWITCH(-.192, 0.15), SECOND_STORY(-.192, 0.025), SCALE_HIGH_BACK(0.22, 0.4), SCALE_MIDDLE_BACK(0.2, 0.46), SCALE_LOW_BACK(0.16, 0.52), SEVEN_FOOT_SCALE(.22, .32), CLIMB(.26, .225);
 
 		private final double elbowPos;
 		private final double wristPos;
@@ -237,7 +237,7 @@ public class Arm extends Subsystem {
 		});
 		
 		elbowMinAngVelSource.setPidSource(() -> {
-			return isClimb ? -.15 : -.2;
+			return isClimb ? -.15 : -.3;
 		});
 		
 		elbowMaxAngVelSource.setPidSource(() -> {
