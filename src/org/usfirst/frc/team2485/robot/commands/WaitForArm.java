@@ -4,8 +4,8 @@ import org.usfirst.frc.team2485.robot.RobotMap;
 
 import edu.wpi.first.wpilibj.command.Command;
 
-public class WaitUntilArmUp extends Command {
-	public WaitUntilArmUp() {
+public class WaitForArm extends Command {
+	public WaitForArm() {
 		requires(RobotMap.intake);
 	}
 

@@ -6,7 +6,7 @@ import org.usfirst.frc.team2485.robot.commands.DriveTo;
 import org.usfirst.frc.team2485.robot.commands.ResetDriveTrain;
 import org.usfirst.frc.team2485.robot.commands.SetIntakeManual;
 import org.usfirst.frc.team2485.robot.commands.StopIntaking;
-import org.usfirst.frc.team2485.robot.commands.WaitUntilArmUp;
+import org.usfirst.frc.team2485.robot.commands.WaitForArm;
 import org.usfirst.frc.team2485.robot.commands.WaitUntilClose;
 import org.usfirst.frc.team2485.robot.commands.WaitUntilCubeIntaken;
 import org.usfirst.frc.team2485.robot.subsystems.Arm.ArmSetpoint;
