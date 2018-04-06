@@ -65,21 +65,6 @@ public class AutoLogger {
 			// Add a new line separator after the header
 			fileWriter.append(NEW_LINE_SEPARATOR);
 			
-			// initialize class variables
-			addEvent(Type.START, "ResetDriveTrain", ""); // instant
-			addEvent(Type.START, "DriveTo", "");
-			addEvent(Type.START, "RotateTo", "");
-			addEvent(Type.START, "DriveStraight", "");
-			addEvent(Type.START, "ZeroEncoders", ""); // instant
-			addEvent(Type.START, "WaitUntilClose", "");
-			addEvent(Type.START, "WaitUntilArmUp", "");
-			addEvent(Type.START, "ArmSetSetpoint", ""); // instant
-			addEvent(Type.START, "StartEjecting", "");
-			addEvent(Type.START, "StopIntaking", "");
-			addEvent(Type.START, "SetIntakeManual", "");
-			addEvent(Type.START, "WaitUntilCubeIntaken", "");
-			
-			
 			//if it finishes normally "End Normally" if it timeouts put "timeout" if isFinished condition is true put "isFinished" else nothing
 
 			// for loop to go through it then appending it to the .csv file

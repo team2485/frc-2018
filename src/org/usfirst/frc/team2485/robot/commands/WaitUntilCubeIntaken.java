@@ -21,7 +21,7 @@ public class WaitUntilCubeIntaken extends Command {
 	
 	protected void initialize() {
 		startTime = System.currentTimeMillis();
-		
+		AutoLogger.addEvent(Type.START, "WaitUntilCubeIntaken", "");
 	} 
 	
 	protected void execute() {

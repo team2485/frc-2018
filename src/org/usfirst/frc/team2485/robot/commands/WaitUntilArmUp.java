@@ -21,7 +21,7 @@ public class WaitUntilArmUp extends Command {
 	protected void end() {
 		// TODO Auto-generated method stub
 		super.end();
-		AutoLogger.addEvent(Type.STOP, "WaitUntilArmUp", isFinished() ? "" : "timeout");
+		AutoLogger.addEvent(Type.STOP, "WaitUntilArmUp", "");
 	}
 	
 	

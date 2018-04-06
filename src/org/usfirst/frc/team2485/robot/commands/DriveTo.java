@@ -49,6 +49,7 @@ public class DriveTo extends Command{
 		startTime = System.currentTimeMillis();
 //		RobotMap.driveTrain.zeroEncoders();
 		RobotMap.driveTrain.angRampRate.setRampRates(100, 100);
+		AutoLogger.addEvent(Type.START, "DriveTo", "");
 	}
 	@Override
 	protected void execute() {

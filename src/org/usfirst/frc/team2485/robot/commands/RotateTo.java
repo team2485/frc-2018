@@ -32,6 +32,7 @@ public class RotateTo extends Command {
 		startTime = System.currentTimeMillis();
 		RobotMap.driveTrain.zeroEncoders();
 		RobotMap.driveTrain.angRampRate.setRampRates(ConstantsIO.kUpRamp_AngCurrent, 100);
+		AutoLogger.addEvent(Type.START, "RotateTo", "");
 	}
 	@Override
 	protected void execute() {

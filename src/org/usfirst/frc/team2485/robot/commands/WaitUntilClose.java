@@ -25,7 +25,7 @@ public class WaitUntilClose extends Command{
 		// TODO Auto-generated method stub
 		super.end();
 		
-			AutoLogger.addEvent(Type.STOP, "WaitUntilClose", isFinished() ? "" : "timeout");
+			AutoLogger.addEvent(Type.STOP, "WaitUntilClose", "");
 		}
 	}
 

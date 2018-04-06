@@ -71,6 +71,7 @@ public class DriveStraight extends Command{
 
 		if (setAngle)
 			angle = RobotMap.pigeonDisplacementWrapper.pidGet();
+		AutoLogger.addEvent(Type.START, "DriveStraight", "");
 	}
 	@Override
 	protected void execute() {
