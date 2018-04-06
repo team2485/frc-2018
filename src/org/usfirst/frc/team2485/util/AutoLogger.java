@@ -2,6 +2,10 @@ package org.usfirst.frc.team2485.util;
 
 import java.io.FileWriter;
 
+
+
+// @author larry mei and aditya gupta
+
 import java.io.IOException;
 
 import java.util.ArrayList;
@@ -11,8 +15,10 @@ import java.util.List;
 import org.usfirst.frc.team2485.robot.commandGroups.ScaleAuto;
 import org.usfirst.frc.team2485.robot.commands.ArmSetSetpoint;
 import org.usfirst.frc.team2485.robot.subsystems.Arm.ArmSetpoint;
+import org.usfirst.frc.team2485.util.Event.Type;
 
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.command.Command;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -34,55 +40,59 @@ X, Y coordinate
 Arm and Wrist angle and rate */
 
 // Start with timeStamp, type, commandName, msg at first
-public class AutoLogger extends Event {
+public class AutoLogger {
+	
+	private static ArrayList<Event> savedEvents;
+	
+    private static final String COMMA_DELIMITER = ",";
+    private static final String NEW_LINE_SEPARATOR = "\n";
+    
+	private static FileWriter fileWriter = null;
 
-	public AutoLogger(double timeStamp, Type type, String commandName, String msg) {
-		super(timeStamp, type, commandName, msg);
-	}
-
-	FileWriter fileWriter = null;
-
-	public static void addEvent() {
-		setTimeStamp(Timer.getFPGATimestamp());
-		Event e = new Event(getTimeStamp(), getType(), getCommandName(), null); // replace null with getMsg(), make methods static in Event.java
-	}
-
-	public void read() {
-		BufferedReader fileReader = null;
-		try {
-			ArrayList<AutoLogger> LoggerList = new ArrayList<AutoLogger>();
-			String line = "";
-			fileReader = new BufferedReader(new FileReader("AutoLogger.csv"));
-			
-			// Organize Data by individualizing them into columns
-			
-			// Print new organized data into list
-//			for(AutoLogger LoggerList : )
-			} catch (Exception e) {
-			System.out.println("Error while reading CSV file");
-			e.printStackTrace();
-		} finally {
-			try {
-				fileReader.close();
-			} catch (IOException e) {
-				System.out.println("Error while closing fileReader");
-				e.printStackTrace();
-			}
-		}
+	public static void addEvent(Type type, String commandName, String msg) { // (Timeout/Completed) in typeMsg
+		Event e = new Event(Timer.getFPGATimestamp(), type, commandName, msg); // replace null with getMsg(), make methods static in Event.java
+		savedEvents.add(e);
 	}
 	
-	public void write() {
+	public static void write() {
 		// Write values onto .csv file
 		try {
-			fileWriter = new FileWriter("fileName");
+			fileWriter = new FileWriter("Log " + System.currentTimeMillis() + ".csv");
+			
 			// Write the CSV file header
-			fileWriter.append("AutoLogger");
+			fileWriter.append("Timestamp, Type, Command Name, Message");
 
 			// Add a new line separator after the header
-			fileWriter.append("\n");
+			fileWriter.append(NEW_LINE_SEPARATOR);
+			
+			// initialize class variables
+			addEvent(Type.START, "ResetDriveTrain", ""); // instant
+			addEvent(Type.START, "DriveTo", "");
+			addEvent(Type.START, "RotateTo", "");
+			addEvent(Type.START, "DriveStraight", "");
+			addEvent(Type.START, "ZeroEncoders", ""); // instant
+			addEvent(Type.START, "WaitUntilClose", "");
+			addEvent(Type.START, "WaitUntilArmUp", "");
+			addEvent(Type.START, "ArmSetSetpoint", ""); // instant
+			addEvent(Type.START, "StartEjecting", "");
+			addEvent(Type.START, "StopIntaking", "");
+			addEvent(Type.START, "SetIntakeManual", "");
+			addEvent(Type.START, "WaitUntilCubeIntaken", "");
+			
+			
+			//if it finishes normally "End Normally" if it timeouts put "timeout" if isFinished condition is true put "isFinished" else nothing
 
-			// Initialize class variables
-			// addEvent(Timer.getFPGATimestamp(), );
+			// for loop to go through it then appending it to the .csv file
+			for(Event e : savedEvents) {
+				fileWriter.append(String.valueOf(e.getTimeStamp()));
+				fileWriter.append(COMMA_DELIMITER);
+				fileWriter.append(String.valueOf(e.getType()));
+				fileWriter.append(COMMA_DELIMITER);
+				fileWriter.append(e.getCommandName());
+				fileWriter.append(COMMA_DELIMITER);
+				fileWriter.append(e.getMsg());
+				fileWriter.append(NEW_LINE_SEPARATOR);
+			}
 
 		} catch (Exception e) {
 			System.out.println("Error creating csvFileWriter");

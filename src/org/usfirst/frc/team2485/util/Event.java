@@ -9,10 +9,11 @@ import java.util.ArrayList;
 import java.util.List;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
-enum Type {
-	START, STOP, ERROR;
-}
+
 public class Event {
+	public enum Type {
+		START, STOP, ERROR;
+	}
 	private double timeStamp;
 	private Type type;
 	private String commandName;
@@ -58,7 +59,7 @@ public class Event {
 	}
 	
 	public String toString() {
-		
+		return "";
 	}
 //	public double getTimeStamp() {
 //		return Timer.getFPGATimestamp();

@@ -1,8 +1,10 @@
 package org.usfirst.frc.team2485.robot.commands;
 
 import org.usfirst.frc.team2485.robot.RobotMap;
+import org.usfirst.frc.team2485.util.AutoLogger;
 //import org.usfirst.frc.team2485.robot.subsystems.DriveTrain;
 import org.usfirst.frc.team2485.util.FinishedCondition;
+import org.usfirst.frc.team2485.util.Event.Type;
 
 import edu.wpi.first.wpilibj.command.Command;
 
@@ -82,10 +84,16 @@ public class DriveStraight extends Command{
 		return finished || (System.currentTimeMillis() - startTime) > timeout;
 	}
 	
+	
 	@Override
 	protected void end() {
 		RobotMap.driveTrain.reset();
 		super.end();
+		if (finishedCondition.isFinished()) {
+			AutoLogger.addEvent(Type.STOP, "DriveStraight", finished ? "finished condition" : "timeout");
+		} else {
+			AutoLogger.addEvent(Type.STOP, "DriveStraight", finished ? "" : "timeout");
+		}
 
 	}
 

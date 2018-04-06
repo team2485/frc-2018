@@ -1,7 +1,9 @@
 package org.usfirst.frc.team2485.robot.commands;
 
 import org.usfirst.frc.team2485.robot.RobotMap;
+import org.usfirst.frc.team2485.util.AutoLogger;
 import org.usfirst.frc.team2485.util.ConstantsIO;
+import org.usfirst.frc.team2485.util.Event.Type;
 
 import edu.wpi.first.wpilibj.command.Command;
 
@@ -57,5 +59,8 @@ public class RotateTo extends Command {
 	@Override
 	protected void end() {
 		// TODO Auto-generated method stub
+		super.end();
+			AutoLogger.addEvent(Type.STOP, "RotateTo", finished ? "" : "timeout");
+		}
 	}
-}
+
