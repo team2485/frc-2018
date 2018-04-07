@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.command.Command;
 
 public class Event {
 	public enum Type {
-		START, STOP, ERROR;
+		START, STOP, ERROR, DOUBLE;
 	}
 	private double timeStamp;
 	private Type type;
