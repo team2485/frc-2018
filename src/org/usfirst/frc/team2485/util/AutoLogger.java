@@ -9,9 +9,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import java.util.ArrayList;
-
+import java.util.Arrays;
 import java.util.List;
 
+import org.usfirst.frc.team2485.robot.RobotMap;
 import org.usfirst.frc.team2485.robot.commandGroups.ScaleAuto;
 import org.usfirst.frc.team2485.robot.commands.ArmSetSetpoint;
 import org.usfirst.frc.team2485.robot.subsystems.Arm.ArmSetpoint;
@@ -32,12 +33,9 @@ X, Y coordinate
 Encoder distance & rate
 Gyro angle and rate
 Arm and Wrist angle and rate
-
-Things to record during auto:
-Time of beginning and end of each command
 Raw joystick values
-X, Y coordinate
-Arm and Wrist angle and rate */
+
+ */
 
 // Start with timeStamp, type, commandName, msg at first
 public class AutoLogger {
@@ -53,6 +51,24 @@ public class AutoLogger {
 		Event e = new Event(Timer.getFPGATimestamp(), type, commandName, msg); // replace null with getMsg(), make methods static in Event.java
 		savedEvents.add(e);
 	}
+	
+	
+	
+	
+	
+	public static ArrayList<Double> addData(double... data) {
+		
+		
+		ArrayList<Double> datas = new ArrayList<Double>();
+		for(int i=0; i<data.length-1; i++) {
+			datas.add(data[i]);
+		}
+		
+		return datas;
+		
+	}
+	
+	
 	
 	public static void write() {
 		// Write values onto .csv file

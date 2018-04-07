@@ -1,6 +1,8 @@
 
 package org.usfirst.frc.team2485.robot;
 
+import java.util.ArrayList;
+
 import org.usfirst.frc.team2485.robot.commandGroups.Eject;
 import org.usfirst.frc.team2485.robot.commandGroups.ScaleAuto;
 import org.usfirst.frc.team2485.robot.commandGroups.SwitchAuto;
@@ -8,6 +10,7 @@ import org.usfirst.frc.team2485.robot.commands.ArmSetSetpoint;
 import org.usfirst.frc.team2485.robot.commands.ResetDriveTrain;
 import org.usfirst.frc.team2485.robot.commands.RotateTo;
 import org.usfirst.frc.team2485.robot.subsystems.Arm.ArmSetpoint;
+import org.usfirst.frc.team2485.util.AutoLogger;
 import org.usfirst.frc.team2485.util.ConstantsIO;
 import org.usfirst.frc.team2485.util.FastMath;
 
@@ -303,6 +306,27 @@ public class Robot extends IterativeRobot {
 //		SmartDashboard.putNumber("X", RobotMap.deadReckoning.getX());
 //		SmartDashboard.putNumber("Y", RobotMap.deadReckoning.getY());
 		}
+		
+		
+	    double avgEncoderDist = (RobotMap.driveLeftEncoderWrapperDistance.pidGet() + RobotMap.driveRightEncoderWrapperDistance.pidGet())/2;
+		double avgEncoderRate = (RobotMap.driveLeftEncoderWrapperRate.pidGet() + RobotMap.driveRightEncoderWrapperRate.pidGet())/2;
+		double elbowAngle = RobotMap.elbowEncoderWrapperDistance.pidGet();
+		double elbowRate = RobotMap.elbowEncoderWrapperRate.pidGet();
+		double wristAngle = RobotMap.wristEncoderWrapperDistance.pidGet();
+		double wristRate = RobotMap.wristEncoderWrapperRate.pidGet();
+		double gyroAngle = RobotMap.pigeonDisplacementWrapper.pidGet();
+		double gyroRate = RobotMap.pigeonRateWrapper.pidGet();
+		double xPos = RobotMap.deadReckoning.getX();
+		double yPos = RobotMap.deadReckoning.getY();
+		double joystickDriver = OI.driver.getRawAxis(0);
+		double joystickOperator = OI.driver.getRawAxis(1);
+		
+		
+		double[] theData = new double[] { xPos, yPos, avgEncoderDist, avgEncoderRate, elbowAngle, elbowRate, wristAngle, wristRate, gyroAngle, gyroRate, joystickDriver, joystickOperator};
+		
+		ArrayList<Double> finalData = AutoLogger.addData(theData);
+		
+		
 	}
 	/**
 	 * This function is called periodically during test mode
