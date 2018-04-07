@@ -12,7 +12,10 @@ import org.usfirst.frc.team2485.robot.commands.RotateTo;
 import org.usfirst.frc.team2485.robot.subsystems.Arm.ArmSetpoint;
 import org.usfirst.frc.team2485.util.AutoLogger;
 import org.usfirst.frc.team2485.util.ConstantsIO;
+import org.usfirst.frc.team2485.util.Event.Type;
 import org.usfirst.frc.team2485.util.FastMath;
+import org.usfirst.frc.team2485.util.ThresholdHandler;
+
 
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoMode.PixelFormat;
@@ -318,13 +321,28 @@ public class Robot extends IterativeRobot {
 		double gyroRate = RobotMap.pigeonRateWrapper.pidGet();
 		double xPos = RobotMap.deadReckoning.getX();
 		double yPos = RobotMap.deadReckoning.getY();
-		double joystickDriver = OI.driver.getRawAxis(0);
-		double joystickOperator = OI.driver.getRawAxis(1);
+		double joystickDriver = ThresholdHandler.deadbandAndScale(OI.driver.getRawAxis(OI.XBOX_RTRIGGER_PORT), OI.XBOX_TRIGGER_DEADBAND, 0, 1) 
+    			- ThresholdHandler.deadbandAndScale(OI.driver.getRawAxis(OI.XBOX_LTRIGGER_PORT), OI.XBOX_TRIGGER_DEADBAND, 0, 1);
+		double joystickOperator = OI.operator.getRawAxis(OI.XBOX_LYJOYSTICK_PORT);
+		double elbowCurrent = RobotMap.elbowTalon.getOutputCurrent();
+		double wristCurrent = RobotMap.wristTalon.getOutputCurrent();
+		double avgDriveTrainCurrent = (RobotMap.driveLeftTalon.getOutputCurrent() + RobotMap.driveRightTalon.getOutputCurrent())/2;
+		double elbowPwm = RobotMap.elbowTalon.getMotorOutputPercent();
+		double wristPwm = RobotMap.wristTalon.getMotorOutputPercent();
 		
 		
-		double[] theData = new double[] { xPos, yPos, avgEncoderDist, avgEncoderRate, elbowAngle, elbowRate, wristAngle, wristRate, gyroAngle, gyroRate, joystickDriver, joystickOperator};
+		String[] dataNames = new String[] { "xPos", "yPos", "avgEncoderDist", "avgEncoderRate", "elbowAngle", "elbowRate", "wristAngle", "wristRate", "gyroAngle", "gyroRate", "joystickDriver", "joystickOperator", "elbowCurrent", "wristCurrent", "elbowPwm", "wristPwm", "avgDriveTrainCurrent"};
+		double[] theData = new double[] { xPos, yPos, avgEncoderDist, avgEncoderRate, elbowAngle, elbowRate, wristAngle, wristRate, gyroAngle, gyroRate, joystickDriver, joystickOperator, elbowCurrent, wristCurrent, elbowPwm, wristPwm, avgDriveTrainCurrent};
 		
 		ArrayList<Double> finalData = AutoLogger.addData(theData);
+		
+		for(int i=0; i<=finalData.size()-1; i++) {
+			AutoLogger.addEvent(Type.DOUBLE, dataNames[i] , Double.toString(finalData.get(i)));
+			
+			
+		}
+		
+		
 		
 		
 	}
