@@ -23,6 +23,17 @@ public class DeadReckoning {
 		this.running = true;
 		zero();
 	}
+	
+	public void reset(double x, double y) {
+		this.x = x;
+		this.y = y;
+	}
+	
+	public void setEncoderPosition(double dist) {
+		leftEnc.setPosition(dist);
+		rightEnc.setPosition(dist);
+		lastDist = dist;
+	}
 
 	public synchronized void zero() {
 		x = 0;

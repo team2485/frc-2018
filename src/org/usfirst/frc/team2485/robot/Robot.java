@@ -8,8 +8,11 @@ import org.usfirst.frc.team2485.robot.commands.ArmSetSetpoint;
 import org.usfirst.frc.team2485.robot.commands.ResetDriveTrain;
 import org.usfirst.frc.team2485.robot.commands.RotateTo;
 import org.usfirst.frc.team2485.robot.subsystems.Arm.ArmSetpoint;
+import org.usfirst.frc.team2485.util.AutoLogger;
 import org.usfirst.frc.team2485.util.ConstantsIO;
 import org.usfirst.frc.team2485.util.FastMath;
+
+import com.ctre.phoenix.Logger;
 
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.cscore.VideoMode.PixelFormat;
@@ -69,6 +72,7 @@ public class Robot extends IterativeRobot {
 		Scheduler.getInstance().removeAll();
 		RobotMap.driveTrain.reset();
 		RobotMap.arm.reset();
+		AutoLogger.write();
 	}
 
 	@Override

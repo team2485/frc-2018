@@ -25,6 +25,7 @@ public class ScaleAuto extends CommandGroup {
 	public static AutoPath pathLeftCross, pathRightCross, pathLeftStraight, pathRightStraight, intakePathLeft,
 			intakePathRight;
 	boolean isStraight = false;
+	
 
 	public ScaleAuto(boolean startLeft, boolean switchLeft, boolean scaleLeft) {
 		CommandGroup drive = new CommandGroup();

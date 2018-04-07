@@ -42,7 +42,7 @@ Arm and Wrist angle and rate */
 // Start with timeStamp, type, commandName, msg at first
 public class AutoLogger {
 	
-	private static ArrayList<Event> savedEvents;
+	private static ArrayList<Event> savedEvents = new ArrayList<Event>();
 	
     private static final String COMMA_DELIMITER = ",";
     private static final String NEW_LINE_SEPARATOR = "\n";
@@ -57,7 +57,7 @@ public class AutoLogger {
 	public static void write() {
 		// Write values onto .csv file
 		try {
-			fileWriter = new FileWriter("Log " + System.currentTimeMillis() + ".csv");
+			fileWriter = new FileWriter("/home/lvuser/Log " + System.currentTimeMillis() + ".csv");
 			
 			// Write the CSV file header
 			fileWriter.append("Timestamp, Type, Command Name, Message");
@@ -78,18 +78,15 @@ public class AutoLogger {
 				fileWriter.append(e.getMsg());
 				fileWriter.append(NEW_LINE_SEPARATOR);
 			}
+			fileWriter.flush();
+			fileWriter.close();
+			savedEvents = new ArrayList<>();
 
 		} catch (Exception e) {
 			System.out.println("Error creating csvFileWriter");
 			e.printStackTrace();
 		} finally {
-			try {
-				fileWriter.flush();
-				fileWriter.close();
-			} catch (IOException e) {
-				System.out.println("Error while closing csvFileWriter");
-				e.printStackTrace();
-			}
+			
 		}
 	}
 }

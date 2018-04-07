@@ -50,6 +50,8 @@ public class DriveTo extends Command{
 //		RobotMap.driveTrain.zeroEncoders();
 		RobotMap.driveTrain.angRampRate.setRampRates(100, 100);
 		AutoLogger.addEvent(Type.START, "DriveTo", "");
+		RobotMap.deadReckoning.reset(RobotMap.deadReckoning.getX() + path.getPointAtDist(0).x, RobotMap.deadReckoning.getY() + path.getPointAtDist(0).y);
+		RobotMap.deadReckoning.setEncoderPosition(0);
 	}
 	@Override
 	protected void execute() {
@@ -90,6 +92,7 @@ public class DriveTo extends Command{
 		} else {
 			AutoLogger.addEvent(Type.STOP, "DriveTo", finished ? "" : "timeout");
 		}
+		RobotMap.deadReckoning.reset(RobotMap.deadReckoning.getX() - path.getPointAtDist(path.getPathLength()).x, path.getPointAtDist(path.getPathLength()).y);
 	}
 
 	@Override
