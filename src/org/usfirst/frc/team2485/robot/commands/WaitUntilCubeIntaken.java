@@ -1,6 +1,8 @@
 package org.usfirst.frc.team2485.robot.commands;
 
 import org.usfirst.frc.team2485.robot.RobotMap;
+import org.usfirst.frc.team2485.util.AutoLogger;
+import org.usfirst.frc.team2485.util.Event.Type;
 
 import edu.wpi.first.wpilibj.command.Command;
 
@@ -19,7 +21,7 @@ public class WaitUntilCubeIntaken extends Command {
 	
 	protected void initialize() {
 		startTime = System.currentTimeMillis();
-		
+		AutoLogger.addEvent(Type.START, "WaitUntilCubeIntaken", "");
 	} 
 	
 	protected void execute() {
@@ -38,6 +40,13 @@ public class WaitUntilCubeIntaken extends Command {
 	@Override
 	protected boolean isFinished() {
 		return cubeIntaken || System.currentTimeMillis() - startTime > timeout;
+	}
+	
+	@Override
+	protected void end() {
+		// TODO Auto-generated method stub
+		super.end();
+		AutoLogger.addEvent(Type.STOP, "WaitUntilCubeIntaken", cubeIntaken ? "" : "timeout");
 	}
 
 }

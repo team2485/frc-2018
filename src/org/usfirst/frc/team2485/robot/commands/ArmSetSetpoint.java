@@ -2,6 +2,8 @@ package org.usfirst.frc.team2485.robot.commands;
 
 import org.usfirst.frc.team2485.robot.RobotMap;
 import org.usfirst.frc.team2485.robot.subsystems.Arm.ArmSetpoint;
+import org.usfirst.frc.team2485.util.AutoLogger;
+import org.usfirst.frc.team2485.util.Event.Type;
 
 import edu.wpi.first.wpilibj.command.InstantCommand;
 
@@ -30,6 +32,7 @@ public class ArmSetSetpoint extends InstantCommand {
     	 if (isClimb) {
          	RobotMap.arm.setIsClimb(true);
          }
+    	 AutoLogger.addEvent(Type.START, "ArmSetSetpoint", ""); // instant
     }
 
 }

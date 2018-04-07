@@ -1,7 +1,9 @@
 package org.usfirst.frc.team2485.robot.commands;
 
 import org.usfirst.frc.team2485.robot.RobotMap;
+import org.usfirst.frc.team2485.util.AutoLogger;
 import org.usfirst.frc.team2485.util.AutoPath;
+import org.usfirst.frc.team2485.util.Event.Type;
 import org.usfirst.frc.team2485.util.FinishedCondition;
 
 import edu.wpi.first.wpilibj.command.Command;
@@ -47,6 +49,7 @@ public class DriveTo extends Command{
 		startTime = System.currentTimeMillis();
 //		RobotMap.driveTrain.zeroEncoders();
 		RobotMap.driveTrain.angRampRate.setRampRates(100, 100);
+		AutoLogger.addEvent(Type.START, "DriveTo", "");
 	}
 	@Override
 	protected void execute() {
@@ -78,6 +81,15 @@ public class DriveTo extends Command{
 	@Override
 	public synchronized void cancel() {
 		finished = true;
+	}
+	
+	@Override
+	protected void end() {
+		if (finishedCondition.isFinished()) {
+			AutoLogger.addEvent(Type.STOP, "DriveTo", finished ? "finished condition" : "timeout");
+		} else {
+			AutoLogger.addEvent(Type.STOP, "DriveTo", finished ? "" : "timeout");
+		}
 	}
 
 	@Override
