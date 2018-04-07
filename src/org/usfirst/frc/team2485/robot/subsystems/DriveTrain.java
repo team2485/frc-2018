@@ -33,6 +33,7 @@ public class DriveTrain extends Subsystem {
 	
 	private RampRate velocityRampRate = new RampRate();
 	public RampRate angRampRate = new RampRate();
+	private RampRate throttleRampRate = new RampRate();
 
 	public TransferNode distanceTN = new TransferNode(0);
 	public TransferNode angleTN = new TransferNode(0);
@@ -52,7 +53,7 @@ public class DriveTrain extends Subsystem {
 	public PIDSourceWrapper maxVelocityORSource = new PIDSourceWrapper();
 	private PIDSourceWrapper minAngleORSource = new PIDSourceWrapper();
 	private PIDSourceWrapper maxAngleORSource = new PIDSourceWrapper();
-	
+		
 	private LowPassFilter angVelFilter = new LowPassFilter();
 	
 	private PIDSourceWrapper angVelSource = new PIDSourceWrapper();
@@ -240,12 +241,37 @@ public class DriveTrain extends Subsystem {
 
 	public void WARlordsDrive(double throttle, double steering, boolean quickturn) {
 		enablePID(false);
-	
+		
+		double percentUp = (RobotMap.elbowEncoderWrapperDistance.pidGet() - ArmSetpoint.SWITCH.getElbowPos()) / 
+				(ArmSetpoint.SCALE_HIGH_BACK.getElbowPos() - ArmSetpoint.SWITCH.getElbowPos());
+		percentUp = Math.min(1, percentUp);
+		
+//		double upRamp = percentUp * (ConstantsIO.kUpRamp_TeleopUp - ConstantsIO.kUpRamp_TeleopDown) + ConstantsIO.kUpRamp_TeleopDown;
+//		double downRamp = percentUp * (ConstantsIO.kDownRamp_TeleopUp - ConstantsIO.kDownRamp_TeleopDown) + ConstantsIO.kDownRamp_TeleopDown;
+////	double I = percentUp * (CURRENT_LIMIT_ARM_UP - CURRENT_LIMIT_ARM_DOWN) + CURRENT_LIMIT_ARM_DOWN;
+//		double speed = percentUp * (SPEED_LIMIT - 1) + 1;
+		boolean drivingForward = getAverageSpeed() > 0;
+		boolean throttleForward = throttle > 0;
+		double ramp;
+		if (drivingForward == throttleForward) { // starting
+			if (drivingForward) {
+				ramp = ConstantsIO.kRamp_AcceleratingForward;				
+			} else {
+				ramp = ConstantsIO.kRamp_AcceleratingBackward;
+			}
+		} else { // stopping
+			if (drivingForward) {
+				ramp = ConstantsIO.kRamp_DeceleratingForward;				
+			} else {
+				ramp = ConstantsIO.kRamp_DeceleratingBackward;				
+			}		
+		}
+		throttleRampRate.setRampRates(ramp, 1000);
+		throttle = throttleRampRate.getNextValue(throttle); // don't enable just use here																		// (kind of sketchy but what here isn't)
 		
 		double leftPwm, rightPwm;
 
 		double vmax = throttle;
-
 		double angularPwm = 0;
 
 		if (quickturn) {
@@ -273,15 +299,9 @@ public class DriveTrain extends Subsystem {
 		RobotMap.driveLeftTalon.enableCurrentLimit(false);
 		RobotMap.driveRightTalon.enableCurrentLimit(false);
 
-		double percentUp = (RobotMap.elbowEncoderWrapperDistance.pidGet() - ArmSetpoint.SWITCH.getElbowPos()) / 
-				(ArmSetpoint.SCALE_HIGH_BACK.getElbowPos() - ArmSetpoint.SWITCH.getElbowPos());
-		percentUp = Math.min(1, percentUp);
 		
-		double upRamp = percentUp * (ConstantsIO.kUpRamp_TeleopUp - ConstantsIO.kUpRamp_TeleopDown) + ConstantsIO.kUpRamp_TeleopDown;
-		double downRamp = percentUp * (ConstantsIO.kDownRamp_TeleopUp - ConstantsIO.kDownRamp_TeleopDown) + ConstantsIO.kDownRamp_TeleopDown;
 		
-////	double I = percentUp * (CURRENT_LIMIT_ARM_UP - CURRENT_LIMIT_ARM_DOWN) + CURRENT_LIMIT_ARM_DOWN;
-//		double speed = percentUp * (SPEED_LIMIT - 1) + 1;
+		
 		double speed = 1;
 
 		if (quickturn) {
@@ -296,8 +316,8 @@ public class DriveTrain extends Subsystem {
 		leftPwm *= speed;
 		rightPwm *= speed;
 		
-		RobotMap.driveLeftPWM.setRampRate(upRamp, downRamp);
-		RobotMap.driveRightPWM.setRampRate(upRamp, downRamp);
+//		RobotMap.driveLeftPWM.setRampRate(upRamp, downRamp);
+//		RobotMap.driveRightPWM.setRampRate(upRamp, downRamp);
 		
 
 		RobotMap.driveLeftPWM.set(leftPwm);

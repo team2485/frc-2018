@@ -38,13 +38,13 @@ public class ScaleAuto extends CommandGroup {
 			drive.addSequential(new ResetDriveTrain());
 			AutoPath path = scaleLeft ? pathLeftStraight : pathRightStraight;
 			drive.addSequential(new ZeroEncoders());
-			drive.addSequential(new DriveTo(path, 180, true, 10000, true));
+			drive.addSequential(new DriveTo(path, 307, true, 10000, true));
 			isStraight = true;
 		} else {
 			AutoPath path = scaleLeft ? pathLeftCross : pathRightCross;
 			drive.addSequential(new ResetDriveTrain());
 			drive.addSequential(new ZeroEncoders());
-			DriveTo crossPath = new DriveTo(path, 150, true, 100000, true);
+			DriveTo crossPath = new DriveTo(path, 307, true, 100000, true);
 			drive.addSequential(crossPath);
 		}
 
@@ -55,12 +55,12 @@ public class ScaleAuto extends CommandGroup {
 		addSequential(new Eject(false, true));
 		addSequential(new ArmSetSetpoint(ArmSetpoint.INTAKE)); // intaking path: change setpoint to intake
 		addSequential(new ZeroEncoders());
-		addSequential(new DriveTo(scaleLeft ? intakePathLeft : intakePathRight, 80, false, 7000, false));
+		addSequential(new DriveTo(scaleLeft ? intakePathLeft : intakePathRight, 307, false, 7000, false));
 		addSequential(new ResetDriveTrain());
 		addSequential(new WaitForArm());
 		addSequential(new SetIntakeManual(0.75));
 		addSequential(new ZeroEncoders());
-		DriveStraight driveStraight = new DriveStraight(8, scaleLeft ? -.39 : .39, 50, 6000);
+		DriveStraight driveStraight = new DriveStraight(16, scaleLeft ? -.39 : .39, 50, 6000);
 
 		driveStraight.setFinishedCondition(() -> {
 			return RobotMap.intake.isIntaken();
@@ -76,7 +76,7 @@ public class ScaleAuto extends CommandGroup {
 //			addSequential(new Eject(true, true));
 //		} else {
 			addSequential(new ArmSetSetpoint(ArmSetpoint.SCALE_HIGH_BACK));
-			addSequential(new DriveTo(scaleLeft ? intakePathLeft : intakePathRight, 80, true, 20000, false));
+			addSequential(new DriveTo(scaleLeft ? intakePathLeft : intakePathRight, 307, true, 20000, false));
 			addSequential(new ResetDriveTrain());
 			addSequential(new Eject(false, true));
 			addSequential(new ArmSetSetpoint(ArmSetpoint.SWITCH));

@@ -19,8 +19,8 @@ public class Arm extends Subsystem {
 	
 	public static final double CRITICAL_DISTANCE = toMeters(40); // temp //distance from mast to 16 inches past frame
 																	// perimeter
-	public static final double CONSERVATIVE_CRITICAL_DISTANCE = toMeters(36);
-	public static final double QUASI_CONSERVATIVE_CRITICAL_DISTANCE = toMeters(36);
+	public static final double CONSERVATIVE_CRITICAL_DISTANCE = toMeters(32);
+	public static final double QUASI_CONSERVATIVE_CRITICAL_DISTANCE = toMeters(32);
 	public static final double ALPHA_MAX_WRIST = 8;
 	public static final double ALPHA_MAX_ELBOW = 4;
 	public static final int ELBOW_OFFSET = -4038;
@@ -102,8 +102,8 @@ public class Arm extends Subsystem {
 	private static final double MAX_PWM_THRESHOLD_NO_CURRENT = .1;
 	public static final double MAX_UP_CURRENT_WRIST = 20;
 	public static final double MAX_DOWN_CURRENT_WRIST = 20;
-	public static final double MAX_UP_CURRENT_ELBOW = 35;
-	public static final double MAX_DOWN_CURRENT_ELBOW = 25;
+	public static final double MAX_UP_CURRENT_ELBOW = 40;
+	public static final double MAX_DOWN_CURRENT_ELBOW = 40;
 	
 	public static final double VMAX_WRIST = .2; //.4
 	public static final double VMIN_WRIST = -.2; //-.4
