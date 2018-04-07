@@ -9,7 +9,7 @@ import org.usfirst.frc.team2485.robot.commands.RotateTo;
 import org.usfirst.frc.team2485.robot.commands.SetIntakeManual;
 import org.usfirst.frc.team2485.robot.commands.StopIntaking;
 import org.usfirst.frc.team2485.robot.commands.Wait;
-import org.usfirst.frc.team2485.robot.commands.WaitUntilArmUp;
+import org.usfirst.frc.team2485.robot.commands.WaitForArm;
 import org.usfirst.frc.team2485.robot.commands.WaitUntilClose;
 import org.usfirst.frc.team2485.robot.commands.WaitUntilCubeIntaken;
 import org.usfirst.frc.team2485.robot.commands.ZeroEncoders;
@@ -31,20 +31,20 @@ public class ScaleAuto extends CommandGroup {
 		CommandGroup everythingElse = new CommandGroup();
 		CommandGroup everythingBeforeEject = new CommandGroup();
 		everythingElse.addSequential(new ArmSetSetpoint(ArmSetpoint.SWITCH));
-		everythingElse.addSequential(new WaitUntilClose(140));
+		everythingElse.addSequential(new WaitUntilClose(200));
 		everythingElse.addSequential(new ArmSetSetpoint(ArmSetpoint.SCALE_HIGH_BACK));
 
 		if (startLeft == scaleLeft) {
 			drive.addSequential(new ResetDriveTrain());
 			AutoPath path = scaleLeft ? pathLeftStraight : pathRightStraight;
 			drive.addSequential(new ZeroEncoders());
-			drive.addSequential(new DriveTo(path, 150, true, 10000, true));
+			drive.addSequential(new DriveTo(path, 307, true, 10000, true));
 			isStraight = true;
 		} else {
 			AutoPath path = scaleLeft ? pathLeftCross : pathRightCross;
-			DriveTo crossPath = new DriveTo(path, 150, true, 100000, true);
 			drive.addSequential(new ResetDriveTrain());
 			drive.addSequential(new ZeroEncoders());
+			DriveTo crossPath = new DriveTo(path, 307, true, 100000, true);
 			drive.addSequential(crossPath);
 		}
 
@@ -54,16 +54,17 @@ public class ScaleAuto extends CommandGroup {
 		addSequential(everythingBeforeEject);
 		addSequential(new Eject(false, true));
 		addSequential(new ArmSetSetpoint(ArmSetpoint.INTAKE)); // intaking path: change setpoint to intake
+		addSequential(new ZeroEncoders());
+		addSequential(new DriveTo(scaleLeft ? intakePathLeft : intakePathRight, 307, false, 7000, false));
+		addSequential(new ResetDriveTrain());
+		addSequential(new WaitForArm());
 		addSequential(new SetIntakeManual(0.75));
 		addSequential(new ZeroEncoders());
-		addSequential(new DriveTo(scaleLeft ? intakePathLeft : intakePathRight, 80, false, 7000, false));
-		addSequential(new ResetDriveTrain());
-		DriveStraight driveStraight = new DriveStraight(8, scaleLeft ? -.39 : .39, 50, 6000);
+		DriveStraight driveStraight = new DriveStraight(16, scaleLeft ? -.39 : .39, 50, 6000);
 
 		driveStraight.setFinishedCondition(() -> {
 			return RobotMap.intake.isIntaken();
 		});
-		addSequential(new ZeroEncoders());
 		addSequential(driveStraight);
 //		intaking.addSequential(new WaitUntilCubeIntaken(4000));
 		addSequential(new ResetDriveTrain());
@@ -75,7 +76,7 @@ public class ScaleAuto extends CommandGroup {
 //			addSequential(new Eject(true, true));
 //		} else {
 			addSequential(new ArmSetSetpoint(ArmSetpoint.SCALE_HIGH_BACK));
-			addSequential(new DriveTo(scaleLeft ? intakePathLeft : intakePathRight, 80, true, 20000, false));
+			addSequential(new DriveTo(scaleLeft ? intakePathLeft : intakePathRight, 307, true, 20000, false));
 			addSequential(new ResetDriveTrain());
 			addSequential(new Eject(false, true));
 			addSequential(new ArmSetSetpoint(ArmSetpoint.SWITCH));

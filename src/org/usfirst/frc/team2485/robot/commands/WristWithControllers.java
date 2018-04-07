@@ -6,6 +6,8 @@ import org.usfirst.frc.team2485.robot.RobotMap;
 import org.usfirst.frc.team2485.robot.subsystems.Arm;
 import org.usfirst.frc.team2485.util.ThresholdHandler;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.command.Command;
 
@@ -82,8 +84,12 @@ public class WristWithControllers extends Command {
 
     	}
 
-   
-    	if (!isManual) {
+    	if (thetasCritical[1] != 0 && theta1 > Arm.MID_ELBOW_ANGLE && RobotMap.arm.getElbowAngle() < Arm.MID_ELBOW_ANGLE) {
+    		if (RobotMap.arm.wristAngPID.isEnabled()) {
+    			RobotMap.arm.wristAngPID.disable();
+    		}
+    		RobotMap.wristTalon.set(ControlMode.PercentOutput, 1);
+    	} else if (!isManual) {
     		if (RobotMap.arm.isClimb) {
     			double angle = Math.max(Math.min(RobotMap.arm.getThetaWrist(), .23 - RobotMap.arm.getElbowAngle()), -RobotMap.arm.getElbowAngle());
     			RobotMap.arm.setWristPos(manualSetpoint ? RobotMap.arm.getThetaWrist() : angle);

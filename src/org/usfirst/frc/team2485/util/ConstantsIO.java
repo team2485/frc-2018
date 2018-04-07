@@ -21,6 +21,12 @@ import org.usfirst.frc.team2485.robot.Robot;
 public class ConstantsIO {
 	public static final String ROBO_RIO_CONSTANTS_FILE_PATH = "/home/lvuser/constants.txt";
 
+	public static double kRamp_AcceleratingForward;
+	public static double kRamp_AcceleratingBackward;
+	public static double kRamp_DeceleratingForward;
+	public static double kRamp_DeceleratingBackward;
+
+
 	public static HashMap<String, String> data;
 
 	public static double accelerationMax;
@@ -132,7 +138,12 @@ public class ConstantsIO {
 		}
 
 		//		createUnMatchedConstants();
-
+		
+		kRamp_AcceleratingForward = Double.parseDouble(data.get("kRamp_AcceleratingForward"));
+		kRamp_AcceleratingBackward = Double.parseDouble(data.get("kRamp_AcceleratingBackward"));
+		kRamp_DeceleratingForward = Double.parseDouble(data.get("kRamp_DeceleratingForward"));
+		kRamp_DeceleratingBackward = Double.parseDouble(data.get("kRamp_DeceleratingBackward"));
+		
 		accelerationMax = Double.parseDouble(data.get("accelerationMax"));
 		kPMax_Distance = Double.parseDouble(data.get("kPMax_Distance"));
 		IMax = Integer.parseInt(data.get("IMax"));

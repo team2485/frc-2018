@@ -20,11 +20,12 @@ public class Arm extends Subsystem {
 	public static final double CRITICAL_DISTANCE = toMeters(40); // temp //distance from mast to 16 inches past frame
 																	// perimeter
 	public static final double CONSERVATIVE_CRITICAL_DISTANCE = toMeters(32);
+	public static final double QUASI_CONSERVATIVE_CRITICAL_DISTANCE = toMeters(32);
 	public static final double ALPHA_MAX_WRIST = 8;
 	public static final double ALPHA_MAX_ELBOW = 4;
 	public static final int ELBOW_OFFSET = -4038;
 	public static final int WRIST_OFFSET = -852;
-	public static final double MIN_WRIST_LIFTING_POSITION = 0.1;
+	public static final double MIN_WRIST_LIFTING_POSITION = 0.15;
 
 	private double thetaWrist;
 	private double thetaElbow;
@@ -87,7 +88,7 @@ public class Arm extends Subsystem {
 	public static final double gearRatioWrist = 975; // temporary
 	public static final double gearRatioElbow = 945;
 
-	public static final double CRITICAL_ANGLE = 0.15; // SET DIRECTLY
+	public static final double CRITICAL_ANGLE = 0.1; // SET DIRECTLY
 	public static final double WRIST_TOLERANCE = 0;
 	public static final double ELBOW_TOLERANCE = 0;
 
@@ -101,8 +102,8 @@ public class Arm extends Subsystem {
 	private static final double MAX_PWM_THRESHOLD_NO_CURRENT = .1;
 	public static final double MAX_UP_CURRENT_WRIST = 20;
 	public static final double MAX_DOWN_CURRENT_WRIST = 20;
-	public static final double MAX_UP_CURRENT_ELBOW = 25;
-	public static final double MAX_DOWN_CURRENT_ELBOW = 20;
+	public static final double MAX_UP_CURRENT_ELBOW = 40;
+	public static final double MAX_DOWN_CURRENT_ELBOW = 40;
 	
 	public static final double VMAX_WRIST = .2; //.4
 	public static final double VMIN_WRIST = -.2; //-.4
@@ -222,11 +223,11 @@ public class Arm extends Subsystem {
 
 	public Arm() {
 		
-		MIN_WRIST_ANGLE_CROSS = FastMath.acos((CONSERVATIVE_CRITICAL_DISTANCE * CONSERVATIVE_CRITICAL_DISTANCE - L2 * L2 - L1 * L1) 
-				/ 2 / L1 / L2) / 2 / Math.PI; 
-		MID_ELBOW_ANGLE = -FastMath.acos((L1 * L1 + CONSERVATIVE_CRITICAL_DISTANCE * CONSERVATIVE_CRITICAL_DISTANCE - L2 * L2) 
-				/ 2 / CONSERVATIVE_CRITICAL_DISTANCE / L1) / 2 / Math.PI;
-
+		MIN_WRIST_ANGLE_CROSS = FastMath.acos((CRITICAL_DISTANCE * CRITICAL_DISTANCE - L2 * L2 - L1 * L1) 
+				/ 2 / L1 / L2) / 2 / Math.PI + 0.05; 
+		MID_ELBOW_ANGLE = -FastMath.acos((L1 * L1 + CRITICAL_DISTANCE * CRITICAL_DISTANCE - L2 * L2) 
+				/ 2 / CRITICAL_DISTANCE / L1) / 2 / Math.PI;
+		System.out.println("mid" + MID_ELBOW_ANGLE);
 		// Elbow
 		elbowMaxAngSource.setPidSource(() -> {
 			return elbowAngVelMaxTN.pidGet();
@@ -237,11 +238,13 @@ public class Arm extends Subsystem {
 		});
 		
 		elbowMinAngVelSource.setPidSource(() -> {
-			return isClimb ? -.15 : -.3;
+//			return isClimb ? -.15 : -.3;
+			return isClimb ? -.15 : -1000;
 		});
 		
 		elbowMaxAngVelSource.setPidSource(() -> {
-			return isClimb ? .15 : .3;
+//			return isClimb ? .15 : .3;
+			return isClimb ? .15 : 1000;
 		});
 		
 		elbowMaxCurrentSource.setPidSource(() -> {
@@ -402,7 +405,7 @@ public class Arm extends Subsystem {
 	}
 
 	public double getMinWristPos() {
-		double margin = (CONSERVATIVE_CRITICAL_DISTANCE - (L1 * FastMath.cos(getElbowAngle() * 2 * Math.PI))) / L2;
+		double margin = (QUASI_CONSERVATIVE_CRITICAL_DISTANCE - (L1 * FastMath.cos(getElbowAngle() * 2 * Math.PI))) / L2;
 		return margin > 1 || Math.abs(getElbowAngle()) > CRITICAL_ANGLE ? -100 : FastMath.acos(margin) / 2 / Math.PI - RobotMap.elbowEncoderWrapperDistance.pidGet();
 	}
 
