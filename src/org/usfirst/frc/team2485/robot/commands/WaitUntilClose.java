@@ -13,6 +13,10 @@ public class WaitUntilClose extends Command{
 //		requires(RobotMap.arm);
 		this.close = close;
 	}
+	
+	protected void initialize() {
+		System.out.println("WaitUntilClose");
+	}
 
 	@Override
 	protected boolean isFinished() {

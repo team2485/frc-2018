@@ -95,6 +95,7 @@ public class DriveStraight extends Command{
 		} else {
 			AutoLogger.addEvent(Type.STOP, "DriveStraight", finished ? "" : "timeout");
 		}
+		
 
 	}
 

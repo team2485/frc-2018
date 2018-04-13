@@ -22,6 +22,8 @@ import com.ctre.phoenix.sensors.PigeonIMU_StatusFrame;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.PIDSourceType;
+import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.SPI.Port;
 import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.Ultrasonic.Unit;
 
@@ -95,6 +97,7 @@ public class RobotMap {
 	public static SpeedControllerWrapper elbowCurrentWrapper;
 	public static SpeedControllerWrapper wristCurrentWrapper;
 
+	public static SPI leds;
 	public static TalonSRXWrapper climberWrapper;
 
 	public static TalonSRXWrapper driveLeftTalonCurrentWrapper1;
@@ -152,7 +155,12 @@ public class RobotMap {
 	public static void init() {
 
 		// Construct Hardware
-
+		leds = new SPI(Port.kOnboardCS0);
+		leds.setChipSelectActiveLow();
+		leds.setClockRate(10000);
+		leds.setMSBFirst();
+		leds.setSampleDataOnRising();
+		leds.setClockActiveHigh();
 		// INTAKE
 		intakeLeftTalon = new TalonSRX(intakeLeftPort);
 		intakeRightTalon = new TalonSRX(intakeRightPort);

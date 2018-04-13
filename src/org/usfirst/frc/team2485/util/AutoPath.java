@@ -10,8 +10,9 @@ import java.util.Arrays;
 
 public class AutoPath {
 	private static final double MAX_VELOCITY = 1000;
-	private static final double MAX_ANG_VEL = .75;
-	private static final double MAX_ACCELERATION_LINEAR = 20;
+	private static final double MAX_ANG_VEL = 1;
+	private static final double MIN_VELOCITY = 15;
+	private static final double MAX_ACCELERATION_LINEAR = 18;
 	public class Point {
 		public double x, y; 
 		public double heading, curvature;
@@ -24,7 +25,7 @@ public class AutoPath {
 	}
 	
 	public static class Pair {
-		private double x;
+		private double x;		
 		private double y;
 		public Pair (double x, double y) {
 			this.x = x;
@@ -84,6 +85,29 @@ public class AutoPath {
 		generateCurve();
 		
 	} 
+	
+	public Point getPointAtDistInterp(double dist) {
+		int index = points.length;
+		for (int i = 0; i < points.length; i++) {
+			if (dist < points[i].arcLength) {
+				index = i;
+				break;
+			}
+		}
+		if (index == 0) {
+			return points[0]; 
+		} else if (index == points.length) {
+			return points[points.length - 1];
+		} else {
+			Point p1 = points[index - 1];
+			Point p2 = points[index];
+			double percentDone = (dist - p1.arcLength) / (p2.arcLength - p1.arcLength);
+			Point p = new Point(new Pair(p1.x * (1 - percentDone) + p2.x * percentDone, 
+					p1.y * (1 - percentDone) + p2.y * percentDone));
+			p.heading = p1.heading * (1 - percentDone) + p2.heading * percentDone;
+			return p;
+		}
+	}
 	
 	public static AutoPath getAutoPathForClothoidSpline(Pair[] points, double[] distances) {
 		Pair[][] input = new Pair[distances.length * 2 + 1][];
@@ -159,7 +183,7 @@ public class AutoPath {
 				if (Math.abs(points[j].curvature) > 0 && 
 						2 * MAX_ACCELERATION_LINEAR * (points[j].arcLength - points[i].arcLength) < points[i].maxSpeed * points[i].maxSpeed) {
 					double maxSpeed = MAX_ANG_VEL / Math.abs(points[j].curvature);
-					maxSpeed = Math.sqrt(maxSpeed * maxSpeed + 2 * MAX_ACCELERATION_LINEAR * (points[j].arcLength - points[i].arcLength));
+					maxSpeed = Math.sqrt(maxSpeed * maxSpeed + 2 * MAX_ACCELERATION_LINEAR * (points[j].arcLength - points[i].arcLength)) + MIN_VELOCITY;
 					points[i].maxSpeed = Math.min(points[i].maxSpeed, maxSpeed);
 				}
 			}

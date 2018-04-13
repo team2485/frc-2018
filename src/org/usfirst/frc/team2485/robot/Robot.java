@@ -77,14 +77,21 @@ public class Robot extends IterativeRobot {
 		Scheduler.getInstance().removeAll();
 		RobotMap.driveTrain.reset();
 		RobotMap.arm.reset();
+		RobotMap.intake.setRollers(0);
 		AutoLogger.write();
 	}
-
+	int counter = 0;
 	@Override
 	public void disabledPeriodic() {
 		Scheduler.getInstance().run();
 		RobotMap.driveTrain.reset();
 		updateSmartDashboard();
+		if (counter++ % 50 == 0) {
+			byte b = (byte)( counter / 50) ;
+			byte[] arr = new byte[100];
+			System.out.println(RobotMap.leds.transaction(new byte[] {b}, arr, 1));
+			System.out.println(arr[0]);
+		}
 	}
 	
 
@@ -144,8 +151,8 @@ public class Robot extends IterativeRobot {
 				
 		// CHANGE AUTO HERE
 		boolean startLeft = false;
-//		Scheduler.getInstance().add(new SwitchAuto(switchLeft, scaleLeft));
-		Scheduler.getInstance().add(new ScaleAuto(startLeft, switchLeft, scaleLeft));
+		Scheduler.getInstance().add(new SwitchAuto(switchLeft, scaleLeft));
+//		Scheduler.getInstance().add(new ScaleAuto(startLeft, switchLeft, scaleLeft));
 	}
 
 	/**
@@ -263,7 +270,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("Intake Average Current", (RobotMap.intakeLeftTalon.getOutputCurrent() + RobotMap.intakeRightTalon.getOutputCurrent())/2);
 //		SmartDashboard.putNumber("Angle TN", RobotMap.driveTrain.angleOutputTN.pidGet());
 		//SmartDashboard.putNumber("Yaw Rate", RobotMap.pigeonRateWrapper.pidGet());
-		//SmartDashboard.putNumber("Drift", RobotMap.pathTracker.getDrift());
+		SmartDashboard.putNumber("Drift", RobotMap.pathTracker.getDrift());
 //		SmartDashboard.putNumber("X", RobotMap.deadReckoning.getX());
 //		SmartDashboard.putNumber("Y", RobotMap.deadReckoning.getY());
 		SmartDashboard.putNumber("Elbow Current Error", RobotMap.elbowTalon.getOutputCurrent());
@@ -334,16 +341,10 @@ public class Robot extends IterativeRobot {
 		double wristPwm = RobotMap.wristTalon.getMotorOutputPercent();
 		
 		
-		String[] dataNames = new String[] { "xPos", "yPos", "avgEncoderDist", "avgEncoderRate", "elbowAngle", "elbowRate", "wristAngle", "wristRate", "gyroAngle", "gyroRate", "joystickDriver", "joystickOperator", "elbowCurrent", "wristCurrent", "elbowPwm", "wristPwm", "avgDriveTrainCurrent"};
 		double[] theData = new double[] { xPos, yPos, avgEncoderDist, avgEncoderRate, elbowAngle, elbowRate, wristAngle, wristRate, gyroAngle, gyroRate, joystickDriver, joystickOperator, elbowCurrent, wristCurrent, elbowPwm, wristPwm, avgDriveTrainCurrent};
 		
-		ArrayList<Double> finalData = AutoLogger.addData(theData);
 		
-		for(int i=0; i<=finalData.size()-1; i++) {
-			AutoLogger.addEvent(Type.DOUBLE, dataNames[i] , Double.toString(finalData.get(i)));
-			
-			
-		}
+		AutoLogger.addDataPt(theData);
 		
 		
 		

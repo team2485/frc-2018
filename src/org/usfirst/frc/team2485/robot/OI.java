@@ -7,6 +7,7 @@ import org.usfirst.frc.team2485.robot.commands.ArmSetSetpoint;
 import org.usfirst.frc.team2485.robot.commands.CancelCommand;
 import org.usfirst.frc.team2485.robot.commands.HoldPosition;
 import org.usfirst.frc.team2485.robot.commands.SetIntakeManual;
+import org.usfirst.frc.team2485.robot.commands.StartEjecting;
 import org.usfirst.frc.team2485.robot.commands.StopIntaking;
 import org.usfirst.frc.team2485.robot.subsystems.Arm.ArmSetpoint;
 
@@ -64,6 +65,7 @@ public class OI {
 	public static JoystickButton DRIVER_LBUMPER;
 	public static JoystickButton DRIVER_RBUMPER;
 	public static JoystickButton DRIVER_XBOX;
+	public static JoystickButton DRIVER_START;
 	
 	public static JoystickButton OPERATOR_UP;
 	public static JoystickButton OPERATOR_DOWN;
@@ -112,6 +114,7 @@ public class OI {
 	private static JoystickButton OPERATOR_BACKUP_BACK_BUTTON;
 	
 	
+	
 	public static void init() {
 		driver = new Joystick(0);
 		operator = new Joystick(1);
@@ -132,6 +135,7 @@ public class OI {
 		DRIVER_RBUMPER = new JoystickButton(driver, XBOX_RBUMPER_PORT);
 		
 		DRIVER_XBOX = new JoystickButton(driver, XBOX_XBOX_PORT);
+		DRIVER_START = new JoystickButton(driver, XBOX_START_BUTTON);
 		
 		OPERATOR_UP = new JoystickButton(operator, XBOX_UP_PORT);
 		OPERATOR_DOWN = new JoystickButton(operator, XBOX_DOWN_PORT);
@@ -156,9 +160,10 @@ public class OI {
 
 
 		
-
-		DRIVER_B.whenPressed(new Eject(true, false));
-		DRIVER_RBUMPER.whenPressed(new Eject(false, false));
+		
+		DRIVER_START.whenPressed(new StartEjecting(false, true));
+		DRIVER_B.whenPressed(new Eject(true, false, false));
+		DRIVER_RBUMPER.whenPressed(new Eject(false, false, false));
 		DRIVER_Y.whenPressed(new SetIntakeManual(0));
 		DRIVER_A.whenPressed(new SetIntakeManual(.75)); // anton change this 
 		
@@ -229,8 +234,8 @@ public class OI {
 		
 		DRIVER_BACKUP_XBOX = new JoystickButton(driverBackup, XBOX_XBOX_PORT);
 		
-		DRIVER_BACKUP_B.whenPressed(new Eject(true, false));
-		DRIVER_BACKUP_RBUMPER.whenPressed(new Eject(false, false));
+		DRIVER_BACKUP_B.whenPressed(new Eject(true, false, false));
+		DRIVER_BACKUP_RBUMPER.whenPressed(new Eject(false, false, false));
 		DRIVER_BACKUP_Y.whenPressed(new SetIntakeManual(0));
 		DRIVER_BACKUP_A.whenPressed(new SetIntakeManual(.75)); // anton change this 
 		

@@ -24,15 +24,21 @@ public class DeadReckoning {
 		zero();
 	}
 	
-	public void reset(double x, double y) {
+	public synchronized void reset(double x, double y) {
 		this.x = x;
 		this.y = y;
 	}
 	
-	public void setEncoderPosition(double dist) {
+	public synchronized void setEncoderPosition(double dist) {
 		leftEnc.setPosition(dist);
 		rightEnc.setPosition(dist);
 		lastDist = dist;
+	}
+	
+	public synchronized void addToEncoderPosition(double dist) {
+		leftEnc.setPosition(dist + leftEnc.pidGet());
+		rightEnc.setPosition(dist + rightEnc.pidGet());
+		lastDist += dist;
 	}
 
 	public synchronized void zero() {
@@ -58,6 +64,10 @@ public class DeadReckoning {
 		return y;
 	}
 
+	public double getLastDist() {
+		return lastDist;
+	}
+	
 	private synchronized void update() {
 		double curDist = (leftEnc.pidGet() + rightEnc.pidGet()) / 2;
 		double deltaDist = curDist - lastDist;
@@ -84,9 +94,10 @@ public class DeadReckoning {
 			while (true) {
 				if (running) {
 					update();
+					System.out.println("updated" + System.currentTimeMillis());
 				}
 				try {
-					Thread.sleep(5);
+					Thread.sleep(20);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}

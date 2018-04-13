@@ -22,6 +22,7 @@ public class Intake extends Subsystem {
 	public boolean overCurrent = false;
 	public double startSpikeTime;
 	public boolean cubeIntaken = false;
+	public boolean ejectingLong = false;
 	
 	public Intake() {
 		this.left = RobotMap.intakeLeftTalon;

@@ -43,6 +43,7 @@ public class ConstantsIO {
 	public static double kI_DriveAngle;
 	public static double kD_DriveAngle;
 	public static double kF_DriveAngle;
+	public static double kDrift;
 
 	public static double kP_AngVelTeleop;
 	public static double kI_AngVelTeleop;
@@ -113,6 +114,21 @@ public class ConstantsIO {
 	public static double kI_DriveStraight;
 	
 	public static double kUpRamp_AngCurrent;
+	
+	public static double kThrottleLimit_DeceleratingForward;
+	public static double kThrottleLimit_DeceleratingBackward;
+
+	public static double kRamp_AcceleratingForwardArmDown;
+
+	public static double kRamp_AcceleratingBackwardArmDown;
+
+	public static double kRamp_DeceleratingForwardArmDown;
+
+	public static double kThrottleLimit_DeceleratingForwardArmDown;
+
+	public static double kRamp_DeceleratingBackwardArmDown;
+
+	public static double kThrottleLimit_DeceleratingBackwardArmDown;
 
 
 	public static void init() {
@@ -143,6 +159,20 @@ public class ConstantsIO {
 		kRamp_AcceleratingBackward = Double.parseDouble(data.get("kRamp_AcceleratingBackward"));
 		kRamp_DeceleratingForward = Double.parseDouble(data.get("kRamp_DeceleratingForward"));
 		kRamp_DeceleratingBackward = Double.parseDouble(data.get("kRamp_DeceleratingBackward"));
+		kThrottleLimit_DeceleratingForward = Double.parseDouble(data.get("kThrottleLimit_DeceleratingForward"));
+		kThrottleLimit_DeceleratingBackward = Double.parseDouble(data.get("kThrottleLimit_DeceleratingBackward"));
+		
+		 kRamp_AcceleratingForwardArmDown = Double.parseDouble(data.get("kRamp_AcceleratingForwardArmDown"));
+
+		 kRamp_AcceleratingBackwardArmDown = Double.parseDouble(data.get("kRamp_AcceleratingBackwardArmDown"));
+
+		 kRamp_DeceleratingForwardArmDown = Double.parseDouble(data.get("kRamp_DeceleratingForwardArmDown"));
+
+		 kThrottleLimit_DeceleratingForwardArmDown = Double.parseDouble(data.get("kThrottleLimit_DeceleratingForwardArmDown"));
+
+		 kRamp_DeceleratingBackwardArmDown = Double.parseDouble(data.get("kRamp_DeceleratingBackwardArmDown"));
+
+		 kThrottleLimit_DeceleratingBackwardArmDown = Double.parseDouble(data.get("kThrottleLimit_DeceleratingBackwardArmDown"));
 		
 		accelerationMax = Double.parseDouble(data.get("accelerationMax"));
 		kPMax_Distance = Double.parseDouble(data.get("kPMax_Distance"));
@@ -163,10 +193,10 @@ public class ConstantsIO {
 		kI_DriveAngle = Double.parseDouble(data.get("kI_DriveAngle"));
 		kD_DriveAngle = Double.parseDouble(data.get("kD_DriveAngle"));
 		kF_DriveAngle = Double.parseDouble(data.get("kF_DriveAngle"));
+		kDrift = Double.parseDouble(data.get("kDrift"));
 		
 		filterCoefficient = Double.parseDouble(data.get("filterCoefficient"));
 		
-		kP_Drift = Double.parseDouble(data.get("kP_Drift"));
 		
 		kUpRamp_Velocity = Double.parseDouble(data.get("kUpRamp_Velocity"));
 		kDownRamp_Velocity = Double.parseDouble(data.get("kDownRamp_Velocity"));

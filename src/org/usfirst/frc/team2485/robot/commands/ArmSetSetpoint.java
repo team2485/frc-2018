@@ -25,6 +25,7 @@ public class ArmSetSetpoint extends InstantCommand {
 
     // Called just before this Command runs the first time
     protected void initialize() {
+    	System.out.println("ArmSetSetpoint");
     	WristWithControllers.isManual = false;
     	RobotMap.arm.setThetaElbow(theta1);
     	RobotMap.arm.setThetaWrist(theta2 - theta1);

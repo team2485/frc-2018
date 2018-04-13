@@ -221,6 +221,10 @@ public class WarlordsPIDController extends WarlordsControlSystem {
 			return Math.abs(getError()) < absoluteTolerance;
 		}
 	}
+	
+	public double getTolerance() {
+		return absoluteTolerance;
+	}
 
 	public void setOutputSources(PIDSource max,PIDSource min) {
 		

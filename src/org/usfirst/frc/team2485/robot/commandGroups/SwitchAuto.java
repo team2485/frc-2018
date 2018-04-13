@@ -20,22 +20,23 @@ public class SwitchAuto extends CommandGroup {
 	private static AutoPath leftPath, rightPath;
 	private static AutoPath intakeLeftPath, intakeRightPath;
 	private static AutoPath leftToScaleLeft, rightToScaleLeft, leftToScaleRight, rightToScaleRight;
+	private static AutoPath backup;
 	public SwitchAuto(boolean switchLeft, boolean scaleLeft) {
 		addSequential(new ArmSetSetpoint(ArmSetpoint.SWITCH));
 		AutoPath path = switchLeft ? leftPath : rightPath;
 //		RobotMap.pathTracker.start(path);
-		DriveTo drive = new DriveTo(path, 70, false, 6000, false);
+		DriveTo drive = new DriveTo(path, 70, false, 6000, false, true);
 		drive.setDistTolerance(20);
 		addSequential(drive);
 		addSequential(new ResetDriveTrain());
-		addSequential(new Eject(true, false));
-		addSequential(new DriveStraight(-70, 0, 120, 2500));
+		addSequential(new Eject(true, false, true));
+		addSequential(new DriveTo(backup, 120, true, 2500, false, false));
 		addSequential(new ResetDriveTrain());
 		addSequential(new ArmSetSetpoint(ArmSetpoint.INTAKE));
 		CommandGroup getCube = new CommandGroup();
 		CommandGroup driveToIntake = new CommandGroup();
 		CommandGroup intaking = new CommandGroup();
-		driveToIntake.addSequential(new DriveTo(switchLeft ? intakeLeftPath : intakeRightPath, 80, false, 3500, false));
+		driveToIntake.addSequential(new DriveTo(switchLeft ? intakeLeftPath : intakeRightPath, 80, false, 3500, false, false));
 		driveToIntake.addSequential(new ResetDriveTrain());
 		intaking.addSequential(new SetIntakeManual(.75));
 		intaking.addSequential(new WaitUntilCubeIntaken(6000));
@@ -44,11 +45,11 @@ public class SwitchAuto extends CommandGroup {
 		getCube.addParallel(driveToIntake);
 		getCube.addParallel(intaking);
 		addSequential(getCube);
-//		addSequential(new DriveTo(left ? intakeLeftPath : intakeRightPath, 80, true, 3500, false));
-//		DriveStraight straightPath = new DriveStraight(80, 120, 2500);
-//		straightPath.setTolerance(10);
-//		addSequential(straightPath);
-//		addSequential(new Eject(true, true));
+		addSequential(new DriveTo(switchLeft ? intakeLeftPath : intakeRightPath, 80, false, 3500, false, false));
+		DriveStraight straightPath = new DriveStraight(80, 120, 2500);
+		straightPath.setTolerance(10);
+		addSequential(straightPath);
+		addSequential(new Eject(true, true, true));
 		AutoPath pathToScale;
 		CommandGroup drivingToScale = new CommandGroup();
 		if (scaleLeft == switchLeft) {
@@ -56,7 +57,7 @@ public class SwitchAuto extends CommandGroup {
 		} else {
 			pathToScale = switchLeft ? leftToScaleRight : rightToScaleLeft;
 		}
-		drivingToScale.addSequential(new DriveTo(pathToScale, 80, true, 8000, false));
+		drivingToScale.addSequential(new DriveTo(pathToScale, 80, true, 8000, false, true));
 		drivingToScale.addSequential(new ResetDriveTrain());
 		addSequential(drivingToScale);
 	}
@@ -70,6 +71,7 @@ public class SwitchAuto extends CommandGroup {
 		rightToScaleRight = getToScalePathStraight(false);
 		rightToScaleLeft = getToScalePathCross(false);
 		leftToScaleRight = getToScalePathCross(true);
+		backup = getBackup();
 	}
 
 	private static AutoPath getAutoPath(boolean left) {
@@ -101,5 +103,9 @@ public class SwitchAuto extends CommandGroup {
 		AutoPath path = AutoPath.getAutoPathForClothoidSpline(controlPoints, dists);
 		
 		return path;
+	}
+	
+	public static AutoPath getBackup() {
+		return new AutoPath(AutoPath.getPointsForBezier(2000, new Pair(0, 0), new Pair(0, 70)));
 	}
 }

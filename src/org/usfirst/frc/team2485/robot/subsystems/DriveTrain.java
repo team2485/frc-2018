@@ -12,7 +12,6 @@ import org.usfirst.frc.team2485.util.RampRate;
 import org.usfirst.frc.team2485.util.TransferNode;
 import org.usfirst.frc.team2485.util.WarlordsPIDController;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
@@ -43,7 +42,9 @@ public class DriveTrain extends Subsystem {
 	public TransferNode angleOutputRampedTN = new TransferNode(0);
 	public TransferNode curvatureSetpointTN = new TransferNode(0);
 	public TransferNode lowPassFilterAngVelTN = new TransferNode(0);
-
+	public TransferNode angleSetpointTN = new TransferNode(0);
+	
+	public PIDSourceWrapper angleSetpointPIDSource = new PIDSourceWrapper();
 	public PIDSourceWrapper kp_distancePIDSource = new PIDSourceWrapper();
 	private PIDSourceWrapper encoderDistancePIDSource = new PIDSourceWrapper();
 	private PIDSourceWrapper encoderAvgVelocityPIDSource = new PIDSourceWrapper();
@@ -135,6 +136,18 @@ public class DriveTrain extends Subsystem {
 		angVelFilter.setSetpointSource(RobotMap.pigeonRateWrapper);
 		angVelFilter.setOutputs(lowPassFilterAngVelTN);
 		
+		angleSetpointPIDSource.setPidSource(() -> {
+			double correction = ConstantsIO.kDrift * RobotMap.pathTracker.getDrift();
+			correction = Math.min(correction, Math.PI/2);
+			correction = Math.max(correction, -Math.PI/2);
+			if (Math.abs(distancePID.getError()) < distancePID.getTolerance() + 1) {
+				return angleSetpointTN.pidGet();
+			} else if (distancePID.getError() > 0) {
+				return angleSetpointTN.pidGet() - correction;
+			}
+			return angleSetpointTN.pidGet() + correction;
+		});
+		
 		anglePID.setSources(RobotMap.pigeonDisplacementWrapper);
 		anglePID.setVelocitySetpointSources(angVelSource);
 		anglePID.setOutputs(angleOutputTN);
@@ -142,6 +155,7 @@ public class DriveTrain extends Subsystem {
 		anglePID.setOutputSources(maxAngleORSource, minAngleORSource);
 		anglePID.setInputRange(0, 2 * Math.PI);
 		anglePID.setContinuous(true);
+		anglePID.setSetpointSource(angleSetpointPIDSource);
 		
 		angRampRate.setSetpointSource(angleOutputTN);
 		angRampRate.setOutputs(angleOutputRampedTN);
@@ -246,31 +260,34 @@ public class DriveTrain extends Subsystem {
 				(ArmSetpoint.SCALE_HIGH_BACK.getElbowPos() - ArmSetpoint.SWITCH.getElbowPos());
 		percentUp = Math.min(1, percentUp);
 		
-		double upRamp = percentUp * (ConstantsIO.kUpRamp_TeleopUp - ConstantsIO.kUpRamp_TeleopDown) + ConstantsIO.kUpRamp_TeleopDown;
-		double downRamp = percentUp * (ConstantsIO.kDownRamp_TeleopUp - ConstantsIO.kDownRamp_TeleopDown) + ConstantsIO.kDownRamp_TeleopDown;
-		RobotMap.driveRightPWM.setRampRate(upRamp, downRamp);
-		RobotMap.driveLeftPWM.setRampRate(upRamp, downRamp);
+//		double upRamp = percentUp * (ConstantsIO.kUpRamp_TeleopUp - ConstantsIO.kUpRamp_TeleopDown) + ConstantsIO.kUpRamp_TeleopDown;
+//		double downRamp = percentUp * (ConstantsIO.kDownRamp_TeleopUp - ConstantsIO.kDownRamp_TeleopDown) + ConstantsIO.kDownRamp_TeleopDown;
+//		RobotMap.driveRightPWM.setRampRate(upRamp, downRamp);
+//		RobotMap.driveLeftPWM.setRampRate(upRamp, downRamp);
 
-		////	double I = percentUp * (CURRENT_LIMIT_ARM_UP - CURRENT_LIMIT_ARM_DOWN) + CURRENT_LIMIT_ARM_DOWN;
+		//	double I = percentUp * (CURRENT_LIMIT_ARM_UP - CURRENT_LIMIT_ARM_DOWN) + CURRENT_LIMIT_ARM_DOWN;
 //		double speed = percentUp * (SPEED_LIMIT - 1) + 1;
-//		boolean drivingForward = getAverageSpeed() > 0;
-//		boolean throttleForward = throttle > 0;
-//		double ramp;
-//		if (drivingForward == throttleForward || getAverageSpeed() == 0) { // starting
-//			if (drivingForward) {
-//				ramp = ConstantsIO.kRamp_AcceleratingForward;				
-//			} else {
-//				ramp = ConstantsIO.kRamp_AcceleratingBackward;
-//			}
-//		} else { // stopping
-//			if (drivingForward) {
-//				ramp = ConstantsIO.kRamp_DeceleratingForward;				
-//			} else {
-//				ramp = ConstantsIO.kRamp_DeceleratingBackward;				
-//			}		
-//		}
-//		throttleRampRate.setRampRates(ramp, 1000);
-//		throttle = throttleRampRate.getNextValue(throttle); // don't enable just use here																		// (kind of sketchy but what here isn't)
+		boolean drivingForward = getAverageSpeed() > 0;
+		boolean throttleForward = throttle > 0;
+		double ramp;
+		boolean armUp = RobotMap.arm.getElbowSetpoint() > 0;
+		if (drivingForward == throttleForward || getAverageSpeed() == 0) { // starting
+			if (drivingForward) {
+				ramp = armUp ? ConstantsIO.kRamp_AcceleratingForward : ConstantsIO.kRamp_AcceleratingForwardArmDown;				
+			} else {
+				ramp = armUp ?  ConstantsIO.kRamp_AcceleratingBackward : ConstantsIO.kRamp_AcceleratingBackwardArmDown;
+			}
+		} else { // stopping
+			if (drivingForward) {
+				ramp = armUp ? ConstantsIO.kRamp_DeceleratingForward : ConstantsIO.kRamp_DeceleratingForwardArmDown;
+				throttle *= armUp ? ConstantsIO.kThrottleLimit_DeceleratingForward : ConstantsIO.kThrottleLimit_DeceleratingForwardArmDown;
+			} else {
+				ramp = armUp ? ConstantsIO.kRamp_DeceleratingBackward : ConstantsIO.kRamp_DeceleratingBackwardArmDown;	
+				throttle *= armUp ? ConstantsIO.kThrottleLimit_DeceleratingBackward : ConstantsIO.kThrottleLimit_DeceleratingBackwardArmDown;
+			}		
+		}
+		throttleRampRate.setRampRates(ramp, 1000);
+		throttle = throttleRampRate.getNextValue(throttle); // don't enable just use here																		// (kind of sketchy but what here isn't)
 		
 		double leftPwm, rightPwm;
 
@@ -303,9 +320,8 @@ public class DriveTrain extends Subsystem {
 		RobotMap.driveRightTalon.enableCurrentLimit(false);
 
 		
-		
-		
 		double speed = 1;
+		
 
 		if (quickturn) {
 			speed = percentUp * (0.4 - 1) + 1;
@@ -410,7 +426,7 @@ public class DriveTrain extends Subsystem {
 		leftMotorSetter.enable();
 		rightMotorSetter.enable();
 		angVelFilter.enable();
-		anglePID.setSetpoint(angle);
+		angleSetpointTN.setOutput(angle);
 		distancePID.setSetpoint(distance);
 		curvatureSetpointTN.setOutput(curvature);
 		distancePID.setAbsoluteTolerance(toleranceDist);
@@ -460,7 +476,7 @@ public class DriveTrain extends Subsystem {
 			angleOutputTN.setOutput(0);
 			curvatureSetpointTN.setOutput(0);
 			angleTN.setOutput(0);
-			anglePID.setSetpoint(0);
+			angleSetpointTN.setOutput(0);
 			velocitySetpointTN.setOutput(0);
 			angVelFilter.disable();
 		}

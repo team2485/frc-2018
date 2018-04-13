@@ -11,8 +11,9 @@ public class StopIntaking extends InstantCommand {
 	}
 	@Override
 	protected void initialize() {
-		if (RobotMap.intake.getRollers() > 0) {
+		if (RobotMap.intake.getRollers() > 0 || RobotMap.intake.ejectingLong) {
 			RobotMap.intake.stopRollers();
+			RobotMap.intake.ejectingLong = false;
 		}
 		AutoLogger.addEvent(Type.START, "StopIntaking", "");
 	}
