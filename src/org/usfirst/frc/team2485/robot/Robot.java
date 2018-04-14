@@ -151,8 +151,8 @@ public class Robot extends IterativeRobot {
 				
 		// CHANGE AUTO HERE
 		boolean startLeft = false;
-		Scheduler.getInstance().add(new SwitchAuto(switchLeft, scaleLeft));
-//		Scheduler.getInstance().add(new ScaleAuto(startLeft, switchLeft, scaleLeft));
+//		Scheduler.getInstance().add(new SwitchAuto(switchLeft, scaleLeft));
+		Scheduler.getInstance().add(new ScaleAuto(startLeft, switchLeft, scaleLeft));
 	}
 
 	/**

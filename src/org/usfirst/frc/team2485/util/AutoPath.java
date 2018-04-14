@@ -10,9 +10,9 @@ import java.util.Arrays;
 
 public class AutoPath {
 	private static final double MAX_VELOCITY = 1000;
-	private static final double MAX_ANG_VEL = 1;
-	private static final double MIN_VELOCITY = 15;
-	private static final double MAX_ACCELERATION_LINEAR = 18;
+	private static final double MAX_ANG_VEL = 1.25;
+	private static final double MIN_VELOCITY = 20;
+	private static final double MAX_ACCELERATION_LINEAR = 25;
 	public class Point {
 		public double x, y; 
 		public double heading, curvature;

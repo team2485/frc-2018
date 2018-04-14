@@ -45,11 +45,11 @@ public class SwitchAuto extends CommandGroup {
 		getCube.addParallel(driveToIntake);
 		getCube.addParallel(intaking);
 		addSequential(getCube);
-		addSequential(new DriveTo(switchLeft ? intakeLeftPath : intakeRightPath, 80, false, 3500, false, false));
-		DriveStraight straightPath = new DriveStraight(80, 120, 2500);
-		straightPath.setTolerance(10);
-		addSequential(straightPath);
-		addSequential(new Eject(true, true, true));
+//		addSequential(new DriveTo(switchLeft ? intakeLeftPath : intakeRightPath, 80, false, 3500, false, false));
+//		DriveStraight straightPath = new DriveStraight(80, 120, 2500);
+//		straightPath.setTolerance(10);
+//		addSequential(straightPath);
+//		addSequential(new Eject(true, true, true));
 		AutoPath pathToScale;
 		CommandGroup drivingToScale = new CommandGroup();
 		if (scaleLeft == switchLeft) {
