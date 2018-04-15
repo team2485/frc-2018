@@ -22,7 +22,6 @@ public class ScaleAuto extends CommandGroup {
 	public static AutoPath pathLeftCross, pathRightCross, pathLeftStraight, pathRightStraight, intakePathLeft,
 			intakePathRight, driveStraightLeft, driveStraightRight;
 	boolean isStraight = false;
-	
 
 	public ScaleAuto(boolean startLeft, boolean switchLeft, boolean scaleLeft) {
 		CommandGroup drive = new CommandGroup();
@@ -40,13 +39,14 @@ public class ScaleAuto extends CommandGroup {
 		} else {
 			AutoPath path = scaleLeft ? pathLeftCross : pathRightCross;
 			drive.addSequential(new ResetDriveTrain());
-			DriveTo crossPath = new DriveTo(path, 300, true, 100000, true, true);
+			DriveTo crossPath = new DriveTo(path, 300, true, 7500, true, true);
+			crossPath.setDistTolerance(60);
 			drive.addSequential(crossPath);
 		}
 
 		drive.addSequential(new ResetDriveTrain());
 		CommandGroup ejecting = new CommandGroup();
-		ejecting.addSequential(new WaitUntilClose(25));
+		ejecting.addSequential(new WaitUntilClose(100));
 		ejecting.addSequential(new Eject(true, true, true));
 		firstCube.addParallel(drive);
 		firstCube.addParallel(armUpWhenClose);
@@ -54,33 +54,39 @@ public class ScaleAuto extends CommandGroup {
 		addSequential(firstCube);
 		addSequential(new ArmSetSetpoint(ArmSetpoint.INTAKE)); // intaking path: change setpoint to intake
 		addSequential(new TimedCommand(.7));
-		addSequential(new DriveTo(scaleLeft ? intakePathLeft : intakePathRight, 300, false, 7000, false, true));
+		DriveTo intakePath = new DriveTo(scaleLeft ? intakePathLeft : intakePathRight, 300, false, 2000, false, true);
+		intakePath.setAngleTolerance(.175);
+		addSequential(intakePath);
 		addSequential(new ResetDriveTrain());
 		addSequential(new SetIntakeManual(0.75));
-		DriveTo driveStraight = new DriveTo(scaleLeft ? driveStraightLeft : driveStraightRight, 100, false, 6000, false, false);
+		DriveTo driveStraight = new DriveTo(scaleLeft ? driveStraightLeft : driveStraightRight, 100, false, 7500, false,
+				false);
 
 		driveStraight.setFinishedCondition(() -> {
 			return RobotMap.intake.isIntaken();
 		});
 		addSequential(driveStraight);
-//		intaking.addSequential(new WaitUntilCubeIntaken(4000));
+		// intaking.addSequential(new WaitUntilCubeIntaken(4000));
 		addSequential(new ResetDriveTrain());
 		addSequential(new StopIntaking());
-//		addSequential(new TimedCommand(1));
+		// addSequential(new TimedCommand(1));
 
-//		if (switchLeft == scaleLeft) {
-//			DriveStraight finalDrive = new DriveStraight(20, 30, 2000);
-//			finalDrive.setTolerance(10);
-//			addSequential(finalDrive);
-//			addSequential(new Eject(true, true));
-//		} else {
-			addSequential(new ArmSetSetpoint(ArmSetpoint.SCALE_HIGH_BACK));
-			addSequential(new DriveTo(scaleLeft ? driveStraightLeft : driveStraightRight, 100, true, 3000, false, false));
-			addSequential(new ResetDriveTrain());
-			addSequential(new DriveTo(scaleLeft ? intakePathLeft : intakePathRight, 300, true, 2500, false, false));
-			addSequential(new Eject(true, true, true));
-			addSequential(new ArmSetSetpoint(ArmSetpoint.SWITCH));
-//		}
+		// if (switchLeft == scaleLeft) {
+		// DriveStraight finalDrive = new DriveStraight(20, 30, 2000);
+		// finalDrive.setTolerance(10);
+		// addSequential(finalDrive);
+		// addSequential(new Eject(true, true));
+		// } else {
+		addSequential(new ArmSetSetpoint(ArmSetpoint.SCALE_HIGH_BACK));
+		addSequential(new DriveTo(scaleLeft ? driveStraightLeft : driveStraightRight, 100, true, 1000, false, false));
+		addSequential(new ResetDriveTrain());
+		DriveTo secondCube = new DriveTo(scaleLeft ? intakePathLeft : intakePathRight, 300, true, 1250, false, false);
+		secondCube.setDistTolerance(40);
+		secondCube.setAngleTolerance(.175);
+		addSequential(secondCube);
+		addSequential(new Eject(true, true, true));
+		addSequential(new ArmSetSetpoint(ArmSetpoint.SWITCH));
+		// }
 
 	}
 
@@ -97,9 +103,9 @@ public class ScaleAuto extends CommandGroup {
 		intakePathLeft = getIntakePath(true);
 
 		intakePathRight = getIntakePath(false);
-		
+
 		driveStraightLeft = getDriveStraight(true);
-		
+
 		driveStraightRight = getDriveStraight(false);
 
 	}
@@ -107,7 +113,8 @@ public class ScaleAuto extends CommandGroup {
 	public static AutoPath getCross(boolean left) {
 		int sign = left ? -1 : 1;
 
-		Pair[] controlPoints = { new Pair(-193 * sign, -270), new Pair(-214 * sign, -218), new Pair(0.0, -218), //193, -270,  
+		Pair[] controlPoints = { new Pair(-193 * sign, -255), new Pair(-214 * sign, -200), new Pair(0.0, -200), // 193,
+																												// -270,
 				new Pair(0.0, 0.0), };
 		double[] dists = { 50.0, 75.0, };
 		return AutoPath.getAutoPathForClothoidSpline(controlPoints, dists);
@@ -121,24 +128,27 @@ public class ScaleAuto extends CommandGroup {
 
 	public static AutoPath getStraight(boolean left) {
 		int sign = left ? -1 : 1;
-		Pair[] controlPoints = { new Pair(sign * 41.4, -253.0), new Pair(0, -115), new Pair(0.0, 0.0) }; //39, 245
-		double[] dists = { 90.0, };
+		 Pair[] controlPoints = { new Pair(sign * 50.4, -283.0), new Pair(0, -115), new Pair(0.0, 0.0) };
+		
+		 double[] dists = { 90.0, };
 		return AutoPath.getAutoPathForClothoidSpline(controlPoints, dists);
 
 	}
 
 	public static AutoPath getIntakePath(boolean left) {
 		int sign = left ? -1 : 1;
-		AutoPath intakePath = new AutoPath(AutoPath.getPointsForBezier(2000, new Pair(sign * 3.6, 18.0), //6, 26
-				new Pair(sign * -0.39, 33.38), new Pair(sign * -6.16, 43.32), new Pair(sign * -4.1, 47.7))); 
+		 AutoPath intakePath = new AutoPath(AutoPath.getPointsForBezier(2000, new Pair(sign * -5.4, -12.0),
+		 new Pair(sign * -6.88, -6.12), new Pair(sign * -6.16, 28.32), new Pair(sign *
+		 -4.1, 32.7)));
+		
 		return intakePath;
 
 	}
-	
+
 	public static AutoPath getDriveStraight(boolean left) {
-		AutoPath path = new AutoPath(AutoPath.getPointsForBezier(1000, new Pair(0, 0), new Pair(20 * Math.sin(left ? -.39 : .39), 20 * Math.cos(left ? -.39 : .39))));
+		AutoPath path = new AutoPath(AutoPath.getPointsForBezier(1000, new Pair(0, 0),
+				new Pair(0 /** Math.sin(left ? -.39 : .39)*/, 20 /*** Math.cos(left ? -.39 : .39)*/)));
 		return path;
 	}
-	
 
 }
