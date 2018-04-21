@@ -24,6 +24,8 @@ public class ScaleAuto extends CommandGroup {
 	boolean isStraight = false;
 
 	public ScaleAuto(boolean startLeft, boolean switchLeft, boolean scaleLeft) {
+		setRunWhenDisabled(true);
+		setInterruptible(true);
 		CommandGroup drive = new CommandGroup();
 		CommandGroup armUpWhenClose = new CommandGroup();
 		CommandGroup firstCube = new CommandGroup();
@@ -34,13 +36,13 @@ public class ScaleAuto extends CommandGroup {
 		if (startLeft == scaleLeft) {
 			drive.addSequential(new ResetDriveTrain());
 			AutoPath path = scaleLeft ? pathLeftStraight : pathRightStraight;
-			drive.addSequential(new DriveTo(path, 300, true, 10000, true, true));
+			drive.addSequential(new DriveTo(path, 300, true, 7500, true, true));
 			isStraight = true;
 		} else {
 			AutoPath path = scaleLeft ? pathLeftCross : pathRightCross;
 			drive.addSequential(new ResetDriveTrain());
 			DriveTo crossPath = new DriveTo(path, 300, true, 7500, true, true);
-			crossPath.setDistTolerance(60);
+			crossPath.setDistTolerance(25);
 			drive.addSequential(crossPath);
 		}
 
@@ -53,7 +55,6 @@ public class ScaleAuto extends CommandGroup {
 		firstCube.addParallel(ejecting);
 		addSequential(firstCube);
 		addSequential(new ArmSetSetpoint(ArmSetpoint.INTAKE)); // intaking path: change setpoint to intake
-		addSequential(new TimedCommand(.7));
 		DriveTo intakePath = new DriveTo(scaleLeft ? intakePathLeft : intakePathRight, 300, false, 2000, false, true);
 		intakePath.setAngleTolerance(.175);
 		addSequential(intakePath);
@@ -65,6 +66,7 @@ public class ScaleAuto extends CommandGroup {
 		driveStraight.setFinishedCondition(() -> {
 			return RobotMap.intake.isIntaken();
 		});
+		addSequential(new WaitForArm());
 		addSequential(driveStraight);
 		// intaking.addSequential(new WaitUntilCubeIntaken(4000));
 		addSequential(new ResetDriveTrain());
@@ -78,15 +80,15 @@ public class ScaleAuto extends CommandGroup {
 		// addSequential(new Eject(true, true));
 		// } else {
 		addSequential(new ArmSetSetpoint(ArmSetpoint.SCALE_HIGH_BACK));
-		addSequential(new DriveTo(scaleLeft ? driveStraightLeft : driveStraightRight, 100, true, 1000, false, false));
-		addSequential(new ResetDriveTrain());
-		DriveTo secondCube = new DriveTo(scaleLeft ? intakePathLeft : intakePathRight, 300, true, 1250, false, false);
+//		addSequential(new DriveTo(scaleLeft ? driveStraightLeft : driveStraightRight, 100, true, 1000, false, false));
+//		addSequential(new ResetDriveTrain());
+		DriveTo secondCube = new DriveTo(scaleLeft ? intakePathLeft : intakePathRight, 300, true, 1250, false, true);
 		secondCube.setDistTolerance(40);
 		secondCube.setAngleTolerance(.175);
 		addSequential(secondCube);
 		addSequential(new Eject(true, true, true));
 		addSequential(new ArmSetSetpoint(ArmSetpoint.SWITCH));
-		// }
+		
 
 	}
 
@@ -113,8 +115,7 @@ public class ScaleAuto extends CommandGroup {
 	public static AutoPath getCross(boolean left) {
 		int sign = left ? -1 : 1;
 
-		Pair[] controlPoints = { new Pair(-193 * sign, -255), new Pair(-214 * sign, -200), new Pair(0.0, -200), // 193,
-																												// -270,
+		Pair[] controlPoints = { new Pair(-193 * sign, -255), new Pair(-205 * sign, -215), new Pair(0.0, -215), 																	
 				new Pair(0.0, 0.0), };
 		double[] dists = { 50.0, 75.0, };
 		return AutoPath.getAutoPathForClothoidSpline(controlPoints, dists);
@@ -128,7 +129,7 @@ public class ScaleAuto extends CommandGroup {
 
 	public static AutoPath getStraight(boolean left) {
 		int sign = left ? -1 : 1;
-		 Pair[] controlPoints = { new Pair(sign * 50.4, -283.0), new Pair(0, -115), new Pair(0.0, 0.0) };
+		 Pair[] controlPoints = { new Pair(sign * 35.6, -255.0), new Pair(0, -110.0), new Pair(0.0, 0.0) };
 		
 		 double[] dists = { 90.0, };
 		return AutoPath.getAutoPathForClothoidSpline(controlPoints, dists);
@@ -138,8 +139,8 @@ public class ScaleAuto extends CommandGroup {
 	public static AutoPath getIntakePath(boolean left) {
 		int sign = left ? -1 : 1;
 		 AutoPath intakePath = new AutoPath(AutoPath.getPointsForBezier(2000, new Pair(sign * -5.4, -12.0),
-		 new Pair(sign * -6.88, -6.12), new Pair(sign * -6.16, 28.32), new Pair(sign *
-		 -4.1, 32.7)));
+		 new Pair(sign * -6.88, -6.12), new Pair(sign * -12.3, 14.6), new Pair(sign *
+		 -10.2, 19)));
 		
 		return intakePath;
 
@@ -149,6 +150,34 @@ public class ScaleAuto extends CommandGroup {
 		AutoPath path = new AutoPath(AutoPath.getPointsForBezier(1000, new Pair(0, 0),
 				new Pair(0 /** Math.sin(left ? -.39 : .39)*/, 20 /*** Math.cos(left ? -.39 : .39)*/)));
 		return path;
+	}
+	
+	@Override
+	protected void interrupted() {
+		// TODO Auto-generated method stub
+		super.interrupted();
+		this.reset();
+	}
+	
+	@Override
+	public synchronized void cancel() {
+		// TODO Auto-generated method stub
+		super.cancel();
+		this.reset();
+	}
+	
+	@Override
+	protected void end() {
+		// TODO Auto-generated method stub
+		super.end();
+		this.reset();
+	}
+	
+	private void reset() {
+		// TODO Auto-generated method stub
+		RobotMap.driveTrain.reset();
+		RobotMap.arm.reset();
+		RobotMap.intake.setRollers(0);
 	}
 
 }

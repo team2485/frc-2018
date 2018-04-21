@@ -24,6 +24,8 @@ public class SwitchAuto extends CommandGroup {
 	private static AutoPath leftStraightIntakePath, rightStraightIntakePath;
 	private static AutoPath backup;
 	public SwitchAuto(boolean switchLeft, boolean scaleLeft) {
+		setRunWhenDisabled(true);
+		setInterruptible(true);
 		addSequential(new ArmSetSetpoint(ArmSetpoint.SWITCH));
 		AutoPath path = switchLeft ? leftPath : rightPath;
 //		RobotMap.pathTracker.start(path);
@@ -35,38 +37,38 @@ public class SwitchAuto extends CommandGroup {
 		addSequential(new DriveTo(backup, 120, true, 2500, false, true));
 		addSequential(new ResetDriveTrain());
 		addSequential(new ArmSetSetpoint(ArmSetpoint.INTAKE));
-		CommandGroup getCube = new CommandGroup();
-		CommandGroup driveToIntake = new CommandGroup();
-		CommandGroup intaking = new CommandGroup();
-		driveToIntake.addSequential(new DriveTo(switchLeft ? intakeLeftPath : intakeRightPath, 50, false, 3500, true, true));
-		driveToIntake.addSequential(new ResetDriveTrain());
-		intaking.addSequential(new SetIntakeManual(.75));
+		addSequential(new SetIntakeManual(.75));
+		addSequential(new DriveTo(switchLeft ? intakeLeftPath : intakeRightPath, 50, false, 3500, true, true));
+		addSequential(new ResetDriveTrain());
 //		intaking.addSequential(new WaitUntilCubeIntaken(6000));
-		DriveTo straightIntake = new DriveTo(switchLeft ? leftStraightIntakePath : rightStraightIntakePath, 100, false, 4000, false, false);
+		DriveTo straightIntake = new DriveTo(switchLeft ? leftStraightIntakePath : rightStraightIntakePath, 100, false, 100000, false, false);
 		straightIntake.setFinishedCondition(() -> {
 			return RobotMap.intake.isIntaken();
 		});
-		intaking.addSequential(straightIntake);
-		intaking.addSequential(new StopIntaking());
-		intaking.addSequential(new ArmSetSetpoint(ArmSetpoint.SWITCH));
-		getCube.addParallel(driveToIntake);
-		getCube.addParallel(intaking);
-		addSequential(getCube);
+		addSequential(straightIntake);
+		addSequential(new ResetDriveTrain());
+		addSequential(new StopIntaking());
+		addSequential(new ArmSetSetpoint(ArmSetpoint.SWITCH));
+		addSequential(new DriveTo(switchLeft ? intakeLeftPath : intakeRightPath, 50, true, 10000, false, true));
+		addSequential(new ResetDriveTrain());
+		addSequential(new DriveTo(backup, 120, false, 10000, false, true));
+		addSequential(new Eject(true, false, true));
 //		addSequential(new DriveTo(switchLeft ? intakeLeftPath : intakeRightPath, 80, false, 3500, false, false));
 //		DriveStraight straightPath = new DriveStraight(80, 120, 2500);
 //		straightPath.setTolerance(10);
 //		addSequential(straightPath);
 //		addSequential(new Eject(true, true, true));
-		AutoPath pathToScale;
-		CommandGroup drivingToScale = new CommandGroup();
-		if (scaleLeft == switchLeft) {
-			pathToScale = switchLeft ? leftToScaleLeft : rightToScaleRight;
-		} else {
-			pathToScale = switchLeft ? leftToScaleRight : rightToScaleLeft;
-		}
-		drivingToScale.addSequential(new DriveTo(pathToScale, 80, true, 8000, false, true));
-		drivingToScale.addSequential(new ResetDriveTrain());
-		addSequential(drivingToScale);
+		
+//		AutoPath pathToScale;
+//		CommandGroup drivingToScale = new CommandGroup();
+//		if (scaleLeft == switchLeft) {
+//			pathToScale = switchLeft ? leftToScaleLeft : rightToScaleRight;
+//		} else {
+//			pathToScale = switchLeft ? leftToScaleRight : rightToScaleLeft;
+//		}
+//		drivingToScale.addSequential(new DriveTo(pathToScale, 80, true, 8000, false, true));
+//		drivingToScale.addSequential(new ResetDriveTrain());
+//		addSequential(drivingToScale);
 	}
 
 	public static void init() {
@@ -121,5 +123,32 @@ public class SwitchAuto extends CommandGroup {
 	
 	public static AutoPath getStraightIntakePath(boolean switchLeft) {
 		return new AutoPath(AutoPath.getPointsForBezier(2000, new Pair(0, 0), new Pair(Math.sin(switchLeft ? 0.42 : -0.42) * 50, Math.cos(switchLeft ? 0.42 : -0.42) * 50)));
+	}
+	
+	protected void interrupted() {
+		// TODO Auto-generated method stub
+		super.interrupted();
+		this.reset();
+	}
+	
+	@Override
+	public synchronized void cancel() {
+		// TODO Auto-generated method stub
+		super.cancel();
+		this.reset();
+	}
+	
+	@Override
+	protected void end() {
+		// TODO Auto-generated method stub
+		super.end();
+		this.reset();
+	}
+	
+	private void reset() {
+		// TODO Auto-generated method stub
+		RobotMap.driveTrain.reset();
+		RobotMap.arm.reset();
+		RobotMap.intake.setRollers(0);
 	}
 }

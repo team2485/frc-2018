@@ -92,7 +92,7 @@ public class AutoLogger {
 			}
 
 			if (savedDataPts.size() > 0) {
-				fileWriterDataPts = new FileWriter("/home/lvuser/Data/Log " + System.currentTimeMillis() + ".csv");
+				fileWriterDataPts = new FileWriter("/home/lvuser/Data/Log " + date + ".csv");
 				fileWriterDataPts.append("Timestamp, xPos, yPos, avgEncoderDist, avgEncoderRate, elbowAngle, elbowRate, wristAngle, wristRate, gyroAngle, gyroRate, joystickDriver, joystickOperator, elbowCurrent, wristCurrent, elbowPwm, wristPwm, avgDriveTrainCurrent");
 				fileWriterDataPts.append(NEW_LINE_SEPARATOR);
 				for(DataPts p : savedDataPts) {

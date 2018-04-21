@@ -3,10 +3,12 @@ package org.usfirst.frc.team2485.robot;
 
 import java.util.ArrayList;
 
+import org.usfirst.frc.team2485.robot.commandGroups.ChampsCrossAuto;
 import org.usfirst.frc.team2485.robot.commandGroups.Eject;
 import org.usfirst.frc.team2485.robot.commandGroups.ScaleAuto;
 import org.usfirst.frc.team2485.robot.commandGroups.SwitchAuto;
 import org.usfirst.frc.team2485.robot.commands.ArmSetSetpoint;
+import org.usfirst.frc.team2485.robot.commands.CancelCommand;
 import org.usfirst.frc.team2485.robot.commands.ResetDriveTrain;
 import org.usfirst.frc.team2485.robot.commands.RotateTo;
 import org.usfirst.frc.team2485.robot.subsystems.Arm.ArmSetpoint;
@@ -24,6 +26,8 @@ import edu.wpi.cscore.VideoMode.PixelFormat;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -43,6 +47,7 @@ public class Robot extends IterativeRobot {
 	private boolean startedCamera = false;
 	public static boolean operatorBackup = false, driverBackup = false;
 	boolean debug;
+	private Command auto; 
 
 	/**
 	 * This function is run when the robot is first started up and should be
@@ -62,6 +67,7 @@ public class Robot extends IterativeRobot {
 
 		ScaleAuto.init();
 		SwitchAuto.init();
+		ChampsCrossAuto.init();
 		
 		debug = false;
 		
@@ -74,10 +80,11 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void disabledInit() {
-		Scheduler.getInstance().removeAll();
-		RobotMap.driveTrain.reset();
-		RobotMap.arm.reset();
-		RobotMap.intake.setRollers(0);
+		if (debug) {
+			RobotMap.driveTrain.reset();
+			RobotMap.arm.reset();
+			RobotMap.intake.setRollers(0);
+		}
 		AutoLogger.write();
 	}
 	int counter = 0;
@@ -113,14 +120,14 @@ public class Robot extends IterativeRobot {
 		ConstantsIO.init();
 		RobotMap.updateConstants();
 		
-//		RobotMap.elbowEncoderWrapperDistance.setPosition(-.190);
-//		RobotMap.wristEncoderWrapperDistance.setPosition(0.416);
-//		isHomed = true; // so we don't crash immediately in actual matches	
+		RobotMap.elbowEncoderWrapperDistance.setPosition(-.190);
+		RobotMap.wristEncoderWrapperDistance.setPosition(0.416);
+		isHomed = true; // so we don't crash immediately in actual matches	
 		
-		if (!isHomed) {
-			throw new RuntimeException("Not homed");
-		}
-		
+//		if (!isHomed) {
+//			throw new RuntimeException("Not homed");
+//		}
+//		
 		String positions = DriverStation.getInstance().getGameSpecificMessage().toUpperCase();
 		boolean switchLeft = positions.charAt(0) == 'L';
 		boolean scaleLeft = positions.charAt(1) == 'L';
@@ -151,8 +158,10 @@ public class Robot extends IterativeRobot {
 				
 		// CHANGE AUTO HERE
 		boolean startLeft = false;
-		//Scheduler.getInstance().add(new SwitchAuto(switchLeft, scaleLeft));
-		Scheduler.getInstance().add(new ScaleAuto(startLeft, switchLeft, scaleLeft));
+//		auto = new SwitchAuto(switchLeft, scaleLeft);
+//		auto = new ScaleAuto(startLeft, switchLeft, scaleLeft);
+		auto = startLeft == scaleLeft ? new ScaleAuto(startLeft, switchLeft, scaleLeft) : new ChampsCrossAuto(startLeft, scaleLeft);
+		Scheduler.getInstance().add(auto);
 	}
 
 	/**
@@ -179,8 +188,10 @@ public class Robot extends IterativeRobot {
 	public void teleopInit() {
 		ConstantsIO.init();
 		RobotMap.updateConstants();
-		RobotMap.driveTrain.reset();
-		RobotMap.arm.reset();
+		if (debug) {
+			RobotMap.driveTrain.reset();
+			RobotMap.arm.reset();
+		}
 		if (!isHomed) { // set to true in auto init, only relevant for pit testing
 			throw new RuntimeException("Not homed");
 		}
@@ -201,6 +212,34 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void teleopPeriodic() {
+		
+		boolean newButtonHeld = OI.operator.getRawButton(OI.XBOX_LBUMPER_PORT) ||
+    			OI.operator.getRawButton(OI.XBOX_RBUMPER_PORT) ||
+    			OI.operator.getRawButton(OI.XBOX_A_PORT) ||
+    			OI.operator.getRawButton(OI.XBOX_B_PORT) ||
+    			OI.operator.getRawButton(OI.XBOX_X_PORT) ||
+    			OI.operator.getRawButton(OI.XBOX_Y_PORT) || 
+    			OI.operator.getRawButton(OI.XBOX_BACK_BUTTON) ||
+    			OI.operator.getRawButton(OI.XBOX_START_BUTTON) || OI.operatorBackup.getRawButton(OI.XBOX_LBUMPER_PORT) ||
+    			OI.operatorBackup.getRawButton(OI.XBOX_RBUMPER_PORT) ||
+    			OI.operatorBackup.getRawButton(OI.XBOX_A_PORT) ||
+    			OI.operatorBackup.getRawButton(OI.XBOX_B_PORT) ||
+    			OI.operatorBackup.getRawButton(OI.XBOX_X_PORT) ||
+    			OI.operatorBackup.getRawButton(OI.XBOX_Y_PORT) || 
+    			OI.operatorBackup.getRawButton(OI.XBOX_BACK_BUTTON) ||
+    			OI.operatorBackup.getRawButton(OI.XBOX_START_BUTTON);
+		
+		if ((OI.driver.getRawAxis(OI.XBOX_RTRIGGER_PORT) > OI.XBOX_TRIGGER_DEADBAND || 
+				OI.driver.getRawAxis(OI.XBOX_LTRIGGER_PORT) > OI.XBOX_TRIGGER_DEADBAND || 
+				OI.driver.getRawButton(OI.XBOX_X_PORT) || OI.driverBackup.getRawAxis(OI.XBOX_RTRIGGER_PORT) > OI.XBOX_TRIGGER_DEADBAND 
+				|| OI.driverBackup.getRawAxis(OI.XBOX_LTRIGGER_PORT) > OI.XBOX_TRIGGER_DEADBAND || 
+				OI.driverBackup.getRawButton(OI.XBOX_X_PORT) || newButtonHeld) && auto != null) {
+			if (auto.isRunning()) {
+				auto.cancel();
+			}
+		}
+		
+
 		Scheduler.getInstance().run();
 		
 		updateSmartDashboard();
@@ -275,6 +314,7 @@ public class Robot extends IterativeRobot {
 //		SmartDashboard.putNumber("Y", RobotMap.deadReckoning.getY());
 		SmartDashboard.putNumber("Elbow Current Error", RobotMap.elbowTalon.getOutputCurrent());
 //		SmartDashboard.putNumber("Drift", RobotMap.pathTracker.getDrift());
+		
 		
 //		SmartDashboard.putNumber("Sonic Distance", RobotMap.sonic.getRangeInches());
 //		SmartDashboard.putBoolean("Sonic", RobotMap.sonic.getRangeInches() < 5);
@@ -361,7 +401,7 @@ public class Robot extends IterativeRobot {
 			RobotMap.arm.setElbowCurrent(-2);
 			RobotMap.arm.setWristCurrent(0);
 		} else if (OI.driver.getRawButton(OI.XBOX_B_PORT)) {
-			RobotMap.arm.setWristCurrent(3);
+			RobotMap.arm.setWristCurrent(2);
 			RobotMap.arm.setElbowCurrent(0);
 		} else if (OI.driver.getRawButton(OI.XBOX_Y_PORT)) {
 			RobotMap.arm.setWristCurrent(-2);

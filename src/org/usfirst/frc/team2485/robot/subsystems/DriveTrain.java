@@ -324,10 +324,11 @@ public class DriveTrain extends Subsystem {
 		
 
 		if (quickturn) {
-			speed = percentUp * (0.4 - 1) + 1;
-			if (percentUp > .5) {
-				speed *= Math.abs(steering);
-			}
+			speed = percentUp * (0.3 - .8) + .8;
+//			if (armUp) {
+//				speed *= Math.abs(steering);
+//			}
+			speed *= Math.abs(steering);
 
 		}
 

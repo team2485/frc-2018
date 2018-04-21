@@ -112,6 +112,7 @@ public class OI {
 	private static JoystickButton OPERATOR_BACKUP_RSTICK_BUTTON;
 	private static JoystickButton OPERATOR_BACKUP_START_BUTTON;
 	private static JoystickButton OPERATOR_BACKUP_BACK_BUTTON;
+	private static JoystickButton DRIVER_RSTICK_BUTTON;
 	
 	
 	
@@ -157,6 +158,8 @@ public class OI {
 		
 		OPERATOR_START_BUTTON = new JoystickButton(operator, XBOX_START_BUTTON);
 		OPERATOR_BACK_BUTTON = new JoystickButton(operator, XBOX_BACK_BUTTON);
+		
+		DRIVER_RSTICK_BUTTON = new JoystickButton(driver, XBOX_RSTICK_BUTTON_PORT);
 
 
 		
@@ -166,6 +169,7 @@ public class OI {
 		DRIVER_RBUMPER.whenPressed(new Eject(false, false, false));
 		DRIVER_Y.whenPressed(new SetIntakeManual(0));
 		DRIVER_A.whenPressed(new SetIntakeManual(.75)); // anton change this 
+		DRIVER_RSTICK_BUTTON.whenPressed(new SetIntakeManual(.5));
 		
 		Command scaleHighBack = new ArmToScale(ArmSetpoint.SCALE_HIGH_BACK);
 		OPERATOR_Y.whenPressed(scaleHighBack);

@@ -18,11 +18,16 @@ public class Intake extends Subsystem {
 	public TalonSRX left;
 	public TalonSRX right;
 	
-	public double maxCurrent = 30; 
-	public boolean overCurrent = false;
-	public double startSpikeTime;
+	public double maxCurrentSteady = 20; 
+	public double maxCurrentPeak = 30;
+	public boolean overCurrentSteady = false;
+	public boolean overCurrentPeak = false;
+	public double startSpikeTimeSteady;
+	public double startSpikeTimePeak;
 	public boolean cubeIntaken = false;
 	public boolean ejectingLong = false;
+	public final int STEADY_TIME = 1000;
+	public final int PEAK_TIME = 250;
 	
 	public Intake() {
 		this.left = RobotMap.intakeLeftTalon;
@@ -35,15 +40,26 @@ public class Intake extends Subsystem {
 	
 	public boolean isIntaken() {
 		double averageCurrent = (RobotMap.intakeLeftTalon.getOutputCurrent() + RobotMap.intakeRightTalon.getOutputCurrent())/2;
-		if (averageCurrent >= maxCurrent && !overCurrent) {
-			startSpikeTime = System.currentTimeMillis();
-			overCurrent = true;
-		} else if (averageCurrent < maxCurrent) {
-			overCurrent = false;
+		if (averageCurrent >= maxCurrentSteady && !overCurrentSteady) {
+			startSpikeTimeSteady = System.currentTimeMillis();
+			overCurrentSteady = true;
+		} else if (averageCurrent < maxCurrentSteady) {
+			overCurrentSteady = false;
 		}
-		if (overCurrent && (System.currentTimeMillis() - startSpikeTime) > 250) {
+		if (overCurrentSteady && (System.currentTimeMillis() - startSpikeTimeSteady) > STEADY_TIME) {
 			cubeIntaken = true;
 		}
+		
+		if (averageCurrent >= maxCurrentPeak && !overCurrentPeak) {
+			startSpikeTimePeak = System.currentTimeMillis();
+			overCurrentPeak = true;
+		} else if (averageCurrent < maxCurrentPeak) {
+			overCurrentPeak = false;
+		}
+		if (overCurrentPeak && (System.currentTimeMillis() - startSpikeTimePeak) > PEAK_TIME) {
+			cubeIntaken = true;
+		}
+		
 		return cubeIntaken;
 	} 
 	
