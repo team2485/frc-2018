@@ -24,7 +24,6 @@ public class ScaleAuto extends CommandGroup {
 	boolean isStraight = false;
 
 	public ScaleAuto(boolean startLeft, boolean switchLeft, boolean scaleLeft) {
-		setRunWhenDisabled(true);
 		setInterruptible(true);
 		CommandGroup drive = new CommandGroup();
 		CommandGroup armUpWhenClose = new CommandGroup();
@@ -49,7 +48,7 @@ public class ScaleAuto extends CommandGroup {
 		drive.addSequential(new ResetDriveTrain());
 		CommandGroup ejecting = new CommandGroup();
 		ejecting.addSequential(new WaitUntilClose(100));
-		ejecting.addSequential(new Eject(true, true, true));
+		ejecting.addSequential(new Eject(false, true, true));
 		firstCube.addParallel(drive);
 		firstCube.addParallel(armUpWhenClose);
 		firstCube.addParallel(ejecting);
@@ -79,15 +78,15 @@ public class ScaleAuto extends CommandGroup {
 		// addSequential(finalDrive);
 		// addSequential(new Eject(true, true));
 		// } else {
-		addSequential(new ArmSetSetpoint(ArmSetpoint.SCALE_HIGH_BACK));
-//		addSequential(new DriveTo(scaleLeft ? driveStraightLeft : driveStraightRight, 100, true, 1000, false, false));
-//		addSequential(new ResetDriveTrain());
-		DriveTo secondCube = new DriveTo(scaleLeft ? intakePathLeft : intakePathRight, 300, true, 1250, false, true);
-		secondCube.setDistTolerance(40);
-		secondCube.setAngleTolerance(.175);
-		addSequential(secondCube);
-		addSequential(new Eject(true, true, true));
-		addSequential(new ArmSetSetpoint(ArmSetpoint.SWITCH));
+//		addSequential(new ArmSetSetpoint(ArmSetpoint.SCALE_HIGH_BACK));
+////		addSequential(new DriveTo(scaleLeft ? driveStraightLeft : driveStraightRight, 100, true, 1000, false, false));
+////		addSequential(new ResetDriveTrain());
+//		DriveTo secondCube = new DriveTo(scaleLeft ? intakePathLeft : intakePathRight, 300, true, 1250, false, true);
+//		secondCube.setDistTolerance(40);
+//		secondCube.setAngleTolerance(.175);
+//		addSequential(secondCube);
+//		addSequential(new Eject(true, true, true));
+//		addSequential(new ArmSetSetpoint(ArmSetpoint.SWITCH));
 		
 
 	}
@@ -139,8 +138,8 @@ public class ScaleAuto extends CommandGroup {
 	public static AutoPath getIntakePath(boolean left) {
 		int sign = left ? -1 : 1;
 		 AutoPath intakePath = new AutoPath(AutoPath.getPointsForBezier(2000, new Pair(sign * -5.4, -12.0),
-		 new Pair(sign * -6.88, -6.12), new Pair(sign * -12.3, 14.6), new Pair(sign *
-		 -10.2, 19)));
+		 new Pair(sign * -6.88, -6.12), new Pair(sign * -2.3, 14.6), new Pair(sign *
+		 -0.2, 19)));
 		
 		return intakePath;
 
