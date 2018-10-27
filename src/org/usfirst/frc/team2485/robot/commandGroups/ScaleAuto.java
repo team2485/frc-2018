@@ -78,15 +78,15 @@ public class ScaleAuto extends CommandGroup {
 		// addSequential(finalDrive);
 		// addSequential(new Eject(true, true));
 		// } else {
-//		addSequential(new ArmSetSetpoint(ArmSetpoint.SCALE_HIGH_BACK));
-////		addSequential(new DriveTo(scaleLeft ? driveStraightLeft : driveStraightRight, 100, true, 1000, false, false));
-////		addSequential(new ResetDriveTrain());
-//		DriveTo secondCube = new DriveTo(scaleLeft ? intakePathLeft : intakePathRight, 300, true, 1250, false, true);
-//		secondCube.setDistTolerance(40);
-//		secondCube.setAngleTolerance(.175);
-//		addSequential(secondCube);
-//		addSequential(new Eject(true, true, true));
-//		addSequential(new ArmSetSetpoint(ArmSetpoint.SWITCH));
+		addSequential(new ArmSetSetpoint(ArmSetpoint.SCALE_HIGH_BACK));
+//		addSequential(new DriveTo(scaleLeft ? driveStraightLeft : driveStraightRight, 100, true, 1000, false, false));
+//		addSequential(new ResetDriveTrain());
+		DriveTo secondCube = new DriveTo(scaleLeft ? intakePathLeft : intakePathRight, 300, true, 1250, false, true);
+		secondCube.setDistTolerance(40);
+		secondCube.setAngleTolerance(.175);
+		addSequential(secondCube);
+		addSequential(new Eject(true, true, true));
+		addSequential(new ArmSetSetpoint(ArmSetpoint.SWITCH));
 		
 
 	}
